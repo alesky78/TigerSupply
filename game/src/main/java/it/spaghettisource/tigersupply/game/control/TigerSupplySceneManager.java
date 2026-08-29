@@ -6,31 +6,38 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
-import it.spaghettisource.tigersupply.engine.control.AbstractGameManagerJPanel;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
-import it.spaghettisource.tigersupply.engine.control.Game;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneManagerJPanel;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
+import it.spaghettisource.tigersupply.engine.control.Scene;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.finaleffect.FinalEffectManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 
-public class GameManager extends AbstractGameManagerJPanel {
+/**
+ * TigerSupply's concrete scene manager: it extends {@link AbstractSceneManagerJPanel} to bootstrap
+ * the shared repositories and managers, hold the active {@link Scene}, and intercept the global
+ * pause/quit keys before delegating input to the active scene.
+ *
+ * @author Alessandro D'Ottavio
+ */
+public class TigerSupplySceneManager extends AbstractSceneManagerJPanel {
 
 
-	public void setActualGame(Game actualGame){
-		this.actualGame = actualGame;
+	public void setActiveScene(Scene activeScene){
+		this.activeScene = activeScene;
 	}
 	
 	public JPanel getGamePanel(){
 		return panel;
 	}
 	
-	public ApplicationContext getGameContext(){
+	public GameContext getGameContext(){
 		return context;
 	}	
 	
-	public GameManager(JPanel panel,ApplicationContext context) throws Exception{
+	public TigerSupplySceneManager(JPanel panel,GameContext context) throws Exception{
 		this.panel = panel;
 		this.context = context;		
 
@@ -40,10 +47,10 @@ public class GameManager extends AbstractGameManagerJPanel {
 		FinalEffectManager.init(context);
 		SpriteFactory.init();
 		EntityFactory.init(context);
-		GameFlowController.init(this);
+		SceneFlowController.init(this);
 		
 		//start the game with the presentation
-		GameFlowController.getInstance().doPresentation();
+		SceneFlowController.getInstance().doPresentation();
 
 	}
 	
@@ -58,7 +65,7 @@ public class GameManager extends AbstractGameManagerJPanel {
 				context.requestPauseGame();				
 			}
 		}else{
-			actualGame.keyPressed(event);			
+			activeScene.keyPressed(event);			
 		}
 	}
 	

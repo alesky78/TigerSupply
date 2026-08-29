@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.game.entity;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 
 public class Smoke extends Effect {
 
@@ -9,7 +9,7 @@ public class Smoke extends Effect {
 	
 	
 	
-	public void setContext(ApplicationContext context) {
+	public void setContext(GameContext context) {
 		super.setContext(context);
 		spriteTimeDuration = 0.5f;
 		float loops = (float) (spriteTimeDuration/context.getPeriodSeconds());

@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.engine.windows;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
-import it.spaghettisource.tigersupply.engine.control.GameManagerFactory;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
+import it.spaghettisource.tigersupply.engine.control.SceneManagerFactory;
 
 import java.awt.Container;
 import java.awt.event.WindowEvent;
@@ -13,10 +13,10 @@ import javax.swing.JFrame;
 
 /**
  * Reusable top-level window shell that hosts the {@link GamePanel} and bridges
- * the AWT window lifecycle to the {@link ApplicationContext}.
+ * the AWT window lifecycle to the {@link GameContext}.
  *
  * <p>The shell is game-agnostic: the concrete game is supplied indirectly through
- * the {@link GameManagerFactory} handed to the panel. The window title and the
+ * the {@link SceneManagerFactory} handed to the panel. The window title and the
  * playfield dimensions are provided by the composition root (the launcher module),
  * rather than hard-coded here.
  *
@@ -31,7 +31,7 @@ public class GameFrame extends JFrame implements WindowListener{
 
 	private int pWidth, pHeight;   // dimensions of the panel
 
-	private ApplicationContext applicationContext;
+	private GameContext gameContext;
 
 
 	/**
@@ -40,22 +40,22 @@ public class GameFrame extends JFrame implements WindowListener{
 	 * @param title the window title, never {@code null}
 	 * @param width the playfield width in pixels
 	 * @param height the playfield height in pixels
-	 * @param applicationContext the shared game lifecycle context, never {@code null}
-	 * @param gameManagerFactory factory that builds the concrete game manager, never {@code null}
+	 * @param gameContext the shared game lifecycle context, never {@code null}
+	 * @param sceneManagerFactory factory that builds the concrete scene manager, never {@code null}
 	 * @throws Exception if the hosted game panel fails to initialize
 	 */
-	public GameFrame(String title, int width, int height, ApplicationContext applicationContext, GameManagerFactory gameManagerFactory) throws Exception{
+	public GameFrame(String title, int width, int height, GameContext gameContext, SceneManagerFactory sceneManagerFactory) throws Exception{
 
 		super(title);
 
 		//hold the context so the window events can drive pause/resume/stop of the game
-		this.applicationContext = applicationContext;
+		this.gameContext = gameContext;
 		this.pWidth = width;
 		this.pHeight = height;
 
 		//create the content of the frame
 		Container c = getContentPane();
-		GamePanel gamePanel = new GamePanel(applicationContext, pWidth, pHeight, gameManagerFactory);
+		GamePanel gamePanel = new GamePanel(gameContext, pWidth, pHeight, sceneManagerFactory);
 		c.add(gamePanel, "Center");
 		pack();  // size the frame to fit the game panel
 
@@ -72,19 +72,19 @@ public class GameFrame extends JFrame implements WindowListener{
 	//manage hire all the listener for the lifecicle of the windows
 
 	public void windowActivated(WindowEvent e) 
-	{ applicationContext.requestResumeGame();  }
+	{ gameContext.requestResumeGame();  }
 
 	public void windowDeactivated(WindowEvent e) 
-	{  applicationContext.requestPauseGame();  }
+	{  gameContext.requestPauseGame();  }
 
 	public void windowDeiconified(WindowEvent e) 
-	{  applicationContext.requestResumeGame();  }
+	{  gameContext.requestResumeGame();  }
 
 	public void windowIconified(WindowEvent e) 
-	{  applicationContext.requestPauseGame(); }
+	{  gameContext.requestPauseGame(); }
 
 	public void windowClosing(WindowEvent e)
-	{  applicationContext.requestStopGame();  }
+	{  gameContext.requestStopGame();  }
 
 	public void windowClosed(WindowEvent e) {}
 

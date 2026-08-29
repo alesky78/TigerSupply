@@ -7,10 +7,10 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import it.spaghettisource.tigersupply.engine.control.AnimationLoop;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
-import it.spaghettisource.tigersupply.engine.control.GameManager;
-import it.spaghettisource.tigersupply.engine.control.GameManagerFactory;
+import it.spaghettisource.tigersupply.engine.control.GameLoop;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
+import it.spaghettisource.tigersupply.engine.control.SceneManager;
+import it.spaghettisource.tigersupply.engine.control.SceneManagerFactory;
 
 /**
  * this is the panel that will be use to draw the game
@@ -24,10 +24,10 @@ public class GamePanel extends JPanel{
 
 	private final static int FPS_REQUIRED = 60;		//frame required in 1000 ms
 	
-	private ApplicationContext context;
-	private AnimationLoop animationLoop;
+	private GameContext context;
+	private GameLoop gameLoop;
 
-	public GamePanel(ApplicationContext context, int pWidth, int pHeight, GameManagerFactory gameManagerFactory) throws Exception{
+	public GamePanel(GameContext context, int pWidth, int pHeight, SceneManagerFactory sceneManagerFactory) throws Exception{
 
 		float period = 1000.0f/FPS_REQUIRED;
 		
@@ -44,9 +44,9 @@ public class GamePanel extends JPanel{
 		context.setScreenHeight(pHeight+10);
 		context.setScreenWidth(pWidth+10);
 		
-		GameManager manager = gameManagerFactory.create(this, context);
+		SceneManager manager = sceneManagerFactory.create(this, context);
 		
-		animationLoop = new AnimationLoop(context,manager);
+		gameLoop = new GameLoop(context,manager);
 				
 		//create the game listeners
 	    addMouseListener( new GamePanelMauseListener(manager));
@@ -60,8 +60,8 @@ public class GamePanel extends JPanel{
 	// only start the game once the JPanel has been added to the JFrame
 	public void addNotify(){ 
 		super.addNotify();   // creates the peer
-		context.requierdStart();
-		animationLoop.start();
+		context.requestStartGame();
+		gameLoop.start();
 	}
 
 

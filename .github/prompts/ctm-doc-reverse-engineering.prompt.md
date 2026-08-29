@@ -18,11 +18,9 @@ tools: ['vscode', 'execute', 'read', 'edit', 'search', 'agent', 'todo', 'web']
 ### 1.2 Understand the Business Context
 - The core business that the system is implementing overall
 - The business overview of every package
-- List of Business Transactions that are implemented in the system
 
 ### 1.3 Infrastructure Discovery
 - CDK packages (package.json with CDK dependencies)
-- Terraform (.tf files)
 - CloudFormation (.yaml/.json templates)
 - Deployment scripts
 
@@ -55,7 +53,6 @@ Create `/documentation/architecture/system-overview/business-overview.md`:
 
 ## Business Description
 - **Business Description**: [Overall Business description of what the system does]
-- **Business Transactions**: [List of Business Transactions that the system implements and their descriptions]
 - **Business Dictionary**: [Business dictionary terms that the system follows and their meaning]
 
 ## Component Level Business Descriptions

@@ -1,12 +1,12 @@
 package it.spaghettisource.tigersupply.game.scene;
 
 import it.spaghettisource.tigersupply.engine.background.BackGround;
-import it.spaghettisource.tigersupply.engine.control.AbstractGameJPanel;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.finaleffect.FinalEffectManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
-import it.spaghettisource.tigersupply.game.control.GameFlowController;
+import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 import it.spaghettisource.tigersupply.engine.background.BackGroundFitImage;
 
@@ -21,13 +21,13 @@ import java.awt.event.MouseEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 
-public class PresentationScene extends AbstractGameJPanel {
+public class PresentationScene extends AbstractSceneJPanel {
 
-	private ApplicationContext context;
+	private GameContext context;
 	private BackGround backGround;	
 	private FinalEffectManager finalEffectManager; 
 	
-	public PresentationScene(ApplicationContext context) throws Exception{
+	public PresentationScene(GameContext context) throws Exception{
 		this.context = context;
 		this.pWidth = context.getScreenWidth();
 		this.pHeight = context.getScreenHeight();
@@ -42,12 +42,12 @@ public class PresentationScene extends AbstractGameJPanel {
 	}
 	
 	
-	public void updateGame(float deltaTimeSeconds) throws Exception{
+	public void update(float deltaTimeSeconds) throws Exception{
 		finalEffectManager.updateEffect(deltaTimeSeconds);
 	}
 
 
-	public void internalRenderGame(Graphics2D dbg) throws Exception {
+	public void internalRender(Graphics2D dbg) throws Exception {
 		
 		Paint original = dbg.getPaint();
 		dbg.setPaint(new GradientPaint(pWidth/2, pHeight/2, new Color(0, 0, 0), pWidth, pHeight, new Color(0, 0, 155)));
@@ -86,7 +86,7 @@ public class PresentationScene extends AbstractGameJPanel {
 		if(finalEffectManager.isDarknessActive() && finalEffectManager.isDarknessFinish()){	//render and stop for the last time
 			finalEffectManager.stopDarkness();
 			finalEffectManager.stopStar();
-			GameFlowController.getInstance().doHangar();
+			SceneFlowController.getInstance().doHangar();
 		}
 	}	
 
@@ -101,9 +101,9 @@ public class PresentationScene extends AbstractGameJPanel {
 
 	public void keyReleased(KeyEvent event){}
 
-	public void mousePress(int x, int y) {}
+	public void mousePressed(int x, int y) {}
 
-	public void mouseMove(MouseEvent event) {}	
+	public void mouseMoved(MouseEvent event) {}	
 
 	
 }

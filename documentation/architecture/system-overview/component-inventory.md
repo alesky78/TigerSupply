@@ -9,10 +9,10 @@
 
 | Package | Module | Purpose |
 |---------|--------|---------|
-| `it.spaghettisource.tigersupply.launcher` | launcher | Composition root: `Launcher#main` entry point + `TigerSupplyGameManagerFactory`. |
+| `it.spaghettisource.tigersupply.launcher` | launcher | Composition root: `Launcher#main` entry point + `TigerSupplySceneManagerFactory`. |
 | `it.spaghettisource.tigersupply.engine.windows` | engine | Window shell: `GameFrame` (`JFrame`), `GamePanel`, AWT input listeners. |
-| `it.spaghettisource.tigersupply.engine.control` | engine | Game-loop contracts: `Game`, `GameManager`, `GameManagerFactory`, `AnimationLoop`, `ApplicationContext`. |
-| `it.spaghettisource.tigersupply.game.control` | game | TigerSupply's concrete `GameManager` + `GameFlowController` (Scene switching, level progression). |
+| `it.spaghettisource.tigersupply.engine.control` | engine | Game-loop contracts: `Scene`, `SceneManager`, `SceneManagerFactory`, `GameLoop`, `GameContext`. |
+| `it.spaghettisource.tigersupply.game.control` | game | TigerSupply's concrete `TigerSupplySceneManager` + `SceneFlowController` (Scene switching, level progression). |
 | `it.spaghettisource.tigersupply.game.scene` | game | The four Scenes: Presentation, Hangar, Level, Game Over. |
 | `it.spaghettisource.tigersupply.game.scene.definition` | game | Level-XML DTOs (Horde, EnemyDefinition, EnemyPrototype, AlgorithmPrototype, …). |
 | `it.spaghettisource.tigersupply.game.scene.statemachine` | game | Horde-spawn-pacing states built on the generic state machine. |

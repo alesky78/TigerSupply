@@ -2,13 +2,15 @@ package it.spaghettisource.tigersupply.engine.control;
 
 
 /**
- * this class has the scope to hold the life cycle of the game
+ * Holds the shared runtime state of the game loop: the run/pause flags, the frame period, and the
+ * drawable screen size. This is the engine's own lifecycle context, not a dependency-injection
+ * container.
  * 
  * 
  * @author DOttavio
  *
  */
-public class ApplicationContext {
+public class GameContext {
 
 	private volatile boolean running = false;   // used to stop the animation thread, it drastically detory the thread
 	private volatile boolean isPaused = false;	// used to don't update the game logic   
@@ -28,7 +30,7 @@ public class ApplicationContext {
 		isPaused = false;
 	}
 
-	public void requierdStart() {
+	public void requestStartGame() {
 		running = true;
 	}
 

@@ -24,39 +24,39 @@
 
 ```mermaid
 classDiagram
-    class Game {
+    class Scene {
         <<interface>>
-        +updateGame(deltaTimeSeconds)
-        +renderGame()
+        +update(deltaTimeSeconds)
+        +render()
         +paintScreen()
-        +mousePress(x, y)
-        +mouseMove(event)
+        +mousePressed(x, y)
+        +mouseMoved(event)
         +keyPressed(event)
         +keyReleased(event)
     }
-    class GameManager {
+    class SceneManager {
         <<interface>>
-        +getActualGame() Game
-        +mousePress(x, y)
-        +mouseMove(event)
+        +getActiveScene() Scene
+        +mousePressed(x, y)
+        +mouseMoved(event)
         +keyPressed(event)
         +keyReleased(event)
     }
-    class AbstractGameJPanel {
+    class AbstractSceneJPanel {
         <<abstract>>
-        #internalRenderGame(dbg)
+        #internalRender(dbg)
         #doFinalEffect(dbg)
     }
-    class AbstractGameManagerJPanel {
+    class AbstractSceneManagerJPanel {
         <<abstract>>
-        #actualGame : Game
+        #activeScene : Scene
     }
-    class AnimationLoop {
-        -context : ApplicationContext
-        -gameManager : GameManager
+    class GameLoop {
+        -context : GameContext
+        -sceneManager : SceneManager
         +run()
     }
-    class ApplicationContext {
+    class GameContext {
         -running : boolean
         -isPaused : boolean
         -periodInMilliseconds : float
@@ -105,19 +105,19 @@ classDiagram
         +event()
     }
 
-    Game <|.. AbstractGameJPanel
-    GameManager <|.. AbstractGameManagerJPanel
-    AbstractGameManagerJPanel --> Game : actualGame
-    AnimationLoop --> ApplicationContext
-    AnimationLoop --> GameManager
+    Scene <|.. AbstractSceneJPanel
+    SceneManager <|.. AbstractSceneManagerJPanel
+    AbstractSceneManagerJPanel --> Scene : activeScene
+    GameLoop --> GameContext
+    GameLoop --> SceneManager
     Entity <|.. AbstractEntity
     Entity <|.. EntityManager
     AbstractEntity --> Sprite
     AbstractEntity --> UpdateAlgorithm
-    AbstractGameJPanel <|-- PresentationScene
-    AbstractGameJPanel <|-- HangarScene
-    AbstractGameJPanel <|-- LevelScene
-    AbstractGameJPanel <|-- GameOverScene
+    AbstractSceneJPanel <|-- PresentationScene
+    AbstractSceneJPanel <|-- HangarScene
+    AbstractSceneJPanel <|-- LevelScene
+    AbstractSceneJPanel <|-- GameOverScene
     AbstractEntity <|-- BaseEntity
     BaseEntity <|-- Player
     BaseEntity <|-- Enemy
@@ -145,13 +145,13 @@ grouped by module; paths under each heading are relative to that module's base p
 `engine/src/main/java/it/spaghettisource/tigersupply/engine/`).
 
 #### `control/` — engine loop contracts
-- `Game.java` — Contract for a renderable/updatable/input-handling game screen ("Scene").
-- `GameManager.java` — Contract for the component that owns/returns the currently active `Game`.
-- `GameManagerFactory.java` — Factory seam that builds the concrete `GameManager` for a given panel/context, letting `GamePanel` stay game-agnostic; the concrete implementation is supplied by the `launcher` module.
-- `AbstractGameJPanel.java` — Template-method base `Game` that manages Swing double-buffering and calls `internalRenderGame`/`doFinalEffect`.
-- `AbstractGameManagerJPanel.java` — Base `GameManager` that forwards input events to the active `Game`.
-- `AnimationLoop.java` — Fixed-timestep game-loop thread (update/render/paint, frame-skipping, thread-yield logic).
-- `ApplicationContext.java` — Mutable shared runtime state (running/paused flags, frame period, screen size).
+- `Scene.java` — Contract for a renderable/updatable/input-handling game screen ("Scene").
+- `SceneManager.java` — Contract for the component that owns/returns the currently active `Scene`.
+- `SceneManagerFactory.java` — Factory seam that builds the concrete `SceneManager` for a given panel/context, letting `GamePanel` stay game-agnostic; the concrete implementation is supplied by the `launcher` module.
+- `AbstractSceneJPanel.java` — Template-method base `Scene` that manages Swing double-buffering and calls `internalRender`/`doFinalEffect`.
+- `AbstractSceneManagerJPanel.java` — Base `SceneManager` that forwards input events to the active `Scene`.
+- `GameLoop.java` — Fixed-timestep game-loop thread (update/render/paint, frame-skipping, thread-yield logic).
+- `GameContext.java` — Mutable shared runtime state (running/paused flags, frame period, screen size).
 
 #### `entity/` — generic simulation model
 - `Entity.java` — Contract for any simulated game object (update/render/collide/out-of-screen).
@@ -263,9 +263,9 @@ grouped by module; paths under each heading are relative to that module's base p
 - `StreamUtils.java` — Classpath/stream helper utilities.
 
 #### `windows/` — window shell
-- `GameFrame.java` — Game-agnostic `JFrame` window shell (renamed from `Application`); takes a window title, playfield size, `ApplicationContext` and a `GameManagerFactory`, and hosts the `GamePanel`. No longer the process entry point — that moved to the `launcher` module.
-- `GamePanel.java` — `JPanel` hosting the game; builds the `GameManager` via the injected `GameManagerFactory`, owns the `AnimationLoop`, registers input listeners, and starts the loop in `addNotify()`.
-- `GamePanelKeyListener.java`, `GamePanelMauseListener.java`, `GamePanelMauseMotionListener.java` — AWT listener adapters forwarding key/mouse events to the `GameManager` *(class names contain a "Mause" typo for "Mouse")*.
+- `GameFrame.java` — Game-agnostic `JFrame` window shell (renamed from `Application`); takes a window title, playfield size, `GameContext` and a `SceneManagerFactory`, and hosts the `GamePanel`. No longer the process entry point — that moved to the `launcher` module.
+- `GamePanel.java` — `JPanel` hosting the game; builds the `SceneManager` via the injected `SceneManagerFactory`, owns the `GameLoop`, registers input listeners, and starts the loop in `addNotify()`.
+- `GamePanelKeyListener.java`, `GamePanelMauseListener.java`, `GamePanelMauseMotionListener.java` — AWT listener adapters forwarding key/mouse events to the `SceneManager` *(class names contain a "Mause" typo for "Mouse")*.
 
 ---
 
@@ -274,12 +274,12 @@ grouped by module; paths under each heading are relative to that module's base p
 with the `impl` segment dropped).
 
 #### `game/control/` — TigerSupply flow
-- `GameFlowController.java` — Singleton transaction script owning the `Player`/`EnemyManager` and switching the active Scene; drives level progression.
-- `GameManager.java` — Concrete `GameManager` (built by the launcher's `TigerSupplyGameManagerFactory`): bootstraps all singleton services and starts on the Presentation scene; handles global pause/quit keys.
+- `SceneFlowController.java` — Singleton transaction script owning the `Player`/`EnemyManager` and switching the active Scene; drives level progression.
+- `TigerSupplySceneManager.java` — Concrete `SceneManager` (built by the launcher's `TigerSupplySceneManagerFactory`): bootstraps all singleton services and starts on the Presentation scene; handles global pause/quit keys.
 
 #### `game/scene/`
 - `PresentationScene.java` — Title-screen scene (logo text via `GlyphVector`, star field, fade-to-black transition into the Hangar).
-- `HangarScene.java` — Loadout scene: ship/weapon selection buttons wired to a `HangarDataModel`; the Start button hands the configured `Player` to `GameFlowController`.
+- `HangarScene.java` — Loadout scene: ship/weapon selection buttons wired to a `HangarDataModel`; the Start button hands the configured `Player` to `SceneFlowController`.
 - `LevelScene.java` — Core gameplay scene: owns shot/effect `EntityManager`s, the `EnemyManager`, three `CollisionDetector`s, and the parallax background; declares win/lose transitions.
 - `GameOverScene.java` — Game-over scene with a looping explosion-particle effect and restart-on-Space.
 
@@ -362,14 +362,14 @@ with the `impl` segment dropped).
 `launcher/src/main/java/it/spaghettisource/tigersupply/launcher/`).
 
 #### `launcher/`
-- `Launcher.java` — Process entry point (`main`); owns the launch configuration (window title "Tiger Supply", 1360x660 playfield), builds the `ApplicationContext` and a `TigerSupplyGameManagerFactory`, and starts the engine `GameFrame`.
-- `TigerSupplyGameManagerFactory.java` — Concrete `GameManagerFactory`; the single class outside the `game` module that names `game.control.GameManager` — the seam binding the engine to the TigerSupply game.
+- `Launcher.java` — Process entry point (`main`); owns the launch configuration (window title "Tiger Supply", 1360x660 playfield), builds the `GameContext` and a `TigerSupplySceneManagerFactory`, and starts the engine `GameFrame`.
+- `TigerSupplySceneManagerFactory.java` — Concrete `SceneManagerFactory`; the single class outside the `game` module that names `game.control.TigerSupplySceneManager` — the seam binding the engine to the TigerSupply game.
 
 ## Design Patterns
 
 ### Singleton
 - **Location**: `EntityFactory`, `SpriteFactory`, `ImageRepositoryManager`, `AudioManager`,
-  `FontRepositoryManager`, `EffectManager`, `FinalEffectManager`, `GameFlowController`.
+  `FontRepositoryManager`, `EffectManager`, `FinalEffectManager`, `SceneFlowController`.
 - **Purpose**: Provide one globally-reachable instance of each cross-cutting service without a
   dependency-injection container.
 - **Implementation**: Private constructor + static `init(...)`/`getInstance()` with
@@ -393,7 +393,7 @@ with the `impl` segment dropped).
 
 ### State
 - **Location**: `statemachine` (generic) + `game.scene.statemachine` (horde-pacing FSM);
-  `game.control.GameFlowController` (Scene switching is effectively a simpler, code-driven
+  `game.control.SceneFlowController` (Scene switching is effectively a simpler, code-driven
   state machine).
 - **Purpose**: Encode the horde-generation lifecycle (`waitTime`/`waitKill` ⇄
   `generateHorde` → `killBoss`) and the game's Scene graph without nested conditionals.
@@ -407,7 +407,7 @@ with the `impl` segment dropped).
   for update/render calls.
 
 ### Template Method
-- **Location**: `AbstractGameJPanel.renderGame()` (calls abstract `internalRenderGame` +
+- **Location**: `AbstractSceneJPanel.render()` (calls abstract `internalRender` +
   `doFinalEffect`); `game.entity.Enemy`/`game.weapon.AbstractWeapon` (base update loop calling
   into subclass-specific hooks).
 

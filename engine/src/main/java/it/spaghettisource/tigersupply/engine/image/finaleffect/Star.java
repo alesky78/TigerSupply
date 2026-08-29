@@ -4,7 +4,7 @@ package it.spaghettisource.tigersupply.engine.image.finaleffect;
 
 import java.awt.Graphics2D;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerRemovable;
 
 public class Star extends AbstractFinalEffect {
@@ -18,7 +18,7 @@ public class Star extends AbstractFinalEffect {
 	private EntityManagerRemovable<StarEntity> manager = new EntityManagerRemovable<StarEntity>();
 	
 
-	public void configAndStart(float secondNextStar, ApplicationContext context){
+	public void configAndStart(float secondNextStar, GameContext context){
 		active = true;
 		periodCounter = 0;
 		

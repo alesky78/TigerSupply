@@ -10,7 +10,7 @@ import java.awt.Shape;
 import java.awt.font.GlyphVector;
 
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
-import it.spaghettisource.tigersupply.game.control.GameFlowController;
+import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.engine.ui.RectangleButton;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
@@ -39,7 +39,7 @@ public class StartButtonHangar extends RectangleButton{
 		player.addWeapon(model.getPrimaryWeapon());
 		player.addWeapon(model.getSecondaryWeapon());		
 		try {
-			GameFlowController.getInstance().doNextLevel();
+			SceneFlowController.getInstance().doNextLevel();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

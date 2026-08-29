@@ -8,12 +8,17 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 
 /**
- * implementation of the Igame that use a Jpanel to draw the game
- * 
+ * Base {@link Scene} implementation that renders through a Swing {@link JPanel} using a
+ * double-buffered off-screen image.
+ *
+ * <p>It implements the {@link #render()} / {@link #paintScreen()} plumbing and delegates the
+ * scene-specific drawing to the {@link #internalRender(Graphics2D)} and
+ * {@link #doFinalEffect(Graphics2D)} template methods.
+ *
  * @author Alessandro D'Ottavio
  *
  */
-public abstract class AbstractGameJPanel implements Game {
+public abstract class AbstractSceneJPanel implements Scene {
 
 	
 	// off screen rendering
@@ -28,7 +33,7 @@ public abstract class AbstractGameJPanel implements Game {
 	}
 	
 	
-	public void renderGame() throws Exception {
+	public void render() throws Exception {
 
 		if (dbImage == null){
 			dbImage = gamePanel.createImage(pWidth, pHeight);
@@ -40,19 +45,19 @@ public abstract class AbstractGameJPanel implements Game {
 				dbg = (Graphics2D) dbImage.getGraphics();
 		}
 		
-		internalRenderGame(dbg);
+		internalRender(dbg);
 		
 		doFinalEffect(dbg);
 	
 	}	
 	
 	/**
-	 * specific duty of the single game, hire render all the enities of the game
+	 * Scene-specific rendering: draw all the entities of the scene.
 	 * 
-	 * @param dbg
-	 * @throws Exception 
+	 * @param dbg the off-screen graphics to draw into
+	 * @throws Exception if rendering fails
 	 */
-	public abstract void internalRenderGame(Graphics2D dbg) throws Exception;
+	public abstract void internalRender(Graphics2D dbg) throws Exception;
 
 	/**
 	 * specific duty of the single game, hire render all the final effect over the image

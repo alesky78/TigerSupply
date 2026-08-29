@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.engine.entity.manager;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class EntityManagerRemovable<T extends Entity> extends EntityManager<T> {
 	//marked to be removed has managed sprite
 	protected ArrayList<Entity> markedSrpites = new ArrayList<Entity>();
 	
-	public void init(ApplicationContext context) {
+	public void init(GameContext context) {
 		this.context = context;
 		this.width = context.getScreenWidth();
 		this.height = context.getScreenHeight();

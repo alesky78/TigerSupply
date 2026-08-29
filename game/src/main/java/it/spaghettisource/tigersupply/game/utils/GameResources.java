@@ -45,7 +45,7 @@ public class GameResources {
 	public static final String ASTEROID_3  = "asteroid3";
 	public static final String ASTEROID_4  = "asteroid4";	
 
-	//Game state used by the GameManager
+	//Game state used by the scene manager
 	public static final String GAME_STATE_PRESENTATION = "presentation";
 	public static final String GAME_STATE_PLAY 		   = "play";
 

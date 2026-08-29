@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 
 
 /**
@@ -20,11 +20,11 @@ import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
 public class FinalEffectManager {
 
 	private static FinalEffectManager instance;
-	private ApplicationContext context;	
+	private GameContext context;	
 
 	Map<String,FinalEffect> registeredEffect; 
 	
-	private FinalEffectManager(ApplicationContext context){
+	private FinalEffectManager(GameContext context){
 		this.context = context;
 		
 		//register hire the effect to use
@@ -33,7 +33,7 @@ public class FinalEffectManager {
 		registeredEffect.put("star", new Star());		
 	}
 	
-	public static void init(ApplicationContext context) throws Exception{
+	public static void init(GameContext context) throws Exception{
 		if(instance==null){
 			synchronized (FinalEffectManager.class) {
 				if(instance==null){

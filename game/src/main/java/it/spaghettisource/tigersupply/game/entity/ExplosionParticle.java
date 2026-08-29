@@ -4,7 +4,7 @@ package it.spaghettisource.tigersupply.game.entity;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
@@ -25,7 +25,7 @@ public class ExplosionParticle extends BaseEntity {
 	private float spriteCounter; 		
 
 		
-	public ExplosionParticle(int type,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,ApplicationContext context){
+	public ExplosionParticle(int type,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
 		this.type = type;
 	
 		spriteTimeDuration = (float) (Math.random()*maxLifeTimeInSeconds);

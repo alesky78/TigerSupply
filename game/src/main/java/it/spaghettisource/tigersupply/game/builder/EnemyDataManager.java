@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
@@ -38,7 +38,7 @@ import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
  */
 public class EnemyDataManager {
 
-	private ApplicationContext context;
+	private GameContext context;
 	
 	private EnemyDataBuilder builder;
 	private LevelDataRepository lvlData;
@@ -59,7 +59,7 @@ public class EnemyDataManager {
 		bossKilled = false;
 	}
 
-	public void setContext(ApplicationContext context) {
+	public void setContext(GameContext context) {
 		this.context = context;
 	}
 

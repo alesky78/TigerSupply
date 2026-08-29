@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.engine.entity.manager;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Size;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class EntityManager<T extends Entity> implements Entity {
 
-	protected ApplicationContext context;
+	protected GameContext context;
 	
 	//live entities
 	protected ArrayList<T> entities = new ArrayList<T>();

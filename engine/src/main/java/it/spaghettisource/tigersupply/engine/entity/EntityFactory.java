@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.engine.entity;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmDefault;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
@@ -20,13 +20,13 @@ import it.spaghettisource.tigersupply.engine.entity.Speed;
 public class EntityFactory {
 
 	private static EntityFactory instance;
-	private ApplicationContext context;
+	private GameContext context;
 
-	private EntityFactory(ApplicationContext context) throws Exception{
+	private EntityFactory(GameContext context) throws Exception{
 		this.context = context;
 	}
 
-	public static void init(ApplicationContext context) throws Exception{
+	public static void init(GameContext context) throws Exception{
 		if(instance==null){
 			synchronized (EntityFactory.class) {
 				if(instance==null){

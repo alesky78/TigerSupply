@@ -11,8 +11,8 @@ flowchart LR
 ### `launcher` depends on `game`
 - **Type**: Compile (Maven module dependency declared in
   [launcher/pom.xml](../../../launcher/pom.xml)).
-- **Reason**: `launcher` is the composition root: `TigerSupplyGameManagerFactory` references
-  `game.control.GameManager` to bind the concrete game into the engine's `GameFrame`. The
+- **Reason**: `launcher` is the composition root: `TigerSupplySceneManagerFactory` references
+  `game.control.TigerSupplySceneManager` to bind the concrete game into the engine's `GameFrame`. The
   launcher also packages the runnable uber-jar (via shade) that bundles `game` (and
   transitively `engine`) plus resources.
 
@@ -34,10 +34,10 @@ flowchart LR
   layering that was previously only a convention (verified: 0 `engine → game` references).
 - The `game.*` packages (TigerSupply's concrete game) depend heavily on the `engine` framework,
   as expected.
-- `game.control.GameFlowController` and `game.control.GameManager` wire the game internals
+- `game.control.SceneFlowController` and `game.control.TigerSupplySceneManager` wire the game internals
   together at startup (reaching into every `game.*` sub-package and every framework singleton).
-- The single seam binding the two modules is `engine.control.GameManagerFactory`, implemented
-  by `launcher.TigerSupplyGameManagerFactory` — the only class outside `game.*` that names a
+- The single seam binding the two modules is `engine.control.SceneManagerFactory`, implemented
+  by `launcher.TigerSupplySceneManagerFactory` — the only class outside `game.*` that names a
   concrete game type.
 
 ## External Dependencies

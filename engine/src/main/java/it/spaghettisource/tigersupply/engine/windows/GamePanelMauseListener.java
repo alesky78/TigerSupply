@@ -4,7 +4,7 @@ package it.spaghettisource.tigersupply.engine.windows;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import it.spaghettisource.tigersupply.engine.control.GameManager;
+import it.spaghettisource.tigersupply.engine.control.SceneManager;
 
 /**
  * 
@@ -14,14 +14,14 @@ import it.spaghettisource.tigersupply.engine.control.GameManager;
 public class GamePanelMauseListener extends MouseAdapter {
 
 
-	private GameManager game;
+	private SceneManager sceneManager;
 
-	public GamePanelMauseListener(GameManager game){
-		this.game = game;
+	public GamePanelMauseListener(SceneManager sceneManager){
+		this.sceneManager = sceneManager;
 	}
 
 	public void mousePressed(MouseEvent e){
-		game.mousePress(e.getX(), e.getY());
+		sceneManager.mousePressed(e.getX(), e.getY());
 	}
 
 

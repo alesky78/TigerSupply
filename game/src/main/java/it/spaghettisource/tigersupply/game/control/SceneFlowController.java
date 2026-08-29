@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
-import it.spaghettisource.tigersupply.engine.control.AbstractGameJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.EnemyManager;
 import it.spaghettisource.tigersupply.game.entity.Player;
@@ -17,8 +17,8 @@ import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 
 
 /**
- * this controller base on the MVC logic 
- * it as to keep the loginc to navigate from one scree ot other of the game
+ * Singleton that drives the flow between the scenes (presentation, hangar, level, game-over) and
+ * owns the state that persists across them (player, enemy manager, level progression).
  * 
  * it as to be a singleton and accessible from all the part of the game
  * 
@@ -26,10 +26,10 @@ import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
  * @author Alessandro D'Ottavio
  *
  */
-public class GameFlowController {
+public class SceneFlowController {
 
-	private static GameFlowController instance;		
-	private GameManager gameManager;
+	private static SceneFlowController instance;		
+	private TigerSupplySceneManager sceneManager;
 	private Player player;
 	private EnemyManager enemyManager;	
 
@@ -38,9 +38,9 @@ public class GameFlowController {
 	private int numberLevel = 1;
 	private int actualLevel = 0;	
 
-	private GameFlowController(GameManager gameManager) throws Exception {
-		this.gameManager = gameManager;		
-		player = EntityFactoryWrapper.newPlayer(gameManager.getGameContext().getScreenHeight(), gameManager.getGameContext().getPeriodMilliseconds());
+	private SceneFlowController(TigerSupplySceneManager sceneManager) throws Exception {
+		this.sceneManager = sceneManager;		
+		player = EntityFactoryWrapper.newPlayer(sceneManager.getGameContext().getScreenHeight(), sceneManager.getGameContext().getPeriodMilliseconds());
 		player.getsize().setScale(1.2f);
 		enemyManager = new EnemyManager();
 
@@ -49,17 +49,17 @@ public class GameFlowController {
 
 	}
 
-	public static void init(GameManager gameManager) throws Exception{
+	public static void init(TigerSupplySceneManager sceneManager) throws Exception{
 		if(instance==null){
-			synchronized (GameFlowController.class) {
+			synchronized (SceneFlowController.class) {
 				if(instance==null){
-					instance = new GameFlowController(gameManager);
+					instance = new SceneFlowController(sceneManager);
 				}
 			}
 		}
 	}
 
-	public static GameFlowController getInstance() throws Exception{
+	public static SceneFlowController getInstance() throws Exception{
 		if(instance==null){
 			Exception ex = new Exception("FlowController class must by initialized before to use it");
 			throw ex;
@@ -87,9 +87,9 @@ public class GameFlowController {
 		try{
 			actualLevel = 0;	//set to no level so that the first call to level move to first level
 			clear(true);		
-			AbstractGameJPanel game = new PresentationScene(gameManager.getGameContext());
-			game.setGamePanel(gameManager.getGamePanel());
-			gameManager.setActualGame(game);
+			AbstractSceneJPanel scene = new PresentationScene(sceneManager.getGameContext());
+			scene.setGamePanel(sceneManager.getGamePanel());
+			sceneManager.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -99,9 +99,9 @@ public class GameFlowController {
 	public void doGameOver() throws Exception{
 		try{
 			clear(true);
-			AbstractGameJPanel game = new GameOverScene(gameManager.getGameContext());
-			game.setGamePanel(gameManager.getGamePanel());
-			gameManager.setActualGame(game);
+			AbstractSceneJPanel scene = new GameOverScene(sceneManager.getGameContext());
+			scene.setGamePanel(sceneManager.getGamePanel());
+			sceneManager.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -111,9 +111,9 @@ public class GameFlowController {
 	public void doHangar() throws Exception{
 		try{
 			clear(false);
-			AbstractGameJPanel game = new HangarScene(gameManager.getGameContext(),player);
-			game.setGamePanel(gameManager.getGamePanel());
-			gameManager.setActualGame(game);
+			AbstractSceneJPanel scene = new HangarScene(sceneManager.getGameContext(),player);
+			scene.setGamePanel(sceneManager.getGamePanel());
+			sceneManager.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -136,9 +136,9 @@ public class GameFlowController {
 				
 				String nextLevelCode =Integer.toString(actualLevel);
 				enemyManager.setLevelDataFile(levelConfiguration.get(nextLevelCode));
-				AbstractGameJPanel game = new LevelScene(gameManager.getGameContext(),player,enemyManager);
-				game.setGamePanel(gameManager.getGamePanel());
-				gameManager.setActualGame(game);
+				AbstractSceneJPanel scene = new LevelScene(sceneManager.getGameContext(),player,enemyManager);
+				scene.setGamePanel(sceneManager.getGamePanel());
+				sceneManager.setActiveScene(scene);
 			}
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);

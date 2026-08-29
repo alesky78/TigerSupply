@@ -7,14 +7,14 @@ public class UserInterfaceManager {
 
 	UserInterface composition;
 	
-	public void mousePress(int x, int y) {
+	public void mousePressed(int x, int y) {
 		if(composition.containCoordinate(x, y)){
 			composition.execute();
 		}
 			
 	}
 
-	public void mouseMove(MouseEvent event) {
+	public void mouseMoved(MouseEvent event) {
 		if(composition.containCoordinate(event.getX(), event.getY())){
 			composition.mouseOver(event.getX(), event.getY());
 		}else{

@@ -11,23 +11,23 @@ The game communicates purely through in-process Java interfaces. The most import
 (framework contracts in `it.spaghettisource.tigersupply.engine.*`; concrete-game contracts in
 `it.spaghettisource.tigersupply.game.*`) are:
 
-### `control.Game`
+### `control.Scene`
 - **Methods**:
-  - `updateGame(float deltaTimeSeconds) throws Exception` — advance simulation by one frame.
-  - `renderGame() throws Exception` — draw the frame to the off-screen buffer.
+  - `update(float deltaTimeSeconds) throws Exception` — advance simulation by one frame.
+  - `render() throws Exception` — draw the frame to the off-screen buffer.
   - `paintScreen()` — blit the off-screen buffer to the visible panel.
-  - `mousePress(int x, int y)`, `mouseMove(MouseEvent event)`, `keyPressed(KeyEvent event)`,
+  - `mousePressed(int x, int y)`, `mouseMoved(MouseEvent event)`, `keyPressed(KeyEvent event)`,
     `keyReleased(KeyEvent event)` — input handling.
 - **Parameters**: `deltaTimeSeconds` is the fixed frame period in seconds (derived from
-  `ApplicationContext.getPeriodSeconds()`, ~0.0167s at 60 FPS).
+  `GameContext.getPeriodSeconds()`, ~0.0167s at 60 FPS).
 - **Return Types**: `void` for all methods; failures are signalled via checked `Exception`.
-- **Implementations**: `control.AbstractGameJPanel` (template method base) →
+- **Implementations**: `control.AbstractSceneJPanel` (template method base) →
   `game.scene.PresentationScene` / `HangarScene` / `LevelScene` / `GameOverScene`.
 
-### `control.GameManager`
-- **Methods**: `getActualGame() throws Exception` (returns the currently active `Game`), plus
-  the same input-delegation methods as `Game`.
-- **Implementations**: `control.AbstractGameManagerJPanel` → `game.control.GameManager`.
+### `control.SceneManager`
+- **Methods**: `getActiveScene() throws Exception` (returns the currently active `Scene`), plus
+  the same input-delegation methods as `Scene`.
+- **Implementations**: `control.AbstractSceneManagerJPanel` → `game.control.TigerSupplySceneManager`.
 
 ### `entity.Entity`
 - **Methods**: `updateEntity(float deltaSeconds)`, `renderEntity(Graphics2D dbg)`,

@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
@@ -16,7 +16,7 @@ public class Enemy extends BaseEntity {
 	protected EntityManagerEntityRequest<Enemy> enemyManager;		
 	protected Entity target;
 
-	protected ApplicationContext context;
+	protected GameContext context;
 
 	//enemy weapon
 	protected Weapon<Enemy>[] weapons = new Weapon[0];	//deafult 0 fix otherway null poin exception if there is enemy wihtout weapon (background)
@@ -30,11 +30,11 @@ public class Enemy extends BaseEntity {
 	protected float particleMaxLifeTime;	
 	protected float particleDeathMaxLifeTime;	
 
-	public void setContext(ApplicationContext context) {
+	public void setContext(GameContext context) {
 		this.context = context;
 	}
 
-	public ApplicationContext getContext(){
+	public GameContext getContext(){
 		return context;
 	}
 

@@ -7,10 +7,10 @@ has no client/server split, no database, and no network calls. The whole applica
 one JVM:
 
 - A **Swing `JFrame`** (`GameFrame`, in the `engine` module) hosts a single **`JPanel`**
-  (`GamePanel`) that owns a custom **fixed-timestep game loop thread** (`AnimationLoop`)
+  (`GamePanel`) that owns a custom **fixed-timestep game loop thread** (`GameLoop`)
   targeting 60 FPS, with frame-skipping if updates fall behind.
-- Rendering is **manual double-buffering**: each `Game` (Scene) draws into an off-screen
-  `BufferedImage` (`internalRenderGame` + `doFinalEffect`) which is then blitted to the panel
+- Rendering is **manual double-buffering**: each `Scene` draws into an off-screen
+  `BufferedImage` (`internalRender` + `doFinalEffect`) which is then blitted to the panel
   (`paintScreen`).
 - Game content (images, audio, fonts, and the level script) is **data-driven**: plain-text
   catalog files (`image-catalog.txt`, `audio-catalog.txt`, `font-catalog.txt`) list classpath
@@ -21,21 +21,21 @@ one JVM:
   (game loop, entity/sprite/collision, asset repositories, UI, state machine, window shell);
   `game` holds the concrete TigerSupply rules (player, enemies, weapons, scenes, XML-driven
   level/horde builder) under `it.spaghettisource.tigersupply.game.*`; and `launcher` holds the
-  composition root (`Launcher#main` + `TigerSupplyGameManagerFactory`) that wires a concrete
-  game into the engine's `GameFrame` window shell through the `GameManagerFactory` seam.
+  composition root (`Launcher#main` + `TigerSupplySceneManagerFactory`) that wires a concrete
+  game into the engine's `GameFrame` window shell through the `SceneManagerFactory` seam.
 
 ## Architecture Diagram
 
 ```mermaid
 flowchart TB
     Launcher["Launcher#main - launcher (composition root)"] --> Frame["GameFrame (JFrame) - engine.windows"]
-    Launcher --> Factory["TigerSupplyGameManagerFactory - launcher"]
-    Factory -.implements.-> FactoryIf["GameManagerFactory - engine.control"]
+    Launcher --> Factory["TigerSupplySceneManagerFactory - launcher"]
+    Factory -.implements.-> FactoryIf["SceneManagerFactory - engine.control"]
     Frame --> Panel["GamePanel - engine.windows"]
-    Panel --> Loop["AnimationLoop - engine.control"]
-    Panel -->|"gameManagerFactory.create(panel, context)"| GM["GameManager - game.control"]
+    Panel --> Loop["GameLoop - engine.control"]
+    Panel -->|"sceneManagerFactory.create(panel, context)"| GM["TigerSupplySceneManager - game.control"]
     Loop --> GM
-    GM --> GFC["GameFlowController - game.control"]
+    GM --> GFC["SceneFlowController - game.control"]
     GFC --> Presentation["PresentationScene"]
     GFC --> Hangar["HangarScene"]
     GFC --> Level["LevelScene"]
@@ -63,10 +63,10 @@ flowchart TB
 
 ### `control` (engine contracts)
 - **Purpose**: Defines the reusable game-loop abstractions.
-- **Responsibilities**: `Game`/`GameManager` interfaces, `GameManagerFactory` seam (lets the
-  window shell build a concrete manager without naming any game type), `AbstractGameJPanel`/
-  `AbstractGameManagerJPanel` template-method bases, `AnimationLoop` fixed-timestep thread,
-  `ApplicationContext` shared mutable state.
+- **Responsibilities**: `Scene`/`SceneManager` interfaces, `SceneManagerFactory` seam (lets the
+  window shell build a concrete manager without naming any game type), `AbstractSceneJPanel`/
+  `AbstractSceneManagerJPanel` template-method bases, `GameLoop` fixed-timestep thread,
+  `GameContext` shared mutable state.
 - **Dependencies**: `java.awt`/`javax.swing` only.
 - **Type**: Application (framework layer).
 
@@ -74,17 +74,17 @@ flowchart TB
 - **Purpose**: The runnable entry point and the only place that binds a concrete game to the
   engine.
 - **Responsibilities**: `Launcher#main` owns the launch configuration (window title
-  "Tiger Supply", 1360x660 playfield), constructs the shared `ApplicationContext`, selects the
-  concrete game via `TigerSupplyGameManagerFactory` (the sole class outside the game module
-  that names `game.control.GameManager`), and hands both to the engine `GameFrame`.
+  "Tiger Supply", 1360x660 playfield), constructs the shared `GameContext`, selects the
+  concrete game via `TigerSupplySceneManagerFactory` (the sole class outside the game module
+  that names `game.control.TigerSupplySceneManager`), and hands both to the engine `GameFrame`.
 - **Dependencies**: `engine.control`, `engine.windows`, `game.control`.
 - **Type**: Application (composition root).
 
 ### `game.control` (TigerSupply flow)
 - **Purpose**: Wires the reusable framework to TigerSupply's concrete scenes.
-- **Responsibilities**: `GameManager` (built by the launcher's `GameManagerFactory`)
+- **Responsibilities**: `TigerSupplySceneManager` (built by the launcher's `SceneManagerFactory`)
   bootstraps every singleton repository/manager and starts on the Presentation scene;
-  `GameFlowController` is the transaction script that owns the `Player`/`EnemyManager` and
+  `SceneFlowController` is the transaction script that owns the `Player`/`EnemyManager` and
   switches the active Scene.
 - **Dependencies**: `engine.control`, `game.scene`, `game.entity`, `engine.audio`,
   `engine.image.repository`, `engine.font.repository`.
@@ -165,34 +165,34 @@ sequenceDiagram
     participant Main as Launcher#main
     participant Frame as GameFrame (JFrame)
     participant Panel as GamePanel
-    participant Factory as GameManagerFactory
-    participant Loop as AnimationLoop (Thread)
-    participant Mgr as GameManager (game.control)
-    participant Scene as Active Scene (Game)
+    participant Factory as SceneManagerFactory
+    participant Loop as GameLoop (Thread)
+    participant Mgr as TigerSupplySceneManager (game.control)
+    participant Scene as Active Scene
 
     Main->>Frame: new GameFrame(title, w, h, context, factory)
     Frame->>Panel: construct + addNotify()
     Panel->>Factory: create(panel, context)
-    Factory-->>Panel: GameManager
+    Factory-->>Panel: TigerSupplySceneManager
     Panel->>Mgr: drive loop + route input
-    Mgr->>Mgr: init repositories, GameFlowController.doPresentation()
+    Mgr->>Mgr: init repositories, SceneFlowController.doPresentation()
     Panel->>Loop: start()
     loop every ~16.6 ms (60 FPS, up to 5 skipped frames)
-        Loop->>Mgr: getActualGame()
+        Loop->>Mgr: getActiveScene()
         Mgr-->>Loop: Scene
-        Loop->>Scene: updateGame(deltaSeconds)
-        Loop->>Scene: renderGame()
-        Scene->>Scene: internalRenderGame() + doFinalEffect()
+        Loop->>Scene: update(deltaSeconds)
+        Loop->>Scene: render()
+        Scene->>Scene: internalRender() + doFinalEffect()
         Loop->>Scene: paintScreen()
     end
-    OS->>Panel: keyPressed / mousePress / mouseMove
-    Panel->>Mgr: keyPressed / mousePress / mouseMove
+    OS->>Panel: keyPressed / mousePressed / mouseMoved
+    Panel->>Mgr: keyPressed / mousePressed / mouseMoved
     Mgr->>Scene: delegate input event
-    Scene->>Mgr: GameFlowController.doNextLevel() / doGameOver() / doHangar()
-    Mgr->>Mgr: setActualGame(newScene)
+    Scene->>Mgr: SceneFlowController.doNextLevel() / doGameOver() / doHangar()
+    Mgr->>Mgr: setActiveScene(newScene)
 ```
 
-Within `LevelScene.updateGame`, the per-frame simulation order is: manage game-flow
+Within `LevelScene.update`, the per-frame simulation order is: manage game-flow
 (win/lose checks) → update player → update enemies (which advances the horde state machine
 and per-enemy target scanning/weapon firing) → update effects → update player/enemy shots →
 run the three `CollisionDetector`s (player↔enemy, player↔enemy-shot, player-shot↔enemy) →

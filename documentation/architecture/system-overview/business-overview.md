@@ -25,8 +25,8 @@ flowchart LR
   `worm.*` classes as prior art studied while designing the engine's sprite command and
   rendering pipeline.
 - **Business Transactions** — the finite set of game-flow ("Scene") transactions implemented
-  by `GameFlowController`
-  ([GameFlowController.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/control/GameFlowController.java)):
+  by `SceneFlowController`
+  ([SceneFlowController.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/control/SceneFlowController.java)):
   1. **Show Presentation** (`doPresentation`) – title screen with parallax background, star
      field and a "Tiger Supply" logo rendered from font glyph outlines; pressing **Fire**
      (Space) starts a darkness fade into the Hangar.
@@ -52,14 +52,14 @@ flowchart LR
   | **Algorithm Prototype** | A named, reusable movement-strategy template (`<algorithmPrototype>`) with typed properties (deltas, speeds, waypoint lists) consumed by an `UpdateAlgorithm`. |
   | **Weapon** | A fire-control component (reload → ready → firing state machine) attached to the Player or an Enemy, deliberately decoupled from the owning Entity ("weapons are objects contained in the entity", per `note.txt`). |
   | **Scene** | One full-screen "mode" of the game (Presentation, Hangar, Level, Game Over); each Scene implements the generic `Game` contract. |
-  | **GameFlowController** | The singleton transaction script that owns the `Player`/`EnemyManager` and decides which Scene is active and how levels progress. |
-  | **ApplicationContext** | Shared mutable runtime state (running/paused flags, frame period, screen size) visible to the whole engine. |
+  | **SceneFlowController** | The singleton transaction script that owns the `Player`/`EnemyManager` and decides which Scene is active and how levels progress. |
+  | **GameContext** | Shared mutable runtime state (running/paused flags, frame period, screen size) visible to the whole engine. |
 
 ## Component Level Business Descriptions
 
 ### `engine` (Maven module — package `it.spaghettisource.tigersupply.engine`)
 - **Purpose**: Provides the reusable arcade-game **framework** only: the game loop and
-  `Game`/`GameManager`/`GameManagerFactory` contracts, the entity/sprite system, collision
+  `Scene`/`SceneManager`/`SceneManagerFactory` contracts, the entity/sprite system, collision
   detection, audio/image/font repositories, UI widgets, path splines, the generic state
   machine, and the game-agnostic `GameFrame` window shell.
 - **Responsibilities**: Owns the runtime scaffolding — window shell, the fixed-step simulation
@@ -72,7 +72,7 @@ flowchart LR
   (images, audio, fonts, `level/level-1.xml`) — the former `engine.impl.*` packages, now under
   `game.*` with the `impl` segment dropped.
 - **Responsibilities**: All TigerSupply-specific gameplay and content; depends on `engine` for
-  the framework it builds on. `game.control.GameManager`/`GameFlowController` orchestrate the
+  the framework it builds on. `game.control.TigerSupplySceneManager`/`SceneFlowController` orchestrate the
   Scenes and level progression.
 
 ### `launcher` (Maven module — package `it.spaghettisource.tigersupply.launcher`)
@@ -80,7 +80,7 @@ flowchart LR
   concrete game to the engine and produces the runnable distribution.
 - **Responsibilities**: `Launcher#main` is the runnable entry point; it owns the launch
   configuration (window title, 1360x660 playfield) and selects the concrete game via
-  `TigerSupplyGameManagerFactory` (an `engine.control.GameManagerFactory`) before handing it to
+  `TigerSupplySceneManagerFactory` (an `engine.control.SceneManagerFactory`) before handing it to
   the engine `GameFrame`. Its POM builds the runnable uber-jar
   `launcher/target/tigersupply.jar` (shade) and provides `mvn -pl launcher exec:java` (exec).
 

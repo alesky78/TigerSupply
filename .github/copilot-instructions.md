@@ -45,7 +45,7 @@ Organized into 3 Maven modules, each depending on the previous one (`launcher` â
 
 ### 1. `engine`
 **Purpose**: The reusable, game-agnostic arcade-game framework only: game loop and
-`Game`/`GameManager`/`GameManagerFactory` contracts, entity/sprite system, collision detection,
+`Scene`/`SceneManager`/`SceneManagerFactory` contracts, entity/sprite system, collision detection,
 audio/image/font repositories, UI widgets, path splines, generic state machine, and the
 `windows.GameFrame` window shell.
 **Package**: `it.spaghettisource.tigersupply.engine`
@@ -65,8 +65,8 @@ XML-driven level/horde builder) plus the game resources (image/audio/font catalo
 game to the engine and produces the runnable jar.
 **Package**: `it.spaghettisource.tigersupply.launcher`
 **Contains**: 2 Java source files â€” `Launcher` (the runnable entry point `launcher.Launcher#main`;
-owns window title + 1360x660 playfield) and `TigerSupplyGameManagerFactory` (the only class
-outside `game.*` that names `game.control.GameManager`). Its POM builds the uber-jar
+owns window title + 1360x660 playfield) and `TigerSupplySceneManagerFactory` (the only class
+outside `game.*` that names `game.control.TigerSupplySceneManager`). Its POM builds the uber-jar
 `launcher/target/tigersupply.jar` (shade) and provides `mvn -pl launcher exec:java` (exec).
 
 ---
@@ -98,7 +98,7 @@ outside `game.*` that names `game.control.GameManager`). Its POM builds the uber
 - Some resource loaders (`FileAudioLoader`, `FontLoader`, `ImageLoader`) call `System.exit(1)`
   on startup failure; scene/controller code instead prints the stack trace and either calls
   `context.requestStopGame()` or rethrows a wrapped `Exception` with added context (see
-  `GameFlowController`). Match the surrounding file's existing pattern.
+  `SceneFlowController`). Match the surrounding file's existing pattern.
 
 ---
 
@@ -111,8 +111,8 @@ outside `game.*` that names `game.control.GameManager`). Its POM builds the uber
   `audio`, `font`, `background`, `path`, `ui`, `statemachine`, `control`, `utils`, `windows`)
   and TigerSupply-specific game rules in the `game` module under `game.*` (`control`, `scene`,
   `builder`, `entity`, `weapon`, `ui`, `utils`), mirroring the module split. The single seam
-  between them is `engine.control.GameManagerFactory`, implemented by
-  `launcher.TigerSupplyGameManagerFactory`.
+  between them is `engine.control.SceneManagerFactory`, implemented by
+  `launcher.TigerSupplySceneManagerFactory`.
 - Use the existing Factory/Singleton pattern (`XxxFactory.getInstance()` /
   `XxxManager.getInstance()`) for new asset types or managers, consistent with
   `EntityFactory`, `SpriteFactory`, `ImageRepositoryManager`, `AudioManager`,
@@ -156,7 +156,7 @@ outside `game.*` that names `game.control.GameManager`). Its POM builds the uber
 - No unit tests exist yet in any module. `junit-jupiter-api`/`junit-jupiter-params` 5.11.0 are
   declared as `test`-scope dependencies in every module's POM and are ready to use.
 - Most services are singletons reached via static `getInstance()`; isolating one for a test
-  typically means calling its `init(...)` method first (mirroring how `game.control.GameManager`
+  typically means calling its `init(...)` method first (mirroring how `game.control.TigerSupplySceneManager`
   bootstraps them). Discuss with the user before refactoring existing singletons toward
   constructor injection purely to make them testable.
 

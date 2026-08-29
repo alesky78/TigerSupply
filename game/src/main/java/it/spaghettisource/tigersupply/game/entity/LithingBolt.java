@@ -12,7 +12,7 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.util.Random;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 
 
@@ -47,7 +47,7 @@ public class LithingBolt extends BaseEntity {
 	private int		pointsFrequency;
 	private int		pointsOffset;		
 
-	public LithingBolt(ApplicationContext context,Position position,float shotTime,float loadingTime){
+	public LithingBolt(GameContext context,Position position,float shotTime,float loadingTime){
 
 		lifeTimeShot = 2;
 		lifeTickShot = lifeTimeShot/context.getPeriodSeconds();

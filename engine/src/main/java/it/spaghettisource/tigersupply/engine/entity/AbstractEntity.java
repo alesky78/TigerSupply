@@ -4,7 +4,7 @@ package it.spaghettisource.tigersupply.engine.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 
@@ -21,7 +21,7 @@ public abstract class AbstractEntity implements Entity {
 	protected Speed 	 speed;		//speed of the entity
 	protected Size  	 size;		//size of the entity		
 
-	protected ApplicationContext context;
+	protected GameContext context;
 	
 	protected Sprite sprite;
 		
@@ -82,7 +82,7 @@ public abstract class AbstractEntity implements Entity {
 		}
 	}
 
-	public void setContext(ApplicationContext context) {
+	public void setContext(GameContext context) {
 		this.context = context;
 	}
 

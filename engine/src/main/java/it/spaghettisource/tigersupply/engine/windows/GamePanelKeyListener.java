@@ -5,23 +5,23 @@ package it.spaghettisource.tigersupply.engine.windows;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import it.spaghettisource.tigersupply.engine.control.GameManager;
+import it.spaghettisource.tigersupply.engine.control.SceneManager;
 
 public class GamePanelKeyListener extends KeyAdapter {
 
 	
-	private GameManager game;
+	private SceneManager sceneManager;
 
-	public GamePanelKeyListener(GameManager game){
-		this.game = game;
+	public GamePanelKeyListener(SceneManager sceneManager){
+		this.sceneManager = sceneManager;
 	}
 	
 	public void keyPressed(KeyEvent event){
-		game.keyPressed(event);
+		sceneManager.keyPressed(event);
 	}
 	
 	public void keyReleased(KeyEvent event){
-		game.keyReleased(event);
+		sceneManager.keyReleased(event);
 		
 	}
 	

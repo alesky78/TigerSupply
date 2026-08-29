@@ -2,8 +2,8 @@ package it.spaghettisource.tigersupply.game.scene;
 
 import it.spaghettisource.tigersupply.engine.background.BackGround;
 import it.spaghettisource.tigersupply.engine.background.StaticBackGroundFitImage;
-import it.spaghettisource.tigersupply.engine.control.AbstractGameJPanel;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
@@ -35,16 +35,16 @@ import java.awt.Paint;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class HangarScene extends AbstractGameJPanel {
+public class HangarScene extends AbstractSceneJPanel {
 
-	private ApplicationContext context;
+	private GameContext context;
 	private BackGround backGround;	
 
 	//menu variables
 	private UserInterfaceManager uiManager;
 
 
-	public HangarScene(ApplicationContext context,Player player) throws Exception{
+	public HangarScene(GameContext context,Player player) throws Exception{
 		this.context = context;
 		this.pWidth = context.getScreenWidth();
 		this.pHeight = context.getScreenHeight();
@@ -130,7 +130,7 @@ public class HangarScene extends AbstractGameJPanel {
 		uiManager.setComposition(composition);	
 	}
 
-	public void updateGame(float deltaTimeSeconds) throws Exception {
+	public void update(float deltaTimeSeconds) throws Exception {
 		if (!context.isPaused() && !context.isStop()){
 			backGround.updateBackground(deltaTimeSeconds);
 			uiManager.updateUserInterface(deltaTimeSeconds);
@@ -138,7 +138,7 @@ public class HangarScene extends AbstractGameJPanel {
 	}
 
 
-	public void internalRenderGame(Graphics2D dbg) throws Exception {
+	public void internalRender(Graphics2D dbg) throws Exception {
 		backGround.renderBackground(dbg);
 		uiManager.renderUserInterface(dbg);
 	}
@@ -147,15 +147,15 @@ public class HangarScene extends AbstractGameJPanel {
 	}		
 	
 
-	public void mousePress(int x, int y) {
+	public void mousePressed(int x, int y) {
 		if (!context.isPaused() && !context.isStop()){
-			uiManager.mousePress(x, y);
+			uiManager.mousePressed(x, y);
 		}
 	}
 
-	public void mouseMove(MouseEvent event) {
+	public void mouseMoved(MouseEvent event) {
 		if (!context.isPaused() && !context.isStop()){
-			uiManager.mouseMove(event);
+			uiManager.mouseMoved(event);
 		}
 	}	
 

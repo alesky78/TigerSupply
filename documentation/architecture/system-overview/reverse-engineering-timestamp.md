@@ -47,8 +47,8 @@ These documents were updated after two completed OpenSpec changes that reshaped 
 layout (both archived under `openspec/changes/archive/`):
 
 - **`decouple-launcher`** — extracted the composition root into the `launcher` module
-  (`Launcher#main` + `TigerSupplyGameManagerFactory`), introduced the
-  `engine.control.GameManagerFactory` seam, renamed the engine window shell
+  (`Launcher#main` + `TigerSupplySceneManagerFactory`), introduced the
+  `engine.control.SceneManagerFactory` seam, renamed the engine window shell
   `windows.Application` → `windows.GameFrame`, and added the shade/exec packaging.
 - **`extract-game-module`** — moved the concrete game out of `engine.impl.*` into the `game`
   module under `it.spaghettisource.tigersupply.game.*` (dropping the `impl` segment), promoted

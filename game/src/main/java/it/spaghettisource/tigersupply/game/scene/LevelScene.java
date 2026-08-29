@@ -16,22 +16,22 @@ import it.spaghettisource.tigersupply.engine.background.BackGround;
 import it.spaghettisource.tigersupply.engine.background.BackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.BackGroundTexture;
 import it.spaghettisource.tigersupply.engine.background.ParallaxBackGround;
-import it.spaghettisource.tigersupply.engine.control.AbstractGameJPanel;
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.collision.CollisionDetector;
 import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
-import it.spaghettisource.tigersupply.game.control.GameFlowController;
+import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.entity.EnemyManager;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
-public class LevelScene extends AbstractGameJPanel {
+public class LevelScene extends AbstractSceneJPanel {
 
-	private ApplicationContext context;
+	private GameContext context;
 
 	//game entities
 	private Player playerShip;
@@ -51,7 +51,7 @@ public class LevelScene extends AbstractGameJPanel {
 	List<Entity> renderSprites = new ArrayList<Entity>();	//used to manage the sprites to render	
 	EntityZComparator comparator = new EntityZComparator();	//use to order the renderSprites list
 
-	public LevelScene(ApplicationContext context,Player player,EnemyManager eManager) throws Exception{
+	public LevelScene(GameContext context,Player player,EnemyManager eManager) throws Exception{
 		this.context = context;
 		this.pWidth = context.getScreenWidth();
 		this.pHeight = context.getScreenHeight();
@@ -97,7 +97,7 @@ public class LevelScene extends AbstractGameJPanel {
 	}
 
 
-	public void updateGame(float deltaTimeSeconds) throws Exception{
+	public void update(float deltaTimeSeconds) throws Exception{
 		if (!context.isPaused() && !context.isStop()){
 			magageGameFlow();
 			playerShip.updateEntity(deltaTimeSeconds);
@@ -124,15 +124,15 @@ public class LevelScene extends AbstractGameJPanel {
 	private void magageGameFlow() throws Exception {
 		if(!playerShip.isLive()){
 			AudioManager.getInstance().stopAllAudio();
-			GameFlowController.getInstance().doGameOver();
+			SceneFlowController.getInstance().doGameOver();
 		}
 		if(enemyManager.isBossDeath()){
 			AudioManager.getInstance().stopAllAudio();
-			GameFlowController.getInstance().doNextLevel();
+			SceneFlowController.getInstance().doNextLevel();
 		}
 	}
 
-	public void internalRenderGame(Graphics2D dbg) throws Exception {
+	public void internalRender(Graphics2D dbg) throws Exception {
 		
 		dbg.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,RenderingHints.VALUE_COLOR_RENDER_SPEED);
 		dbg.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
@@ -176,8 +176,8 @@ public class LevelScene extends AbstractGameJPanel {
 	}
 
 
-	public void mousePress(int x, int y) {}
+	public void mousePressed(int x, int y) {}
 
-	public void mouseMove(MouseEvent event) {}	
+	public void mouseMoved(MouseEvent event) {}	
 
 }

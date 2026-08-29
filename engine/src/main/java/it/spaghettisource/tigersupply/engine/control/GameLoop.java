@@ -13,7 +13,7 @@ package it.spaghettisource.tigersupply.engine.control;
  * @author Alessandro D'Ottavio
  *
  */
-public class AnimationLoop extends Thread {
+public class GameLoop extends Thread {
 
 	private static final int NO_DELAYS_PER_YIELD = 16;
 	/* Number of frames with a delay of 0 ms before the animation thread yields
@@ -24,22 +24,21 @@ public class AnimationLoop extends Thread {
 	// i.e the games state is updated but not rendered
 
 
-	private ApplicationContext context;
-	private GameManager gameManager;
+	private GameContext context;
+	private SceneManager sceneManager;
 	private long nanosecondPeriod;
 	private float secondPeriod;	
 
 	/**
 	 * 
-	 * @param context
-	 * @param game
-	 * @param period in milliseconds
+	 * @param context the shared game context, never {@code null}
+	 * @param manager the scene manager that supplies the active scene, never {@code null}
 	 */
-	public AnimationLoop(ApplicationContext context,GameManager manager){
+	public GameLoop(GameContext context,SceneManager manager){
 		this.context = context;
 		this.nanosecondPeriod = context.getPeriodNanoseconds();	// ms -> nano
 		this.secondPeriod = context.getPeriodSeconds();			// ms -> sec	
-		this.gameManager = manager;
+		this.sceneManager = manager;
 
 	}
 
@@ -53,17 +52,17 @@ public class AnimationLoop extends Thread {
 
 		beforeTime = System.nanoTime();
 
-		Game game = null;
+		Scene scene = null;
 		
 		while(!context.isStop()){
 						
 			try{
 				//get the scene to render
-				game = gameManager.getActualGame();
+				scene = sceneManager.getActiveScene();
 				
-				game.updateGame(secondPeriod);
-				game.renderGame();
-				game.paintScreen();
+				scene.update(secondPeriod);
+				scene.render();
+				scene.paintScreen();
 			}catch (Exception e) {
 				e.printStackTrace();
 				context.requestStopGame();
@@ -100,7 +99,7 @@ public class AnimationLoop extends Thread {
 			while((excess > nanosecondPeriod) && (skips < MAX_FRAME_SKIPS)) {
 				excess -= nanosecondPeriod;
 				try{
-					game.updateGame(secondPeriod);    // update state but don't render
+					scene.update(secondPeriod);    // update state but don't render
 				}catch (Exception e) {
 					e.printStackTrace();
 					context.requestStopGame();

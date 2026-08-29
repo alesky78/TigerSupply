@@ -47,10 +47,10 @@
   (e.g. spinning `Asteroid`) collide using their unrotated bounding box.
 - **Commented-out code left in place**: e.g. the space-background layer in
   `LevelScene`'s constructor and the boss "test horde" block at the top of `level-1.xml`.
-- **Hard-coded single level**: `GameFlowController` only registers `level/level-1.xml`
+- **Hard-coded single level**: `SceneFlowController` only registers `level/level-1.xml`
   (`numberLevel = 1`); the level-progression logic supports more levels but none are
   authored.
-- **`System.exit(...)` calls scattered through library code** (`AnimationLoop`,
+- **`System.exit(...)` calls scattered through library code** (`GameLoop`,
   `FileAudioLoader`, `FontLoader`, `ImageLoader`, `GameOverScene`) terminate the whole JVM on
   error paths instead of propagating a recoverable failure — this makes the engine code hard
   to reuse/test in-process (e.g. from a future JUnit test).
@@ -63,11 +63,11 @@
   composition system) left in the main source tree rather than removed or moved to tests.
 - **No dependency injection / high Singleton coupling** — nearly every cross-cutting service
   (`EntityFactory`, `SpriteFactory`, `ImageRepositoryManager`, `AudioManager`,
-  `FontRepositoryManager`, `EffectManager`, `FinalEffectManager`, `GameFlowController`) is a
+  `FontRepositoryManager`, `EffectManager`, `FinalEffectManager`, `SceneFlowController`) is a
   classic eager/lazy singleton reached via static `getInstance()`, which makes unit testing
   in isolation difficult (a likely contributor to the current lack of tests). The recent
-  `engine.control.GameManagerFactory` seam is a first step away from this: the engine no longer
-  hard-references the concrete `GameManager`.
+  `engine.control.SceneManagerFactory` seam is a first step away from this: the engine no longer
+  hard-references the concrete `TigerSupplySceneManager`.
 - **Module split completed** — the framework/game-content split declared by the multi-module
   `pom.xml` has now been carried out (`engine` is framework-only, `game` holds `game.*` — the
   former `impl.*` — and `launcher` is the composition root), resolving what was previously the
@@ -84,14 +84,14 @@
   - **Data-driven level design**: hordes/prototypes/algorithms are declared in XML and
     resolved via reflection, so new enemies/waves can be authored without recompiling (see
     [api-documentation.md](./api-documentation.md)).
-  - **Template-method** game loop (`AbstractGameJPanel`) keeps double-buffering/paint logic
+  - **Template-method** game loop (`AbstractSceneJPanel`) keeps double-buffering/paint logic
     out of every concrete Scene.
   - The `engine` framework has **no dependency on `game.*`**, a layering boundary now enforced
     by the Maven module split (engine compiles standalone) rather than left informal.
 - **Anti-patterns**:
   - Pervasive **Singleton/static global state** (see Technical Debt above) instead of
     constructor/parameter-based dependency injection.
-  - **God-object tendencies** in `game.control.GameFlowController` and
+  - **God-object tendencies** in `game.control.SceneFlowController` and
     `game.builder.EnemyDataManager`, which each own/orchestrate a large slice of the game
     (Scene switching + level progression + player/enemy lifecycle in the former; XML
     parsing + repository + entity/algorithm/sprite creation in the latter).

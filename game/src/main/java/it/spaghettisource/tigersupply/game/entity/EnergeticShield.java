@@ -4,7 +4,7 @@ package it.spaghettisource.tigersupply.game.entity;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Size;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
@@ -27,7 +27,7 @@ public class EnergeticShield extends Enemy {
 	private double  increaseSizeForLoop;	
 	private double  decreaseColorForLoop;		
 	
-	public EnergeticShield(int maxSize, float lifeTime,  ApplicationContext context){
+	public EnergeticShield(int maxSize, float lifeTime,  GameContext context){
 		
 		this.maxSize = maxSize;
 		increaseSizeForLoop = maxSize/(lifeTime/context.getPeriodSeconds()); //increment to reach maxSize

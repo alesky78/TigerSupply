@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.game.utils;
 
-import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
+import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.Position;
@@ -33,15 +33,15 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity(0, pHeight/2,GameResources.Z_PLAYER, 0, 0,1.0f, null, sprite, Player.class);
 	}	
 
-	public static ExplosionParticle newExplosionParticleFire(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,ApplicationContext context){
+	public static ExplosionParticle newExplosionParticleFire(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
 		return new ExplosionParticle(ExplosionParticle.TYPE_FIRE,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}	
 
-	public static ExplosionParticle newExplosionParticleEnergetic(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,ApplicationContext context){
+	public static ExplosionParticle newExplosionParticleEnergetic(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
 		return new ExplosionParticle(ExplosionParticle.TYPE_ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}		
 	
-	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityManagerEntityRequest<Entity> effectManager,Position position,ApplicationContext context) throws Exception{
+	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityManagerEntityRequest<Entity> effectManager,Position position,GameContext context) throws Exception{
 		EnergeticShield shield = new EnergeticShield(shieldSize,shieldLifeTimeInSeconds, context);
 		shield.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newCopyPosition(0, 0, position));
 		shield.setContext(context);
@@ -74,7 +74,7 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algo, sprite, EnemyRocket.class);			
 	}	
 	
-	public static LithingBolt newEnemyShotLightinBolt(ApplicationContext context,Position shotPosition,float fireTime,float loadTime) throws Exception{	
+	public static LithingBolt newEnemyShotLightinBolt(GameContext context,Position shotPosition,float fireTime,float loadTime) throws Exception{	
 		shotPosition.setPosZ(GameResources.Z_SHOT);
 		LithingBolt shot = new LithingBolt(context,shotPosition,fireTime,loadTime);
 		return shot;			

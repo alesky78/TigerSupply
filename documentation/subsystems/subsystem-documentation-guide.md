@@ -254,7 +254,7 @@ flow page reads alike:
 | 2 | **Component Descriptions** | Layered tables (columns: Component, Module, Class/Interface, Responsibility) for the entity / manager / factory / builder classes involved. |
 | 3 | **Data Flow** | The concrete runtime steps as a `sequenceDiagram` (or `flowchart TD`) plus a step-by-step narrative that matches the diagram. |
 | 4 | **Integration Points** | External touch points (classpath resource files, level-XML elements/attributes, catalog-file lines) with their exact format documented. |
-| 5 | **Engine State Touched** | Every repository/manager/entity collection read and written (e.g. `ImageRepositoryManager`, `EnemyManager`, `ApplicationContext`), plus edge cases & safety checks (missing catalog alias, unknown prototype name, reflection failure). |
+| 5 | **Engine State Touched** | Every repository/manager/entity collection read and written (e.g. `ImageRepositoryManager`, `EnemyManager`, `GameContext`), plus edge cases & safety checks (missing catalog alias, unknown prototype name, reflection failure). |
 
 Keep the **same worked example** as the hub so a reader can follow one case across pages.
 
