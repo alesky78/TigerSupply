@@ -1,0 +1,8 @@
+//the font catalog contains all the font loader must prepare so that 
+//are fits in the repository ready to be loaded by the framework for any target
+//the line format to define a font is easy:
+//<fontAlias> <fontPath/fontName> <default size> 
+
+techno font/TechnoHideo.ttf
+comodore64 font/Commodore_Angled_v1.2.ttf
+

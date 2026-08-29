@@ -1,0 +1,47 @@
+//the image catalog contains all the images that the loader must prepare so that 
+//are fits in the repository ready to be loaded by the framework for any target
+//ther are this kind of images:
+//s for single image 
+//l for loop images
+
+//the line format to define a immage is easy:
+//for single image: 	s <image alias> <imagePath/imageName> 
+//loop images:			l <image alias> <imagePath/imageName*.extension> <image number>
+
+
+//background
+s bcgr_space  image/background-space.jpg
+s bcgr_planet image/background-planet.png
+s bcgr_hangar image/background-hangar.png
+s bcgr_texture_space image/background-texture-space.jpg
+
+//player images
+l playerA image/ship-A-*.png 5
+l playerB image/ship-B-*.png 5
+s playershot1 image/player-gun.png
+s playershot2 image/player-rocket.png
+s playershot3 image/player-green.png
+s playershot4 image/player-bomb.png
+s playershot5 image/player-paser.png
+
+//effect
+l engine 	image/effect-engine-*.png 2
+s smoke  	image/effect-smoke.png
+l explosion image/exp*.png 9
+//l explosion explosion*.gif 15
+
+//enemy images
+s enemy1 image/enemy-1.png
+s enemy2 image/enemy-2.png
+s enemy3 image/enemy-3.png
+s enemy4 image/enemy-4.png
+s boss   image/enemy-boss.png
+s enemyshot1 image/enemy-shot-1.png
+s enemyshot2 image/enemy-shot-2.png
+s enemyshot3 image/enemy-shot-3.png
+
+//other
+s asteroid1 image/asteroid-1.png
+s asteroid2 image/asteroid-2.png
+s asteroid3 image/asteroid-3.png
+s asteroid4 image/asteroid-4.png

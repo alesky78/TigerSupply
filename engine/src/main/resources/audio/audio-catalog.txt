@@ -1,0 +1,16 @@
+//the audio catalog contains all the audio file that loader must prepare so that 
+//are fits in the repository ready to be loaded by the framework for any target
+//the line format to define a font is easy:
+//<audioAlias> <audioPath/audioName>  
+
+//music
+mainTheme audio/main-theme.wav
+
+//enemy
+boss-laser audio/boss-laser.wav
+
+
+laser audio/laser.wav
+rocket audio/rocket.wav
+explosion-little audio/litle-explosion.wav
+

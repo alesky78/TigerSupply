@@ -1,0 +1,86 @@
+-Dsun.java2d.opengl=True
+
+
+idee molto interessanti da revenge of the titans!!!
+
+----------------------------------------------------------------------------------------------------
+Entity e Sprite due oggetti separati permette gestione indipendente dello sprite rispetto a Entity
+----------------------------------------------------------------------------------------------------
+com.shavenpuppy.jglib.sprites.Sprite
+worm.Entity
+
+															-- SPRITES --
+
+----------------------------------------------------------------
+Pattern Command che serve per gestire gli update degli sprites 
+---------------------------------------------------------------- 
+gli sprite vengono gestiti dal metodo tick per l'avanzamento di update e dal render per il loro rendering tutti e due i metodi sono contenuti in
+StaticSpriteEngine  tick() e render()
+
+vediamo il tick()
+com.shavenpuppy.jglib.sprites.Command			 -- è un generico command ce ne sono di diverso tipo per operazioni sugli sprites colore, alpha, size etc..
+com.shavenpuppy.jglib.sprites.Animation 		 -- contiene la lista dei command implementati
+com.shavenpuppy.jglib.sprites.StaticSpriteEngine -- tutto è controllato dal manager che gestisce tutti gli sprites ed il suo metodo tick() muove tuta la lisa di sprites
+net.puppygames.applet.Screen					 -- ma in realtà e Screen che crea e chiede allo StaticSpriteEngine di lanciare i tick su tutto
+
+IDEA MIA
+applicato al algoritmo di update dell'entity (loro lo applicano solo agli sprites e non alla logica)
+con questo si puo' implementare tutta la logica nell'update di entity
+tipo command della rotazione, del movimento, dello sparo, del suono!!!, del colore
+
+----------------------------------------------------------------
+Rendering centralizzato degli sprite 
+----------------------------------------------------------------
+vediamo il render()
+StaticSpriteEngine ha due oggetti poi che gli servono per il suo metodo render()
+com.shavenpuppy.jglib.sprites.SpriteProcessor	-- è una semplice interfaccia che lancia su tutti gli sprite contenuti in una lista il render sullo sprite 
+												   l'interfaccia viene implementata nella costruttore dell'oggetto StaticSpriteEngine  (è una classe anonima)
+com.shavenpuppy.jglib.sprites.SpriteRenderer	-- è il render lanciato dallo SpriteProcessor (logica di rendering centralizzata)
+com.shavenpuppy.jglib.sprites.DefaultSpriteRenderer -- implementazione di default
+net.puppygames.applet.Screen					 -- ma in realtà e Screen che crea e chiede allo StaticSpriteEngine di lanciare i render su tutto
+
+IDEA MIA
+molto interessante da studiare dovrebbe aumentare le performance notevolmente
+ad esempio ho capito questo
+- si puo' avere un pool di sprite ottimizzando molto la memoria e non ricostruire lo stesso sprite sempre	(riducendo uso Garbage Collection)
+- si potrebbe delegare anche il filtro al rendered in questo modo potrebbe pullare le immagini filtrate in modo
+da farlo una volta solta, il codice è complesso ma le potenzialità qui sono estremamente notevoli!	(qui si avrebbe un enorme riduzione della memoria utilizzata)
+
+
+															-- ENTITY --
+										
+------------------------------------------------------------------
+Le armi sono oggetti contenuti nelle entity questo è geniale e banale 
+l'enorme vantaggio è la totale dissociazione di codice nella entity di 
+comportamento del fire, questo giustifica ancora piu' la mia interfaccia scan
+------------------------------------------------------------------
+worm.weapons.WeaponFeature	--
+worm.weapons.WeaponFeature.WeaponInstance --una inner class di WeaponFeature
+worm.entities.Bullet -- ovviamente anche un colpo poi ha le sue caratteristiche
+
+------------------------------------------------------------------------------------------------------------------------
+l'algoritmo di update implemento nell interfaccia Tickable è diviso fasi in realtà solo in una estensione non nella base
+------------------------------------------------------------------------------------------------------------------------
+qui ad esempio loro usano 3 fasi 
+PHASE_SPAWN ingresso nel gioco
+PHASE_ALIVE ciclo normale
+PHASE_DYING sta morendo
+in questo modo i command da lanciare possono essere diversificati in base alla fase
+worm.entities.Unit
+
+
+														-- MISCELANEOUS --
+
+---------------------------------------------------------------------------------------------------------------------
+c'è una classe di precalcolo matematico per ottimizzare tutte le operazioni 
+--------------------------------------------------------------------------------------------------------------------- 
+ade esempio il coseno viene già calcolato per tutte le possibilità all 'inizio e no a run time come faccio io
+com.shavenpuppy.jglib.util.FPMath
+
+
+
+
+
+
+
+
