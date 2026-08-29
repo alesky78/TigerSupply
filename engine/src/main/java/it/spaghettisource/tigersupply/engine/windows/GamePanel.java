@@ -9,7 +9,8 @@ import javax.swing.JPanel;
 
 import it.spaghettisource.tigersupply.engine.control.AnimationLoop;
 import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
-import it.spaghettisource.tigersupply.engine.impl.control.GameManager;
+import it.spaghettisource.tigersupply.engine.control.GameManager;
+import it.spaghettisource.tigersupply.engine.control.GameManagerFactory;
 
 /**
  * this is the panel that will be use to draw the game
@@ -26,7 +27,7 @@ public class GamePanel extends JPanel{
 	private ApplicationContext context;
 	private AnimationLoop animationLoop;
 
-	public GamePanel(ApplicationContext context ,int pWidth, int pHeight) throws Exception{
+	public GamePanel(ApplicationContext context, int pWidth, int pHeight, GameManagerFactory gameManagerFactory) throws Exception{
 
 		float period = 1000.0f/FPS_REQUIRED;
 		
@@ -43,7 +44,7 @@ public class GamePanel extends JPanel{
 		context.setScreenHeight(pHeight+10);
 		context.setScreenWidth(pWidth+10);
 		
-		GameManager manager = new GameManager(this, context);
+		GameManager manager = gameManagerFactory.create(this, context);
 		
 		animationLoop = new AnimationLoop(context,manager);
 				
