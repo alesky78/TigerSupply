@@ -9,7 +9,7 @@ import java.util.Random;
 import it.spaghettisource.tigersupply.engine.entity.AbstractEntity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
-import it.spaghettisource.tigersupply.engine.impl.utils.UpdateAlgorithmFactoryWrapper;
+import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 
 public class StarEntity extends AbstractEntity {
 

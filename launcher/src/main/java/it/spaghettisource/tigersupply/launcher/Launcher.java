@@ -13,7 +13,7 @@ import it.spaghettisource.tigersupply.engine.windows.GameFrame;
  */
 public class Launcher {
 
-	private static final String WINDOW_TITLE = "Tiger Suply";
+	private static final String WINDOW_TITLE = "Tiger Supply";
 	private static final int PLAYFIELD_WIDTH = 1360;
 	private static final int PLAYFIELD_HEIGHT = 660;
 

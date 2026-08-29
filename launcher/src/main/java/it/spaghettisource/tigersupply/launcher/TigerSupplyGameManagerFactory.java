@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import it.spaghettisource.tigersupply.engine.control.ApplicationContext;
 
 import it.spaghettisource.tigersupply.engine.control.GameManagerFactory;
-import it.spaghettisource.tigersupply.engine.impl.control.GameManager;
+import it.spaghettisource.tigersupply.game.control.GameManager;
 
 /**
  * Composition-root factory that builds the concrete TigerSupply game manager.
