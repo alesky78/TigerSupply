@@ -16,7 +16,7 @@
   D'Ottavio`/`DOttavio`) and package organization, but:
   - Comments mix **English and Italian** (e.g. TODOs in
     [AbstractEntity.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/AbstractEntity.java),
-    [LevelScene.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/impl/scene/LevelScene.java),
+    [LevelScene.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/LevelScene.java),
     [GamePanel.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/windows/GamePanel.java)).
   - Several identifiers contain typos that are now part of the public API surface (renaming
     them is a breaking change, so they persist): `GamePanelMauseListener` /
@@ -25,7 +25,7 @@
     `LithingBolt`/`LightinBoltLaser` ("Lithing"/"Lightin" for "Lightning"), the XML attribute
     `algoritmPrototype` ("algoritm" for "algorithm"), and `Size.getHeigh()`/`heigh` field
     ("Heigh" for "Height") used throughout the entity model.
-  - `it.spaghettisource.tigersupply.engine.impl.entity.Entity` is an **empty, unused class**
+  - `it.spaghettisource.tigersupply.game.entity.Entity` is an **empty, unused class**
     whose simple name collides with `it.spaghettisource.tigersupply.engine.entity.Entity`
     (the real Entity contract), which is a namespace-confusion risk for future maintainers/IDEs.
 - **Documentation**: Fair. Most public classes/interfaces have a short Javadoc summary with
@@ -34,10 +34,10 @@
 
 ## Technical Debt
 
-- **Hard-coded resolution**: `windows/Application.calculateSizesGameScreen()` hard-codes the
-  play field to `1360x660` pixels (the "correct" DPI-aware calculation is present but
-  commented out), and `level-1.xml`'s enemy spawn coordinates assume this fixed resolution —
-  the game cannot currently be resized/scaled.
+- **Hard-coded resolution**: `launcher.Launcher` hard-codes the play field to `1360x660`
+  pixels (`PLAYFIELD_WIDTH`/`PLAYFIELD_HEIGHT`), `windows.GameFrame` calls `setResizable(false)`
+  ("the game is not ready for other resolutions"), and `level-1.xml`'s enemy spawn coordinates
+  assume this fixed resolution — the game cannot currently be resized/scaled.
 - **Unexplained `+10` screen-size fudge factor** in
   [GamePanel.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/windows/GamePanel.java)
   (`context.setScreenHeight(pHeight+10)`), flagged by the original author's own TODO as a
@@ -57,18 +57,21 @@
 - **19 `e.printStackTrace()` call sites** across 16 files swallow exceptions to stdout/stderr
   instead of structured logging or propagation (no logging framework — e.g. SLF4J/Log4j — is
   used anywhere in the codebase).
-- **`impl.entity.Entity`** is dead code (see above) — a candidate for deletion.
-- **`impl.ui.MenuCompositionTest`** appears to be exploratory/spike code (its name and the
+- **`game.entity.Entity`** is dead code (see above) — a candidate for deletion.
+- **`game.ui.MenuCompositionTest`** appears to be exploratory/spike code (its name and the
   fact that it is never referenced from any Scene suggest it was a test harness for the UI
   composition system) left in the main source tree rather than removed or moved to tests.
 - **No dependency injection / high Singleton coupling** — nearly every cross-cutting service
   (`EntityFactory`, `SpriteFactory`, `ImageRepositoryManager`, `AudioManager`,
   `FontRepositoryManager`, `EffectManager`, `FinalEffectManager`, `GameFlowController`) is a
   classic eager/lazy singleton reached via static `getInstance()`, which makes unit testing
-  in isolation difficult (a likely contributor to the current lack of tests).
-- **`game`/`launcher` modules are empty scaffolding** — the intended framework/game-content
-  split declared by the multi-module `pom.xml` has not actually been carried out; all code
-  still lives in `engine`.
+  in isolation difficult (a likely contributor to the current lack of tests). The recent
+  `engine.control.GameManagerFactory` seam is a first step away from this: the engine no longer
+  hard-references the concrete `GameManager`.
+- **Module split completed** — the framework/game-content split declared by the multi-module
+  `pom.xml` has now been carried out (`engine` is framework-only, `game` holds `game.*` — the
+  former `impl.*` — and `launcher` is the composition root), resolving what was previously the
+  most prominent structural item of technical debt.
 
 ## Patterns and Anti-patterns
 
@@ -83,19 +86,19 @@
     [api-documentation.md](./api-documentation.md)).
   - **Template-method** game loop (`AbstractGameJPanel`) keeps double-buffering/paint logic
     out of every concrete Scene.
-  - Framework packages have **no dependency on `impl.*`**, giving a clean (if informal)
-    layering boundary that a future `engine`/`game` module split could exploit directly.
+  - The `engine` framework has **no dependency on `game.*`**, a layering boundary now enforced
+    by the Maven module split (engine compiles standalone) rather than left informal.
 - **Anti-patterns**:
   - Pervasive **Singleton/static global state** (see Technical Debt above) instead of
     constructor/parameter-based dependency injection.
-  - **God-object tendencies** in `impl.control.GameFlowController` and
-    `impl.builder.EnemyDataManager`, which each own/orchestrate a large slice of the game
+  - **God-object tendencies** in `game.control.GameFlowController` and
+    `game.builder.EnemyDataManager`, which each own/orchestrate a large slice of the game
     (Scene switching + level progression + player/enemy lifecycle in the former; XML
     parsing + repository + entity/algorithm/sprite creation in the latter).
   - **No automated tests** despite a testing framework being declared — regressions can only
     be caught by manually playing the game.
   - **Exception handling by printing + `System.exit`** instead of structured error handling
     or logging.
-  - Several **misleading/duplicate type names** (`impl.entity.Entity` vs `entity.Entity`;
-    `impl.scene.definition.Speed` vs `entity.Speed`; two unrelated `RocketLauncer` classes in
+  - Several **misleading/duplicate type names** (`game.entity.Entity` vs `engine.entity.Entity`;
+    `game.scene.definition.Speed` vs `engine.entity.Speed`; two unrelated `RocketLauncer` classes in
     sibling `player`/`enemy` packages) increase the chance of importing the wrong class.

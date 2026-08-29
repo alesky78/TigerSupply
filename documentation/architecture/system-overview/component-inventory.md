@@ -1,25 +1,26 @@
 # Component Inventory
 
-> TigerSupply is a single-module monolith today: all executable code lives in the `engine`
-> Maven module. The table below inventories it at the **package** level (the natural
-> component boundary in this codebase), grouped by role, alongside the two placeholder Maven
-> modules.
+> TigerSupply's code is split across three Maven modules: `engine` (reusable framework),
+> `game` (concrete TigerSupply rules, package root `it.spaghettisource.tigersupply.game`), and
+> `launcher` (composition root). The table below inventories it at the **package** level (the
+> natural component boundary in this codebase), grouped by role.
 
 ## Application Packages
 
-| Package | Purpose |
-|---------|---------|
-| `it.spaghettisource.tigersupply.engine.windows` | Process bootstrap: `JFrame`/`JPanel`, AWT input listeners. |
-| `it.spaghettisource.tigersupply.engine.control` | Game-loop contracts: `Game`, `GameManager`, `AnimationLoop`, `ApplicationContext`. |
-| `it.spaghettisource.tigersupply.engine.impl.control` | TigerSupply's concrete `GameManager` + `GameFlowController` (Scene switching, level progression). |
-| `it.spaghettisource.tigersupply.engine.impl.scene` | The four Scenes: Presentation, Hangar, Level, Game Over. |
-| `it.spaghettisource.tigersupply.engine.impl.scene.definition` | Level-XML DTOs (Horde, EnemyDefinition, EnemyPrototype, AlgorithmPrototype, …). |
-| `it.spaghettisource.tigersupply.engine.impl.scene.statemachine` | Horde-spawn-pacing states built on the generic state machine. |
-| `it.spaghettisource.tigersupply.engine.impl.builder` | SAX-based level-script parser and level-data manager. |
-| `it.spaghettisource.tigersupply.engine.impl.entity` | Concrete simulation objects: Player, Enemy hierarchy, projectiles, effects. |
-| `it.spaghettisource.tigersupply.engine.impl.weapon` (+ `player`, `enemy`) | Fire-control components for player and enemy entities. |
-| `it.spaghettisource.tigersupply.engine.impl.ui` | Hangar loadout widgets (ship/weapon buttons, description panel, start button). |
-| `it.spaghettisource.tigersupply.engine.impl.utils` | Concrete-game factory wrappers and a Z-order comparator. |
+| Package | Module | Purpose |
+|---------|--------|---------|
+| `it.spaghettisource.tigersupply.launcher` | launcher | Composition root: `Launcher#main` entry point + `TigerSupplyGameManagerFactory`. |
+| `it.spaghettisource.tigersupply.engine.windows` | engine | Window shell: `GameFrame` (`JFrame`), `GamePanel`, AWT input listeners. |
+| `it.spaghettisource.tigersupply.engine.control` | engine | Game-loop contracts: `Game`, `GameManager`, `GameManagerFactory`, `AnimationLoop`, `ApplicationContext`. |
+| `it.spaghettisource.tigersupply.game.control` | game | TigerSupply's concrete `GameManager` + `GameFlowController` (Scene switching, level progression). |
+| `it.spaghettisource.tigersupply.game.scene` | game | The four Scenes: Presentation, Hangar, Level, Game Over. |
+| `it.spaghettisource.tigersupply.game.scene.definition` | game | Level-XML DTOs (Horde, EnemyDefinition, EnemyPrototype, AlgorithmPrototype, …). |
+| `it.spaghettisource.tigersupply.game.scene.statemachine` | game | Horde-spawn-pacing states built on the generic state machine. |
+| `it.spaghettisource.tigersupply.game.builder` | game | SAX-based level-script parser and level-data manager. |
+| `it.spaghettisource.tigersupply.game.entity` | game | Concrete simulation objects: Player, Enemy hierarchy, projectiles, effects. |
+| `it.spaghettisource.tigersupply.game.weapon` (+ `player`, `enemy`) | game | Fire-control components for player and enemy entities. |
+| `it.spaghettisource.tigersupply.game.ui` | game | Hangar loadout widgets (ship/weapon buttons, description panel, start button). |
+| `it.spaghettisource.tigersupply.game.utils` | game | Concrete-game factory wrappers, a Z-order comparator, and the `GameResources` constants. |
 
 ## Infrastructure Packages
 
@@ -39,7 +40,7 @@ it is a local desktop application with no deployed infrastructure.
 | `path` | Framework | Natural-cubic-spline path generation. |
 | `ui` (+ `listener`) | Framework | Generic composable clickable-widget UI toolkit. |
 | `statemachine` | Framework | Generic, reusable finite-state-machine contract/implementation. |
-| `utils` | Framework | Reflection factory, dynabean properties, shared constants, stream helpers. |
+| `utils` | Framework | Reflection factory, dynabean properties, framework constants (`StaticResources`), stream helpers. |
 
 ## Test Packages
 
@@ -49,10 +50,11 @@ dependency in every module's POM but is currently unused.
 
 ## Total Count
 
-- **Total Maven modules**: 3 (`engine`, `game`, `launcher`)
-- **Total Java source files**: 168 (all in `engine`; 0 in `game`; 0 in `launcher`)
-- **Total resource files**: 72 (images, audio, fonts, catalogs, level XML — all in `engine`)
-- **Application packages** (TigerSupply-specific, `impl.*`): 11
+- **Total Maven modules**: 3 (`engine`, `game`, `launcher`) — all now contain source code.
+- **Total Java source files**: 172 (`engine` 102, `game` 68, `launcher` 2).
+- **Total resource files**: 72 (images, audio, fonts, catalogs, level XML — now in the `game` module).
+- **Application packages** (TigerSupply-specific, `game.*`): 11
+- **Composition-root package** (`launcher`): 1
 - **Infrastructure packages**: 0
-- **Shared/Framework packages**: 10
+- **Shared/Framework packages** (`engine`): 10
 - **Test packages**: 0

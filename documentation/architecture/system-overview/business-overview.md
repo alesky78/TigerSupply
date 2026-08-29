@@ -26,7 +26,7 @@ flowchart LR
   rendering pipeline.
 - **Business Transactions** — the finite set of game-flow ("Scene") transactions implemented
   by `GameFlowController`
-  ([GameFlowController.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/impl/control/GameFlowController.java)):
+  ([GameFlowController.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/control/GameFlowController.java)):
   1. **Show Presentation** (`doPresentation`) – title screen with parallax background, star
      field and a "Tiger Supply" logo rendered from font glyph outlines; pressing **Fire**
      (Space) starts a darkness fade into the Hangar.
@@ -58,29 +58,39 @@ flowchart LR
 ## Component Level Business Descriptions
 
 ### `engine` (Maven module — package `it.spaghettisource.tigersupply.engine`)
-- **Purpose**: Provides both the reusable arcade-game **framework** (game loop, entity/sprite
-  system, collision detection, audio/image/font repositories, UI widgets, path splines,
-  generic state machine) and, in its `impl` sub-package, the **concrete TigerSupply game
-  rules** (player ship, enemy types, weapons, scenes, XML-driven level/horde builder).
-- **Responsibilities**: Owns the entire runtime of the game today — window bootstrap, the
-  fixed-step simulation loop, rendering, sound, input handling, and all TigerSupply-specific
-  gameplay/level content. This is the only module with source code.
+- **Purpose**: Provides the reusable arcade-game **framework** only: the game loop and
+  `Game`/`GameManager`/`GameManagerFactory` contracts, the entity/sprite system, collision
+  detection, audio/image/font repositories, UI widgets, path splines, the generic state
+  machine, and the game-agnostic `GameFrame` window shell.
+- **Responsibilities**: Owns the runtime scaffolding — window shell, the fixed-step simulation
+  loop, rendering, sound, input plumbing, and asset management — with **no** knowledge of any
+  concrete TigerSupply type.
 
-### `game` (Maven module)
-- **Purpose**: Reserved module intended to eventually hold game-specific content separate from
-  the reusable engine (per the multi-module split already declared in the root
-  [pom.xml](../../../pom.xml)).
-- **Responsibilities**: None yet — only a [pom.xml](../../../game/pom.xml) declaring a
-  dependency on `engine` exists; there is no `src/` directory.
+### `game` (Maven module — package `it.spaghettisource.tigersupply.game`)
+- **Purpose**: Holds the **concrete TigerSupply game rules** (player ship, enemy types,
+  weapons, the four Scenes, the XML-driven level/horde builder) plus the game's resources
+  (images, audio, fonts, `level/level-1.xml`) — the former `engine.impl.*` packages, now under
+  `game.*` with the `impl` segment dropped.
+- **Responsibilities**: All TigerSupply-specific gameplay and content; depends on `engine` for
+  the framework it builds on. `game.control.GameManager`/`GameFlowController` orchestrate the
+  Scenes and level progression.
 
-### `launcher` (Maven module)
-- **Purpose**: Reserved module intended to become the packaging/distribution entry-point
-  module for the game.
-- **Responsibilities**: None yet — only a [pom.xml](../../../launcher/pom.xml) declaring a
-  dependency on `game` exists; there is no `src/` directory. The actual runnable entry point
-  today is
-  `it.spaghettisource.tigersupply.engine.windows.Application#main`, inside the `engine`
-  module itself.
+### `launcher` (Maven module — package `it.spaghettisource.tigersupply.launcher`)
+- **Purpose**: The **composition root** and packaging module: the single place that binds a
+  concrete game to the engine and produces the runnable distribution.
+- **Responsibilities**: `Launcher#main` is the runnable entry point; it owns the launch
+  configuration (window title, 1360x660 playfield) and selects the concrete game via
+  `TigerSupplyGameManagerFactory` (an `engine.control.GameManagerFactory`) before handing it to
+  the engine `GameFrame`. Its POM builds the runnable uber-jar
+  `launcher/target/tigersupply.jar` (shade) and provides `mvn -pl launcher exec:java` (exec).
+
+### `openspec` (process tooling — not shipped with the game)
+- **Purpose**: Houses the OpenSpec spec-driven-change workflow configuration
+  ([config.yaml](../../../openspec/config.yaml)) used by AI coding agents to propose and track
+  changes to this repository.
+- **Responsibilities**: `specs/` holds the current capability specs (`engine-game-shell`,
+  `game-module`, `launcher`); `changes/archive/` holds the completed changes that produced the
+  current module split (`2026-08-29-decouple-launcher`, `2026-08-29-extract-game-module`).
 
 ### `openspec` (process tooling — not shipped with the game)
 - **Purpose**: Houses the OpenSpec spec-driven-change workflow configuration

@@ -6,9 +6,9 @@ TigerSupply is a **standalone, offline, single-process desktop game** written in
 has no client/server split, no database, and no network calls. The whole application runs in
 one JVM:
 
-- A **Swing `JFrame`** (`Application`) hosts a single **`JPanel`** (`GamePanel`) that owns a
-  custom **fixed-timestep game loop thread** (`AnimationLoop`) targeting 60 FPS, with
-  frame-skipping if updates fall behind.
+- A **Swing `JFrame`** (`GameFrame`, in the `engine` module) hosts a single **`JPanel`**
+  (`GamePanel`) that owns a custom **fixed-timestep game loop thread** (`AnimationLoop`)
+  targeting 60 FPS, with frame-skipping if updates fall behind.
 - Rendering is **manual double-buffering**: each `Game` (Scene) draws into an off-screen
   `BufferedImage` (`internalRenderGame` + `doFinalEffect`) which is then blitted to the panel
   (`paintScreen`).
@@ -17,71 +17,89 @@ one JVM:
   resources to preload into in-memory repositories, and an XML file
   (`level/level-1.xml`) scripts enemy "hordes" parsed via SAX and instantiated through
   reflection (`ClassFactory`).
-- The engine and the concrete TigerSupply game rules currently live in the **same Maven
-  module** (`engine`); `game` and `launcher` are empty placeholder modules reserved for a
-  future split.
+- The code is split across **three Maven modules**: `engine` holds the reusable framework
+  (game loop, entity/sprite/collision, asset repositories, UI, state machine, window shell);
+  `game` holds the concrete TigerSupply rules (player, enemies, weapons, scenes, XML-driven
+  level/horde builder) under `it.spaghettisource.tigersupply.game.*`; and `launcher` holds the
+  composition root (`Launcher#main` + `TigerSupplyGameManagerFactory`) that wires a concrete
+  game into the engine's `GameFrame` window shell through the `GameManagerFactory` seam.
 
 ## Architecture Diagram
 
 ```mermaid
 flowchart TB
-    App["Application (JFrame) - windows"] --> Panel["GamePanel - windows"]
-    Panel --> Loop["AnimationLoop - control"]
-    Panel --> GM["GameManager impl - impl.control"]
+    Launcher["Launcher#main - launcher (composition root)"] --> Frame["GameFrame (JFrame) - engine.windows"]
+    Launcher --> Factory["TigerSupplyGameManagerFactory - launcher"]
+    Factory -.implements.-> FactoryIf["GameManagerFactory - engine.control"]
+    Frame --> Panel["GamePanel - engine.windows"]
+    Panel --> Loop["AnimationLoop - engine.control"]
+    Panel -->|"gameManagerFactory.create(panel, context)"| GM["GameManager - game.control"]
     Loop --> GM
-    GM --> GFC["GameFlowController - impl.control"]
+    GM --> GFC["GameFlowController - game.control"]
     GFC --> Presentation["PresentationScene"]
     GFC --> Hangar["HangarScene"]
     GFC --> Level["LevelScene"]
     GFC --> GameOver["GameOverScene"]
 
-    Level --> PlayerE["Player - impl.entity"]
-    Level --> EnemyMgr["EnemyManager - impl.entity"]
-    Level --> Collision["CollisionDetector - entity.collision"]
-    EnemyMgr --> DataMgr["EnemyDataManager - impl.builder"]
+    Level --> PlayerE["Player - game.entity"]
+    Level --> EnemyMgr["EnemyManager - game.entity"]
+    Level --> Collision["CollisionDetector - engine.entity.collision"]
+    EnemyMgr --> DataMgr["EnemyDataManager - game.builder"]
     DataMgr --> SaxBuilder["EnemyDataBuilderSaxXml"]
-    SaxBuilder --> LevelXML[("level-1.xml classpath resource")]
-    DataMgr --> HordeSM["Horde state machine - impl.scene.statemachine"]
+    SaxBuilder --> LevelXML[("level-1.xml - game module resource")]
+    DataMgr --> HordeSM["Horde state machine - game.scene.statemachine"]
 
-    PlayerE --> PlayerWeapons["Player weapons - impl.weapon.player"]
-    EnemyMgr --> EnemyWeapons["Enemy weapons - impl.weapon.enemy"]
+    PlayerE --> PlayerWeapons["Player weapons - game.weapon.player"]
+    EnemyMgr --> EnemyWeapons["Enemy weapons - game.weapon.enemy"]
 
     Presentation --> Assets
     Hangar --> Assets
     Level --> Assets
     GameOver --> Assets
-    Assets["Shared services:\nImageRepositoryManager, AudioManager,\nFontRepositoryManager, SpriteFactory,\nEffectManager, FinalEffectManager,\nBackGround hierarchy, UserInterfaceManager"]
+    Assets["Shared engine services:\nImageRepositoryManager, AudioManager,\nFontRepositoryManager, SpriteFactory,\nEffectManager, FinalEffectManager,\nBackGround hierarchy, UserInterfaceManager"]
 ```
 
 ## Component Descriptions
 
 ### `control` (engine contracts)
 - **Purpose**: Defines the reusable game-loop abstractions.
-- **Responsibilities**: `Game`/`GameManager` interfaces, `AbstractGameJPanel`/
+- **Responsibilities**: `Game`/`GameManager` interfaces, `GameManagerFactory` seam (lets the
+  window shell build a concrete manager without naming any game type), `AbstractGameJPanel`/
   `AbstractGameManagerJPanel` template-method bases, `AnimationLoop` fixed-timestep thread,
   `ApplicationContext` shared mutable state.
 - **Dependencies**: `java.awt`/`javax.swing` only.
 - **Type**: Application (framework layer).
 
-### `impl.control` (TigerSupply flow)
-- **Purpose**: Wires the reusable framework to TigerSupply's concrete scenes.
-- **Responsibilities**: `GameManager` bootstraps every singleton repository/manager and starts
-  on the Presentation scene; `GameFlowController` is the transaction script that owns the
-  `Player`/`EnemyManager` and switches the active Scene.
-- **Dependencies**: `control`, `impl.scene`, `impl.entity`, `audio`, `image.repository`,
-  `font.repository`.
-- **Type**: Application.
+### `launcher` (composition root)
+- **Purpose**: The runnable entry point and the only place that binds a concrete game to the
+  engine.
+- **Responsibilities**: `Launcher#main` owns the launch configuration (window title
+  "Tiger Supply", 1360x660 playfield), constructs the shared `ApplicationContext`, selects the
+  concrete game via `TigerSupplyGameManagerFactory` (the sole class outside the game module
+  that names `game.control.GameManager`), and hands both to the engine `GameFrame`.
+- **Dependencies**: `engine.control`, `engine.windows`, `game.control`.
+- **Type**: Application (composition root).
 
-### `impl.scene` (+ `definition`, `statemachine` sub-packages)
+### `game.control` (TigerSupply flow)
+- **Purpose**: Wires the reusable framework to TigerSupply's concrete scenes.
+- **Responsibilities**: `GameManager` (built by the launcher's `GameManagerFactory`)
+  bootstraps every singleton repository/manager and starts on the Presentation scene;
+  `GameFlowController` is the transaction script that owns the `Player`/`EnemyManager` and
+  switches the active Scene.
+- **Dependencies**: `engine.control`, `game.scene`, `game.entity`, `engine.audio`,
+  `engine.image.repository`, `engine.font.repository`.
+- **Type**: Application (game module).
+
+### `game.scene` (+ `definition`, `statemachine` sub-packages)
 - **Purpose**: The four playable Scenes and the data-driven level/horde engine.
 - **Responsibilities**: `PresentationScene`, `HangarScene`, `LevelScene`, `GameOverScene`
   implement `Game`; `definition` holds level-XML DTOs (`Horde`, `EnemyDefinition`,
   `EnemyPrototype`, `AlgorithmPrototype`, …); `statemachine` drives horde spawn pacing
   (`StateWaitTime` / `StateWaitKill` / `StateGenerateHorde` / `StateKillBoss`) on top of the
-  generic `statemachine` package.
-- **Dependencies**: `control`, `entity`, `impl.entity`, `impl.builder`, `background`, `ui`,
-  `font.repository`, `image.repository`.
-- **Type**: Application.
+  generic `engine.statemachine` package.
+- **Dependencies**: `engine.control`, `engine.entity`, `game.entity`, `game.builder`,
+  `engine.background`, `engine.ui`, `engine.font.repository`, `engine.image.repository`.
+- **Type**: Application (game module).
 
 ### `entity` (+ `manager`, `logic`, `collision` sub-packages)
 - **Purpose**: Generic simulation model shared by every game object.
@@ -93,32 +111,33 @@ flowchart TB
 - **Dependencies**: `sprite`, `control`, `utils`.
 - **Type**: Application (framework layer).
 
-### `impl.entity`
+### `game.entity`
 - **Purpose**: Concrete TigerSupply simulation objects.
 - **Responsibilities**: `Player`, `PlayerEngine`/`PlayerRocket`/`PlayerBomb`, `Enemy` and its
   subclasses (`EnemyStandard`, `EnemyBoss`, `EnemyShield`, `EnemyRocket`,
   `EnemyShoterRocket`, `EnemyBackGround`, `Asteroid`), `EnemyManager`, `EnergeticShield`,
-  `ExplosionParticle`, `LithingBolt`, `Smoke`, and `BaseEntity` (minimal concrete
-  `AbstractEntity`).
-- **Dependencies**: `entity`, `impl.weapon`, `impl.utils`, `audio`.
-- **Type**: Application.
+  `ExplosionParticle`, `LithingBolt`, `Smoke`, `Effect` (time-limited effect base) and
+  `BaseEntity` (minimal concrete `AbstractEntity`).
+- **Dependencies**: `engine.entity`, `game.weapon`, `game.utils`, `engine.audio`.
+- **Type**: Application (game module).
 
-### `impl.weapon` (+ `player`, `enemy` sub-packages)
+### `game.weapon` (+ `player`, `enemy` sub-packages)
 - **Purpose**: Fire-control components attached to entities, decoupled from entity logic.
 - **Responsibilities**: `Weapon`/`AbstractWeapon` state machine (unloaded → reloading → ready →
   firing); player variants (`Paser`, `DoubleGun`, `SynusoidalGun`, `RocketLauncer`, `Bomb`);
   enemy variants (`StandardShot`, `RocketLauncer`, `PlasmaCannon`, `LightinBoltLaser`).
-- **Dependencies**: `entity`, `impl.utils`, `impl.entity` (via generics on the owner type).
-- **Type**: Application.
+- **Dependencies**: `engine.entity`, `game.utils`, `game.entity` (via generics on the owner type).
+- **Type**: Application (game module).
 
-### `impl.builder`
+### `game.builder`
 - **Purpose**: Loads and serves the level script.
 - **Responsibilities**: `EnemyDataBuilder`/`EnemyDataBuilderSaxXml` (SAX parser for
   `level-N.xml`), `EnemyDataManager` (orchestrates parsing, indexes results in
   `LevelDataRepository`, and creates concrete `Enemy` entities/algorithms/sprites per horde on
   demand via reflection).
-- **Dependencies**: `impl.scene.definition`, `entity`, `sprite`, `statemachine`, `utils`.
-- **Type**: Application.
+- **Dependencies**: `game.scene.definition`, `engine.entity`, `engine.sprite`,
+  `engine.statemachine`, `engine.utils`.
+- **Type**: Application (game module).
 
 ### `sprite`, `image` (+ `repository`, `effect`, `finaleffect`), `audio` (+ `repository`),
 `font.repository`, `background`, `path`, `ui`, `statemachine`, `utils`, `windows`
@@ -143,14 +162,19 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant OS as OS / Window Events
-    participant App as Application (JFrame)
+    participant Main as Launcher#main
+    participant Frame as GameFrame (JFrame)
     participant Panel as GamePanel
+    participant Factory as GameManagerFactory
     participant Loop as AnimationLoop (Thread)
-    participant Mgr as GameManager
+    participant Mgr as GameManager (game.control)
     participant Scene as Active Scene (Game)
 
-    App->>Panel: construct + addNotify()
-    Panel->>Mgr: new GameManager(panel, context)
+    Main->>Frame: new GameFrame(title, w, h, context, factory)
+    Frame->>Panel: construct + addNotify()
+    Panel->>Factory: create(panel, context)
+    Factory-->>Panel: GameManager
+    Panel->>Mgr: drive loop + route input
     Mgr->>Mgr: init repositories, GameFlowController.doPresentation()
     Panel->>Loop: start()
     loop every ~16.6 ms (60 FPS, up to 5 skipped frames)
@@ -191,11 +215,14 @@ update the parallax background. Rendering then z-sorts all live entities
 
 - **CDK Stacks**: None — this is a local desktop application, not a cloud-deployed service.
 - **Deployment Model**: Maven multi-module **reactor build** (`mvn install` from the repo
-  root builds `engine` → `game` → `launcher` in dependency order). No shade/assembly plugin is
-  configured in any module, so there is currently no "fat jar" or distributable package;
-  running the game means launching
-  `it.spaghettisource.tigersupply.engine.windows.Application#main` on the `engine` module's
-  classpath (e.g., from an IDE, or `java -cp engine/target/classes ... Application`).
+  root builds `engine` → `game` → `launcher` in dependency order). The `launcher` module is
+  configured with the **maven-shade-plugin** to produce a runnable uber-jar
+  (`launcher/target/tigersupply.jar`, manifest `Main-Class:
+  it.spaghettisource.tigersupply.launcher.Launcher`) that bundles engine + game + resources,
+  and with the **exec-maven-plugin** for a reactor dev run (`mvn -pl launcher exec:java`, after
+  an `mvn install` so engine/game resolve). Running the game means launching
+  `it.spaghettisource.tigersupply.launcher.Launcher#main` (e.g. `java -jar
+  launcher/target/tigersupply.jar`).
 - **Networking**: None — the application is fully offline and does not open any sockets.
 - **CI/CD**: The only GitHub Actions workflow in the repository
   ([.github/workflows/copilot-setup-steps.yml](../../../.github/workflows/copilot-setup-steps.yml))

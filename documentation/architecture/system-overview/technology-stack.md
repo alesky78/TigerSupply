@@ -3,8 +3,8 @@
 ## Programming Languages
 
 - **Java** — 17 (`<maven.compiler.release>17</maven.compiler.release>` in the root
-  [pom.xml](../../../pom.xml)) — used for 100% of the source code (168 files across the
-  `engine` module).
+  [pom.xml](../../../pom.xml)) — used for 100% of the source code (172 files across the
+  `engine`, `game`, and `launcher` modules).
 
 ## Frameworks
 
@@ -40,8 +40,11 @@ is built directly on the JDK standard library.
 - **maven-deploy-plugin** — 3.1.2
 - **maven-site-plugin** — 3.12.1
 - **maven-project-info-reports-plugin** — 3.6.1
-- No shade/assembly/exec plugin is configured in any module, so there is no fat-jar/run
-  target defined by the build today.
+- **maven-shade-plugin** — 3.6.0 (`launcher` module) — builds the runnable uber-jar
+  `launcher/target/tigersupply.jar` (manifest `Main-Class:
+  it.spaghettisource.tigersupply.launcher.Launcher`), bundling engine + game + resources.
+- **exec-maven-plugin** — 3.5.0 (`launcher` module) — reactor dev run via
+  `mvn -pl launcher exec:java`.
 
 ## Testing Tools
 

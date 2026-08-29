@@ -12,10 +12,12 @@
   - `pluginManagement` pins: `maven-clean-plugin:3.4.0`, `maven-resources-plugin:3.3.1`,
     `maven-compiler-plugin:3.13.0`, `maven-surefire-plugin:3.3.0`, `maven-jar-plugin:3.4.2`,
     `maven-install-plugin:3.1.2`, `maven-deploy-plugin:3.1.2`, `maven-site-plugin:3.12.1`,
-    `maven-project-info-reports-plugin:3.6.1`. No shade/assembly plugin is configured.
+    `maven-project-info-reports-plugin:3.6.1`.
   - Module POMs: [engine/pom.xml](../../../engine/pom.xml) (no internal deps),
     [game/pom.xml](../../../game/pom.xml) (depends on `engine`),
-    [launcher/pom.xml](../../../launcher/pom.xml) (depends on `game`) — see
+    [launcher/pom.xml](../../../launcher/pom.xml) (depends on `game`, and configures
+    `maven-shade-plugin:3.6.0` to build the runnable uber-jar `tigersupply.jar` plus
+    `exec-maven-plugin:3.5.0` for `mvn -pl launcher exec:java`) — see
     [dependencies.md](./dependencies.md).
 
 ## Key Classes/Modules
@@ -130,14 +132,22 @@ classDiagram
 
 ### Existing Files Inventory
 
-All paths below are relative to
-`engine/src/main/java/it/spaghettisource/tigersupply/engine/`. These are the candidate files
-for modification in any future brownfield change (there are **168** Java source files in
-total; `game` and `launcher` modules have none).
+The codebase now spans **three source roots** (172 Java files total): the reusable framework in
+**`engine`** (102 files, base path
+`engine/src/main/java/it/spaghettisource/tigersupply/engine/`), the concrete TigerSupply game in
+**`game`** (68 files, base path `game/src/main/java/it/spaghettisource/tigersupply/game/` — the
+former `impl.*` packages with the `impl` segment dropped), and the composition root in
+**`launcher`** (2 files, base path
+`launcher/src/main/java/it/spaghettisource/tigersupply/launcher/`). Package headings below are
+grouped by module; paths under each heading are relative to that module's base path.
+
+**Engine module** — reusable framework (base path
+`engine/src/main/java/it/spaghettisource/tigersupply/engine/`).
 
 #### `control/` — engine loop contracts
 - `Game.java` — Contract for a renderable/updatable/input-handling game screen ("Scene").
 - `GameManager.java` — Contract for the component that owns/returns the currently active `Game`.
+- `GameManagerFactory.java` — Factory seam that builds the concrete `GameManager` for a given panel/context, letting `GamePanel` stay game-agnostic; the concrete implementation is supplied by the `launcher` module.
 - `AbstractGameJPanel.java` — Template-method base `Game` that manages Swing double-buffering and calls `internalRenderGame`/`doFinalEffect`.
 - `AbstractGameManagerJPanel.java` — Base `GameManager` that forwards input events to the active `Game`.
 - `AnimationLoop.java` — Fixed-timestep game-loop thread (update/render/paint, frame-skipping, thread-yield logic).
@@ -165,6 +175,7 @@ total; `game` and `launcher` modules have none).
 - `UpdateAlgoritmCopyPosition.java` — Mirrors another `Position` with a fixed offset (attaches engine-trail/shield fx to the ship).
 - `UpdateAlgorithmBspline.java` — Moves along a spline path built from configured waypoints.
 - `UpdateAlgorithmFactory.java` — Reflection-based factory that instantiates + initializes an `UpdateAlgorithm` from a class name and `DynaProperties`.
+- `UpdateAlgorithmFactoryWrapper.java` — Convenience static factory methods for common `UpdateAlgorithm` configurations (copy-position, sinusoidal, …); promoted from the old `impl.utils` into the framework so no engine class references game code.
 
 #### `entity/manager/`
 - `EntityManager.java` — Generic composite `Entity` implementation fanning update/render/collision out to a managed list.
@@ -248,25 +259,31 @@ total; `game` and `launcher` modules have none).
 #### `utils/`
 - `ClassFactory.java` — Reflection helpers (`newIstance`, `loadClass`) used by every factory for data-driven class instantiation.
 - `DynaProperties.java` — Dynamic/typed property bag ("dynabean") used to configure `UpdateAlgorithm`s from XML.
-- `StaticResources.java` — Central catalog of string/int constants (image/audio/font aliases, state/event names, Z-order layers, algorithm property keys).
+- `StaticResources.java` — Framework-only constants catalog (algorithm property keys `ALGPRO_*`, colour keys `COLOR_*`, filter keys `FILTER_*`); the game-specific keys (asset aliases, game-state/event names, Z-order layers) now live in `game.utils.GameResources`.
 - `StreamUtils.java` — Classpath/stream helper utilities.
 
-#### `windows/` — process bootstrap
-- `Application.java` — `JFrame` entry point (`main`); computes window size and wires `ApplicationContext` + `GamePanel`.
-- `GamePanel.java` — `JPanel` hosting the game; owns the `AnimationLoop` and registers input listeners; starts the loop in `addNotify()`.
+#### `windows/` — window shell
+- `GameFrame.java` — Game-agnostic `JFrame` window shell (renamed from `Application`); takes a window title, playfield size, `ApplicationContext` and a `GameManagerFactory`, and hosts the `GamePanel`. No longer the process entry point — that moved to the `launcher` module.
+- `GamePanel.java` — `JPanel` hosting the game; builds the `GameManager` via the injected `GameManagerFactory`, owns the `AnimationLoop`, registers input listeners, and starts the loop in `addNotify()`.
 - `GamePanelKeyListener.java`, `GamePanelMauseListener.java`, `GamePanelMauseMotionListener.java` — AWT listener adapters forwarding key/mouse events to the `GameManager` *(class names contain a "Mause" typo for "Mouse")*.
 
-#### `impl/control/` — TigerSupply flow
-- `GameFlowController.java` — Singleton transaction script owning the `Player`/`EnemyManager` and switching the active Scene; drives level progression.
-- `GameManager.java` — Concrete `GameManager`: bootstraps all singleton services and starts on the Presentation scene; handles global pause/quit keys.
+---
 
-#### `impl/scene/`
+**Game module** — concrete TigerSupply game (base path
+`game/src/main/java/it/spaghettisource/tigersupply/game/`; the former `engine.impl.*` packages
+with the `impl` segment dropped).
+
+#### `game/control/` — TigerSupply flow
+- `GameFlowController.java` — Singleton transaction script owning the `Player`/`EnemyManager` and switching the active Scene; drives level progression.
+- `GameManager.java` — Concrete `GameManager` (built by the launcher's `TigerSupplyGameManagerFactory`): bootstraps all singleton services and starts on the Presentation scene; handles global pause/quit keys.
+
+#### `game/scene/`
 - `PresentationScene.java` — Title-screen scene (logo text via `GlyphVector`, star field, fade-to-black transition into the Hangar).
 - `HangarScene.java` — Loadout scene: ship/weapon selection buttons wired to a `HangarDataModel`; the Start button hands the configured `Player` to `GameFlowController`.
 - `LevelScene.java` — Core gameplay scene: owns shot/effect `EntityManager`s, the `EnemyManager`, three `CollisionDetector`s, and the parallax background; declares win/lose transitions.
 - `GameOverScene.java` — Game-over scene with a looping explosion-particle effect and restart-on-Space.
 
-#### `impl/scene/definition/` — level-XML DTOs
+#### `game/scene/definition/` — level-XML DTOs
 - `Horde.java` — One scripted wave: a `GenerateEvent` + list of `EnemyDefinition`s.
 - `GenerateEvent.java` — Named event (`waitTime`/`waitKill`) with optional delay, gating horde progression.
 - `EnemyDefinition.java` — One `<enemy>` entry in a horde (prototype ref, algorithm ref, spawn position).
@@ -276,7 +293,7 @@ total; `game` and `launcher` modules have none).
 - `Image.java` / `Scale.java` / `Speed.java` — Small XML-attribute value objects (image alias, scale factor, speed vector). *These names shadow other engine classes (e.g. `entity.Speed`) but are separate XML-parsing DTOs, not runtime entity state — a naming hazard to be aware of when navigating the codebase.*
 - `LevelDataRepository.java` — In-memory index of parsed Hordes/EnemyPrototypes/AlgorithmPrototypes, queried by the builder.
 
-#### `impl/scene/statemachine/` — horde-pacing FSM (built on `statemachine/`)
+#### `game/scene/statemachine/` — horde-pacing FSM (built on engine `statemachine/`)
 - `StateAbstract.java` — Base `State` resolving the next `Event` then asking the `TransactionManager` for the next `State`.
 - `StateWaitTime.java` — "Waiting for a timer" state before the next horde spawns.
 - `StateWaitKill.java` — "Waiting for all current enemies to die" state before the next horde spawns.
@@ -285,13 +302,14 @@ total; `game` and `launcher` modules have none).
 - `EnemyTxManager.java` — `TransactionManager` implementation encoding the horde-generation state graph.
 - `EnemyBuilderDataModel.java` — Facade the states use to query/advance `EnemyDataManager` (elapsed time, spawn next horde, boss killed).
 
-#### `impl/builder/`
+#### `game/builder/`
 - `EnemyDataBuilder.java` — Contract for a level-data parser (returns Hordes/EnemyPrototypes/AlgorithmPrototypes).
 - `EnemyDataBuilderSaxXml.java` — SAX-based XML parser implementation reading `level/level-N.xml`.
 - `EnemyDataManager.java` — Orchestrates parsing, stores results in `LevelDataRepository`, and creates concrete `Enemy` entities/algorithms/sprites per horde on demand.
 
-#### `impl/entity/` — concrete simulation objects
+#### `game/entity/` — concrete simulation objects
 - `BaseEntity.java` — Minimal concrete `AbstractEntity` used for simple entities (shots, smoke, engine fx) with no extra behaviour.
+- `Effect.java` — Base class for time-limited effect entities (extends `BaseEntity`; auto-removes after a configurable `spriteTimeDuration`).
 - `Entity.java` — **Empty placeholder class** — unused leftover/dead code that shares its simple name with `engine.entity.Entity` (a potential source of import confusion).
 - `Player.java` — Player ship: input handling, weapons list, life/lives, engine-trail/smoke effects, hit reaction.
 - `PlayerEngine.java` — Player's animated engine-trail effect entity; follows the ship via `UpdateAlgoritmCopyPosition`.
@@ -310,7 +328,7 @@ total; `game` and `launcher` modules have none).
 - `LithingBolt.java` — Lightning-bolt beam projectile entity (boss weapon) *(class name contains a "Lithing"/"Lightning" typo)*.
 - `Smoke.java` — Cosmetic smoke-puff effect entity trailing the player ship.
 
-#### `impl/ui/` — hangar widgets
+#### `game/ui/` — hangar widgets
 - `HangarDataModel.java` — Holds the player's in-progress hangar selection (ship sprite/speed, primary/secondary weapon).
 - `ShipButtonHangar.java` — Button selecting a ship hull + speed and updating the model/preview sprite.
 - `WeaponButtonHangar.java` — Button selecting a primary or secondary weapon into the model.
@@ -318,25 +336,34 @@ total; `game` and `launcher` modules have none).
 - `StartButtonHangar.java` — Button applying the `HangarDataModel` to the `Player` and starting the first level.
 - `MenuCompositionTest.java` — Ad-hoc/experimental UI composition (spike code; not wired into the actual game flow).
 
-#### `impl/utils/`
+#### `game/utils/`
 - `EntityFactoryWrapper.java` — Convenience static factory methods creating every concrete game entity (player, shots, effects, engine trail) with the right sprite/Z-order/speed defaults.
-- `UpdateAlgorithmFactoryWrapper.java` — Convenience static factory methods for common `UpdateAlgorithm` configurations (copy-position, sinusoidal, etc.).
 - `EntityZComparator.java` — Comparator sorting entities by Z position for draw order.
+- `GameResources.java` — Game-specific constants catalog (image/audio/font aliases, game-state/event names, Z-order layers); counterpart to the framework-only `engine.utils.StaticResources`. *(`UpdateAlgorithmFactoryWrapper` previously lived here; it was promoted to `engine.entity.logic`.)*
 
-#### `impl/weapon/`
+#### `game/weapon/`
 - `Weapon.java` — Contract: target-range check, fire/reload state machine.
 - `AbstractWeapon.java` — Shared UNLOADED/READY/RELOADING/FIREING state machine and timers.
 - `HangarWeapon.java` — Contract for weapons that can be previewed/selected in the Hangar UI (`getSprite`, `getDescription`).
 
-#### `impl/weapon/player/`
+#### `game/weapon/player/`
 - `Paser.java`, `DoubleGun.java`, `SynusoidalGun.java` — Primary weapon variants (single shot, twin shot, sine-wave shot).
 - `RocketLauncer.java`, `Bomb.java` — Secondary weapon variants (homing rocket, dropped bomb) *(class name contains a "Launcer"/"Launcher" typo)*.
 
-#### `impl/weapon/enemy/`
+#### `game/weapon/enemy/`
 - `StandardShot.java` — Basic forward-firing enemy weapon.
 - `RocketLauncer.java` — Enemy homing-rocket weapon.
 - `PlasmaCannon.java` — Boss plasma-cannon weapon.
 - `LightinBoltLaser.java` — Boss lightning-beam weapon.
+
+---
+
+**Launcher module** — composition root (base path
+`launcher/src/main/java/it/spaghettisource/tigersupply/launcher/`).
+
+#### `launcher/`
+- `Launcher.java` — Process entry point (`main`); owns the launch configuration (window title "Tiger Supply", 1360x660 playfield), builds the `ApplicationContext` and a `TigerSupplyGameManagerFactory`, and starts the engine `GameFrame`.
+- `TigerSupplyGameManagerFactory.java` — Concrete `GameManagerFactory`; the single class outside the `game` module that names `game.control.GameManager` — the seam binding the engine to the TigerSupply game.
 
 ## Design Patterns
 
@@ -357,7 +384,7 @@ total; `game` and `launcher` modules have none).
   factory.
 
 ### Strategy
-- **Location**: `entity.logic.UpdateAlgorithm` implementations; `impl.weapon.Weapon`
+- **Location**: `entity.logic.UpdateAlgorithm` implementations; `game.weapon.Weapon`
   implementations.
 - **Purpose**: Vary movement and fire-control behaviour independently of the owning `Entity`
   class (explicitly called out as a design goal in [note.txt](../../../note.txt)).
@@ -365,8 +392,8 @@ total; `game` and `launcher` modules have none).
   to it every frame.
 
 ### State
-- **Location**: `statemachine` (generic) + `impl.scene.statemachine` (horde-pacing FSM);
-  `impl.control.GameFlowController` (Scene switching is effectively a simpler, code-driven
+- **Location**: `statemachine` (generic) + `game.scene.statemachine` (horde-pacing FSM);
+  `game.control.GameFlowController` (Scene switching is effectively a simpler, code-driven
   state machine).
 - **Purpose**: Encode the horde-generation lifecycle (`waitTime`/`waitKill` ⇄
   `generateHorde` → `killBoss`) and the game's Scene graph without nested conditionals.
@@ -381,7 +408,7 @@ total; `game` and `launcher` modules have none).
 
 ### Template Method
 - **Location**: `AbstractGameJPanel.renderGame()` (calls abstract `internalRenderGame` +
-  `doFinalEffect`); `impl.entity.Enemy`/`impl.weapon.AbstractWeapon` (base update loop calling
+  `doFinalEffect`); `game.entity.Enemy`/`game.weapon.AbstractWeapon` (base update loop calling
   into subclass-specific hooks).
 
 ### Observer / Listener
@@ -390,7 +417,7 @@ total; `game` and `launcher` modules have none).
 
 ### DynaBean / Reflection-driven configuration
 - **Location**: `utils.DynaProperties` + `entity.logic.UpdateAlgorithmFactory` +
-  `impl.builder.EnemyDataManager.buildAlgorithm`.
+  `game.builder.EnemyDataManager.buildAlgorithm`.
 - **Purpose**: Let the level XML configure arbitrary algorithm parameters (deltas, speeds,
   waypoint lists) without a Java class per configuration.
 

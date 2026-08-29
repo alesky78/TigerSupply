@@ -7,8 +7,9 @@ RPC, or other network-accessible endpoints of any kind.
 
 ## Internal APIs
 
-The engine communicates purely through in-process Java interfaces. The most important
-contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted) are:
+The game communicates purely through in-process Java interfaces. The most important contracts
+(framework contracts in `it.spaghettisource.tigersupply.engine.*`; concrete-game contracts in
+`it.spaghettisource.tigersupply.game.*`) are:
 
 ### `control.Game`
 - **Methods**:
@@ -21,12 +22,12 @@ contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted
   `ApplicationContext.getPeriodSeconds()`, ~0.0167s at 60 FPS).
 - **Return Types**: `void` for all methods; failures are signalled via checked `Exception`.
 - **Implementations**: `control.AbstractGameJPanel` (template method base) →
-  `impl.scene.PresentationScene` / `HangarScene` / `LevelScene` / `GameOverScene`.
+  `game.scene.PresentationScene` / `HangarScene` / `LevelScene` / `GameOverScene`.
 
 ### `control.GameManager`
 - **Methods**: `getActualGame() throws Exception` (returns the currently active `Game`), plus
   the same input-delegation methods as `Game`.
-- **Implementations**: `control.AbstractGameManagerJPanel` → `impl.control.GameManager`.
+- **Implementations**: `control.AbstractGameManagerJPanel` → `game.control.GameManager`.
 
 ### `entity.Entity`
 - **Methods**: `updateEntity(float deltaSeconds)`, `renderEntity(Graphics2D dbg)`,
@@ -37,7 +38,7 @@ contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted
   `collided` is the *reaction* (mutates state — e.g. decrements life, spawns particles,
   triggers removal) and is expected to be called on **both** entities in a collided pair.
   `canBeRemoved()` is polled every frame by the owning `EntityManager` to prune dead entities.
-- **Implementations**: `entity.AbstractEntity` → `impl.entity.BaseEntity` →
+- **Implementations**: `entity.AbstractEntity` → `game.entity.BaseEntity` →
   `Player` / `Enemy` (→ `EnemyStandard`, `EnemyBoss`, `EnemyShield`, `EnemyRocket`,
   `EnemyShoterRocket`, `EnemyBackGround`, `Asteroid`) / effect entities
   (`ExplosionParticle`, `Smoke`, `PlayerEngine`, …).
@@ -62,7 +63,7 @@ contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted
   `UpdateAlgoritmGoToPoint`, `UpdateAlgoritmGoToPointIncreasingSpeed`,
   `UpdateAlgoritmFollowSprite`, `UpdateAlgoritmCopyPosition`, `UpdateAlgorithmBspline`.
 
-### `impl.weapon.Weapon<T extends Entity>`
+### `game.weapon.Weapon<T extends Entity>`
 - **Methods**: `setOwner(T owner)`, `targetInRange(Entity target) boolean`,
   `fire(Entity target) throws Exception`, `reload()`, `isUnloaded()/isReloading()/isReady() boolean`,
   `updateWeapon(float deltaSeconds) throws Exception`.
@@ -70,7 +71,7 @@ contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted
   FIREING → UNLOADED`); callers must check `isReady()`/`isUnloaded()` before calling
   `fire`/`reload` respectively (see `Enemy.scanTargetInRange` and `Player.tryToShot` for the
   canonical call pattern).
-- **Implementations**: `impl.weapon.AbstractWeapon` → player weapons (`Paser`, `DoubleGun`,
+- **Implementations**: `game.weapon.AbstractWeapon` → player weapons (`Paser`, `DoubleGun`,
   `SynusoidalGun`, `RocketLauncer`, `Bomb`) and enemy weapons (`StandardShot`,
   `RocketLauncer`, `PlasmaCannon`, `LightinBoltLaser`).
 
@@ -86,17 +87,17 @@ contracts (all in package `it.spaghettisource.tigersupply.engine.*` unless noted
 - **Return Semantics**: `processState` both executes the current state's side effect (e.g.
   "spawn next horde") **and** returns the next `State` to transition to, by asking the
   `TransactionManager` to resolve `(state name, generated event name)`.
-- **Implementation used in-game**: `impl.scene.statemachine.EnemyTxManager` (the horde-pacing
+- **Implementation used in-game**: `game.scene.statemachine.EnemyTxManager` (the horde-pacing
   state graph) driving `StateWaitTime` / `StateWaitKill` / `StateGenerateHorde` /
   `StateKillBoss`.
 
-### `impl.builder.EnemyDataBuilder`
+### `game.builder.EnemyDataBuilder`
 - **Methods**: `parse() throws Exception`, `buildHordes() List<Horde>`,
   `buildEnemyPrototypes() List<EnemyPrototype>`, `buildAlgorithmPrototypes() List<AlgorithmPrototype>`.
 - **Implementation**: `EnemyDataBuilderSaxXml` (SAX parser reading a classpath resource path,
   e.g. `level/level-1.xml`).
 
-### `impl.weapon.HangarWeapon`
+### `game.weapon.HangarWeapon`
 - **Methods**: `getSprite() Sprite throws Exception`, `getDescription() String`.
 - **Purpose**: Lets the Hangar UI preview a weapon's sprite/description before it is
   equipped; implemented by the concrete player weapon classes.
@@ -155,7 +156,7 @@ A `<level>` document has:
   gives the spawn `Position` (`posX`/`posY`/`posZ`).
 - **`EnemyPrototype`** *(declared separately, referenced by name)* — `name`, `type` (currently
   only `imageSingleSprite` is handled by `EnemyDataManager`), `class` (fully-qualified
-  `impl.entity.Enemy` subclass instantiated via reflection), nested `<speed>`, `<image
+  `game.entity.Enemy` subclass instantiated via reflection), nested `<speed>`, `<image
   alias="…">`, `<scale value="…">`.
 - **`AlgorithmPrototype`** *(declared separately, referenced by name)* — `name`, `class`
   (fully-qualified `UpdateAlgorithm` implementation), nested `<algorithmProperties>` containing

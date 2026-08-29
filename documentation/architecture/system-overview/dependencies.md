@@ -4,36 +4,41 @@
 
 ```mermaid
 flowchart LR
-    launcher["launcher\n(empty - no src/)"] --> game["game\n(empty - no src/)"]
-    game --> engine["engine\n(168 Java files)"]
+    launcher["launcher\n(composition root: Launcher + factory, 2 files)"] --> game["game\n(concrete TigerSupply game, 68 files)"]
+    game --> engine["engine\n(reusable framework, 102 files)"]
 ```
 
 ### `launcher` depends on `game`
 - **Type**: Compile (Maven module dependency declared in
   [launcher/pom.xml](../../../launcher/pom.xml)).
-- **Reason**: `launcher` is reserved to become the distributable/packaging module that would
-  sit on top of the finished game; the dependency is declared ahead of any actual code.
+- **Reason**: `launcher` is the composition root: `TigerSupplyGameManagerFactory` references
+  `game.control.GameManager` to bind the concrete game into the engine's `GameFrame`. The
+  launcher also packages the runnable uber-jar (via shade) that bundles `game` (and
+  transitively `engine`) plus resources.
 
 ### `game` depends on `engine`
 - **Type**: Compile (Maven module dependency declared in
   [game/pom.xml](../../../game/pom.xml)).
-- **Reason**: `game` is reserved to eventually hold TigerSupply-specific content split out of
-  `engine`'s current `impl.*` packages; the dependency is declared ahead of any actual code.
+- **Reason**: `game` holds the concrete TigerSupply content (`game.*`, formerly
+  `engine.impl.*`) and builds on the engine framework (entity/sprite/collision model, asset
+  repositories, UI, state machine, window shell).
 
-> Because `game` and `launcher` have no source files, the **only module with a compile-time
-> effect today is `engine`** — the module graph above is aspirational/scaffolding for a future
-> refactor rather than a currently exercised dependency chain.
+> All three modules now contain source and are exercised at build time: `engine` compiles
+> standalone, `game` compiles against `engine`, and `launcher` compiles against `game` and
+> produces the runnable `tigersupply.jar`.
 
-### Intra-package coupling inside `engine` (informative, not a Maven dependency)
-- The framework packages (`entity`, `sprite`, `image.*`, `audio.*`, `font.repository`,
-  `background`, `path`, `ui`, `statemachine`, `utils`, `control`) are self-contained and do
-  **not** depend on the `impl.*` packages — this is the healthiest layering boundary in the
-  codebase.
-- The `impl.*` packages (TigerSupply's concrete game) depend heavily on the framework
-  packages, as expected.
-- `impl.control.GameFlowController` and `impl.control.GameManager` are the composition root:
-  they are the only classes that reach into essentially every other `impl.*` sub-package and
-  every framework singleton to wire the game together at startup.
+### Layering & coupling (informative, not a Maven dependency)
+- The `engine` framework packages (`entity`, `sprite`, `image.*`, `audio.*`, `font.repository`,
+  `background`, `path`, `ui`, `statemachine`, `utils`, `control`, `windows`) are self-contained
+  and hold **no** reference to any `game.*` type — the module boundary now enforces the
+  layering that was previously only a convention (verified: 0 `engine → game` references).
+- The `game.*` packages (TigerSupply's concrete game) depend heavily on the `engine` framework,
+  as expected.
+- `game.control.GameFlowController` and `game.control.GameManager` wire the game internals
+  together at startup (reaching into every `game.*` sub-package and every framework singleton).
+- The single seam binding the two modules is `engine.control.GameManagerFactory`, implemented
+  by `launcher.TigerSupplyGameManagerFactory` — the only class outside `game.*` that names a
+  concrete game type.
 
 ## External Dependencies
 
@@ -52,4 +57,6 @@ flowchart LR
 
 No other external (non-JDK) libraries are declared anywhere in the reactor — the engine's
 rendering, audio, XML parsing and reflection all come from the Java SE 17 standard library
-itself. There are no transitive runtime dependencies to audit.
+itself. There are no transitive runtime dependencies to audit. The only non-core Maven build
+plugins are `maven-shade-plugin` (3.6.0) and `exec-maven-plugin` (3.5.0) in the `launcher`
+module; both affect packaging/running only and introduce no runtime library dependency.
