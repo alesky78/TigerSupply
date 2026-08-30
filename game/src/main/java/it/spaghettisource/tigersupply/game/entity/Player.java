@@ -49,6 +49,15 @@ public class Player extends BaseEntity {
 	
 	
 	int life = 4;	//life of the player, how many time they can distroy you!!!!!!
+
+	//post-spawn invulnerability: a grace window with a retro blink of the ship sprite
+	private static final float INVULNERABILITY_SECONDS = 3f;
+	private static final float BLINK_INTERVAL_SECONDS = 0.1f;
+	private static final double INVULNERABLE_ALPHA = 0.25;
+	private static final double NORMAL_ALPHA = 1.0;
+	private float invulnerableTimer = 0f;	//seconds left of the grace window, invulnerable while > 0
+	private float blinkCounter = 0f;		//accumulates time between blink toggles
+	private boolean visible = true;			//current blink phase of the ship sprite
 	
 	public Player(){
 		particleNum = 100;
@@ -80,6 +89,19 @@ public class Player extends BaseEntity {
 		return life;
 	}	
 	
+	public boolean isInvulnerable(){
+		return invulnerableTimer > 0;
+	}
+	
+	/**
+	 * arm the post-spawn grace window and (re)start the blink from a visible phase
+	 */
+	private void startInvulnerability(){
+		invulnerableTimer = INVULNERABILITY_SECONDS;
+		blinkCounter = 0f;
+		visible = true;
+	}
+	
 
 	public void setSpeed(Speed speed) {
 		super.setSpeed(speed);
@@ -92,6 +114,7 @@ public class Player extends BaseEntity {
 		startGameXPoisition = 60;
 		position.setPosX(-80);
 		initAnimation = true;		
+		startInvulnerability();
 	}
 
 	public void setShootManager(EntityGroupScreenBound<Entity> shotManager) {
@@ -112,6 +135,10 @@ public class Player extends BaseEntity {
 
 	public void collided(Entity other){
 		
+		if(isInvulnerable()){	//ignore damage during the post-spawn grace window
+			return;
+		}
+		
 		createdDeadParticle();
 		
 		life-=1;	//remove one life
@@ -119,6 +146,7 @@ public class Player extends BaseEntity {
 		shotRequest = false;
 		position.setPosX(-80);
 		initAnimation = true;
+		startInvulnerability();
 	}
 
 	public void tryToShot(float deltaSeconds) throws Exception{
@@ -161,6 +189,8 @@ public class Player extends BaseEntity {
 		
 		super.updateEntity(deltaSeconds);	
 		
+		updateInvulnerability(deltaSeconds);
+		
 		adjustSpeed(deltaSeconds);
 		
 		tryToShot(deltaSeconds);				
@@ -174,6 +204,33 @@ public class Player extends BaseEntity {
 			effectManager.addRequest(smokeEffect);	
 		}
 	}	
+
+	/**
+	 * advance the post-spawn grace window and blink the ship sprite between opaque and
+	 * semi-transparent; restores full opacity exactly once when the window ends.
+	 * 
+	 * @param deltaSeconds elapsed time for this frame
+	 */
+	private void updateInvulnerability(float deltaSeconds) {
+		if(invulnerableTimer <= 0){
+			return;
+		}
+		
+		invulnerableTimer -= deltaSeconds;
+		if(invulnerableTimer <= 0){	//window ended: leave the ship fully opaque
+			invulnerableTimer = 0;
+			visible = true;
+			sprite.setAlpha(NORMAL_ALPHA);
+			return;
+		}
+		
+		blinkCounter += deltaSeconds;
+		if(blinkCounter >= BLINK_INTERVAL_SECONDS){
+			blinkCounter = 0;
+			visible = !visible;
+			sprite.setAlpha(visible ? NORMAL_ALPHA : INVULNERABLE_ALPHA);
+		}
+	}
 
 	/**
 	 * reduce speed to create the float effect, when the key are not typed

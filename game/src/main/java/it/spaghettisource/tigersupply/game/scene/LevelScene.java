@@ -108,8 +108,11 @@ public class LevelScene extends AbstractScene {
 			playerShootManager.updateEntity(deltaTimeSeconds);
 			enemyShootManager.updateEntity(deltaTimeSeconds);	
 
-			collisionDetectorPlayerVsEnemy.detectCollision();
-			collisionDetectorPlayerVsEnemyShot.detectCollision();
+			//skip incoming-damage collisions while the player is in its post-spawn grace window
+			if(!playerShip.isInvulnerable()){
+				collisionDetectorPlayerVsEnemy.detectCollision();
+				collisionDetectorPlayerVsEnemyShot.detectCollision();
+			}
 			collisionDetectorPlayerShotVsEnemy.detectCollision(); 
 
 			backGround.updateBackground(deltaTimeSeconds);
