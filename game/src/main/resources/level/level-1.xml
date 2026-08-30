@@ -17,12 +17,12 @@
 			<enemy enemyPrototype="enemyBackgroundSyn" posX="1" posY="515" posZ="50" algorithmPrototype="default" />											
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" time="1" />
+			<generateEvent name="waitTime" time="1.5" />
 			<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="500" posZ="50"  algorithmPrototype="default" />
 			<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="530" posZ="50"  algorithmPrototype="default" />											
 		</horde>		
 		<horde>
-			<generateEvent name="waitTime" time="1" />
+			<generateEvent name="waitTime" time="2.0" />
 			<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="485" posZ="50" algorithmPrototype="default" />
 			<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="545" posZ="50" algorithmPrototype="default" />											
 		</horde>			
@@ -307,17 +307,17 @@
 
 	<enemiesPrototype>		
 		<enemyPrototype name="enemyBackgroundSt" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
-			<speed x="80" y="0" />
+			<speed x="95" y="0" />
 			<image alias="enemy1" />
 			<scale value="0.7" />
 		</enemyPrototype>
 		<enemyPrototype name="enemyBackgroundSyn" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
-			<speed x="80" y="0" />
+			<speed x="95" y="0" />
 			<image alias="enemy2" />
 			<scale value="0.7" />
 		</enemyPrototype>	
 		<enemyPrototype name="enemyBackgroundRk" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
-			<speed x="80" y="0" />
+			<speed x="95" y="0" />
 			<image alias="enemy3" />
 			<scale value="0.5" />
 		</enemyPrototype>
@@ -347,27 +347,27 @@
 			<scale value="1" />
 		</enemyPrototype>					
 		<enemyPrototype name="standard" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyStandard">
-			<speed x="-130" y="0" />
+			<speed x="-150" y="0" />
 			<image alias="enemy1" />
 			<scale value="1.1" />			
 		</enemyPrototype>
 		<enemyPrototype name="sinusoidal" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyStandard">
-			<speed x="-130" y="0" />
+			<speed x="-150" y="0" />
 			<image alias="enemy2" />
 			<scale value="1.1" />			
 		</enemyPrototype>
 		<enemyPrototype name="enemyShield" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyShield">
-			<speed x="-90" y="0" />
+			<speed x="-110" y="0" />
 			<image alias="enemy4" />
 			<scale value="1.1" />			
 		</enemyPrototype>		
 		<enemyPrototype name="roker" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyShoterRocket">
-			<speed x="-60" y="0" />
+			<speed x="-80" y="0" />
 			<image alias="enemy3" />
 			<scale value="1" />			
 		</enemyPrototype>
 		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBoss">
-			<speed x="-35" y="0" />
+			<speed x="-40" y="0" />
 			<image alias="boss" />
 			<scale value="1.4" />			
 		</enemyPrototype>
