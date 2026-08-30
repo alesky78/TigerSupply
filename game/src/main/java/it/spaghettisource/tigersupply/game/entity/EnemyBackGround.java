@@ -1,6 +1,6 @@
 package it.spaghettisource.tigersupply.game.entity;
 
-
+import it.spaghettisource.tigersupply.engine.entity.Entity;
 
 
 /**
