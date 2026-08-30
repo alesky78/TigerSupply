@@ -3,7 +3,7 @@ package it.spaghettisource.tigersupply.game.scene;
 import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
@@ -29,7 +29,7 @@ public class GameOverScene extends AbstractSceneJPanel {
 	protected int particleDeathMaxSpeed;		
 	protected float particleDeathMaxLifeTime;
 
-	protected EntityManagerEntityRequest<Entity> spriteManger; 
+	protected EntityGroupScreenBound<Entity> spriteManger; 
 	
 	
 	public GameOverScene(GameContext context){
@@ -42,7 +42,7 @@ public class GameOverScene extends AbstractSceneJPanel {
 		particleDeathMaxSpeed = 40;	
 		particleDeathMaxLifeTime= 10f;	
 
-		spriteManger = new EntityManagerEntityRequest<Entity>();
+		spriteManger = new EntityGroupScreenBound<Entity>();
 		spriteManger.init(context);
 	}
 

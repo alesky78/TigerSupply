@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 
 public class PlayerBomb extends BaseEntity {
 
@@ -9,7 +9,7 @@ public class PlayerBomb extends BaseEntity {
 	public static final int DIRECTION_DOWN = 1;	
 	
 	private float maxSpeed;
-	private EntityManagerEntityRequest<Entity> effectManager;
+	private EntityGroupScreenBound<Entity> effectManager;
 	private int direction;
 	
 	
@@ -22,7 +22,7 @@ public class PlayerBomb extends BaseEntity {
 		this.direction = direction;
 	}
 	
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 

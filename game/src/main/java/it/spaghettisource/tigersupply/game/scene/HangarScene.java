@@ -6,7 +6,6 @@ import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.Player;

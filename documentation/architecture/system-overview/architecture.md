@@ -101,10 +101,10 @@ flowchart TB
   `engine.background`, `engine.ui`, `engine.font.repository`, `engine.image.repository`.
 - **Type**: Application (game module).
 
-### `entity` (+ `manager`, `logic`, `collision` sub-packages)
+### `entity` (+ `logic`, `collision` sub-packages)
 - **Purpose**: Generic simulation model shared by every game object.
 - **Responsibilities**: `Entity`/`AbstractEntity` (position/speed/size/sprite + delegated
-  `UpdateAlgorithm`), `EntityManager`/`EntityManagerEntityRequest`/`EntityManagerRemovable`
+  `UpdateAlgorithm`), `EntityGroup`/`EntityGroupScreenBound`
   (composite collections of entities), `CollisionDetector` (rectangle intersection for
   1:1 / 1:N / N:N pairings), `logic.*` (pluggable movement strategies: default, sinusoidal,
   go-to-point, follow-sprite, copy-position, B-spline).

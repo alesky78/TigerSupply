@@ -37,14 +37,14 @@ The game communicates purely through in-process Java interfaces. The most import
 - **Return Semantics**: `collidedWith` is a pure geometric test (AABB intersection);
   `collided` is the *reaction* (mutates state — e.g. decrements life, spawns particles,
   triggers removal) and is expected to be called on **both** entities in a collided pair.
-  `canBeRemoved()` is polled every frame by the owning `EntityManager` to prune dead entities.
+  `canBeRemoved()` is polled every frame by the owning `EntityGroup` to prune dead entities.
 - **Implementations**: `entity.AbstractEntity` → `game.entity.BaseEntity` →
   `Player` / `Enemy` (→ `EnemyStandard`, `EnemyBoss`, `EnemyShield`, `EnemyRocket`,
   `EnemyShoterRocket`, `EnemyBackGround`, `Asteroid`) / effect entities
   (`ExplosionParticle`, `Smoke`, `PlayerEngine`, …).
-- **Composite implementation**: `entity.manager.EntityManager<T extends Entity>` also
+- **Composite implementation**: `entity.EntityGroup<T extends Entity>` also
   implements `Entity`, fanning every call out to its managed list (unsupported accessor
-  methods throw `UnsupportedOperationException` by design, since a manager has no single
+  methods throw `UnsupportedOperationException` by design, since a group has no single
   position/size of its own).
 
 ### `sprite.Sprite`

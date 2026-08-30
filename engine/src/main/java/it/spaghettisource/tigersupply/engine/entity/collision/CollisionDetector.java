@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.engine.entity.collision;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManager;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroup;
 
 
 public  class CollisionDetector{
@@ -12,21 +12,21 @@ public  class CollisionDetector{
 
 	protected int collisionType;
 
-	protected EntityManager<Entity> managerA;
-	protected EntityManager<Entity> managerB;
+	protected EntityGroup<Entity> managerA;
+	protected EntityGroup<Entity> managerB;
 	protected Entity spriteA;
 	protected Entity spriteB;	
 
 
 	@SuppressWarnings("rawtypes")
-	public <T extends EntityManager> CollisionDetector(T a, T b) {
+	public <T extends EntityGroup> CollisionDetector(T a, T b) {
 		managerA = a;
 		managerB = b;
 		collisionType = MANY_TO_MANY;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public <T extends EntityManager> CollisionDetector(Entity a,T b) {
+	public <T extends EntityGroup> CollisionDetector(Entity a,T b) {
 		spriteA = a;
 		managerA = b;
 		collisionType = ONE_TO_MANY;

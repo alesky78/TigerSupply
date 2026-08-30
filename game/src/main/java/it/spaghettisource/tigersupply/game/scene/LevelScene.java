@@ -20,7 +20,7 @@ import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.collision.CollisionDetector;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
@@ -38,9 +38,9 @@ public class LevelScene extends AbstractSceneJPanel {
 	private EnemyManager enemyManager;
 
 
-	private EntityManagerEntityRequest<Entity> playerShootManager;
-	private EntityManagerEntityRequest<Entity> enemyShootManager;
-	private EntityManagerEntityRequest<Entity> effectManager;		
+	private EntityGroupScreenBound<Entity> playerShootManager;
+	private EntityGroupScreenBound<Entity> enemyShootManager;
+	private EntityGroupScreenBound<Entity> effectManager;		
 
 	private CollisionDetector collisionDetectorPlayerVsEnemyShot;
 	private CollisionDetector collisionDetectorPlayerVsEnemy;
@@ -57,13 +57,13 @@ public class LevelScene extends AbstractSceneJPanel {
 		this.pHeight = context.getScreenHeight();
 
 		//shot managers
-		playerShootManager = new EntityManagerEntityRequest<Entity>();
-		enemyShootManager = new EntityManagerEntityRequest<Entity>();
+		playerShootManager = new EntityGroupScreenBound<Entity>();
+		enemyShootManager = new EntityGroupScreenBound<Entity>();
 		playerShootManager.init(context);
 		enemyShootManager.init(context);
 		
 		//effect manager
-		effectManager = new EntityManagerEntityRequest<Entity>();
+		effectManager = new EntityGroupScreenBound<Entity>();
 		effectManager.init(context);
 
 		//player ship

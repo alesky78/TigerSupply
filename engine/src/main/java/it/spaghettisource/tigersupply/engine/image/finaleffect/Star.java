@@ -5,7 +5,7 @@ package it.spaghettisource.tigersupply.engine.image.finaleffect;
 import java.awt.Graphics2D;
 
 import it.spaghettisource.tigersupply.engine.control.GameContext;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerRemovable;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 
 public class Star extends AbstractFinalEffect {
 
@@ -15,7 +15,7 @@ public class Star extends AbstractFinalEffect {
 	private float periodCounter;	
 	
 	
-	private EntityManagerRemovable<StarEntity> manager = new EntityManagerRemovable<StarEntity>();
+	private EntityGroupScreenBound<StarEntity> manager = new EntityGroupScreenBound<StarEntity>();
 	
 
 	public void configAndStart(float secondNextStar, GameContext context){

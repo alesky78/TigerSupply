@@ -80,7 +80,7 @@ classDiagram
         #sprite : Sprite
         #updateAlgorithm : UpdateAlgorithm
     }
-    class EntityManager~T~ {
+    class EntityGroup~T~ {
         #entities : List~T~
     }
     class Sprite {
@@ -111,7 +111,7 @@ classDiagram
     GameLoop --> GameContext
     GameLoop --> SceneManager
     Entity <|.. AbstractEntity
-    Entity <|.. EntityManager
+    Entity <|.. EntityGroup
     AbstractEntity --> Sprite
     AbstractEntity --> UpdateAlgorithm
     AbstractSceneJPanel <|-- PresentationScene
@@ -160,9 +160,11 @@ grouped by module; paths under each heading are relative to that module's base p
 - `Position.java` — Mutable X/Y/Z + rotation-angle value object.
 - `Size.java` — Width/height + scale value object (derives effective width/height).
 - `Speed.java` — X/Y pixel-per-second velocity value object.
+- `EntityGroup.java` — Generic composite `Entity` that fans update/render/collision out to a managed list, prunes children flagged `canBeRemoved()`, and supports deferred "request" spawning of new entities mid-update.
+- `EntityGroupScreenBound.java` — `EntityGroup` specialization that additionally prunes children once they move off-screen (`isOutOfScreen()`); the workhorse group for shots/effects/enemies.
 
 #### `entity/collision/`
-- `CollisionDetector.java` — Rectangle-intersection collision checker supporting one-to-one, one-to-many and many-to-many entity/`EntityManager` pairings.
+- `CollisionDetector.java` — Rectangle-intersection collision checker supporting one-to-one, one-to-many and many-to-many entity/`EntityGroup` pairings.
 
 #### `entity/logic/` — pluggable movement strategies
 - `UpdateAlgorithm.java` — Strategy contract for per-entity movement (`updateLogic` + `DynaProperties`-based `init`).
@@ -176,11 +178,6 @@ grouped by module; paths under each heading are relative to that module's base p
 - `UpdateAlgorithmBspline.java` — Moves along a spline path built from configured waypoints.
 - `UpdateAlgorithmFactory.java` — Reflection-based factory that instantiates + initializes an `UpdateAlgorithm` from a class name and `DynaProperties`.
 - `UpdateAlgorithmFactoryWrapper.java` — Convenience static factory methods for common `UpdateAlgorithm` configurations (copy-position, sinusoidal, …); promoted from the old `impl.utils` into the framework so no engine class references game code.
-
-#### `entity/manager/`
-- `EntityManager.java` — Generic composite `Entity` implementation fanning update/render/collision out to a managed list.
-- `EntityManagerEntityRequest.java` — `EntityManager` variant supporting deferred "request" of new entities (used for shots/effects/enemies produced mid-update).
-- `EntityManagerRemovable.java` — `EntityManager` variant that prunes entities once `canBeRemoved()`/`isOutOfScreen()` is true.
 
 #### `audio/`
 - `AudioManager.java` — Singleton facade to play looping/one-shot music and FX via background threads.
@@ -280,7 +277,7 @@ with the `impl` segment dropped).
 #### `game/scene/`
 - `PresentationScene.java` — Title-screen scene (logo text via `GlyphVector`, star field, fade-to-black transition into the Hangar).
 - `HangarScene.java` — Loadout scene: ship/weapon selection buttons wired to a `HangarDataModel`; the Start button hands the configured `Player` to `SceneFlowController`.
-- `LevelScene.java` — Core gameplay scene: owns shot/effect `EntityManager`s, the `EnemyManager`, three `CollisionDetector`s, and the parallax background; declares win/lose transitions.
+- `LevelScene.java` — Core gameplay scene: owns shot/effect `EntityGroupScreenBound`s, the `EnemyManager`, three `CollisionDetector`s, and the parallax background; declares win/lose transitions.
 - `GameOverScene.java` — Game-over scene with a looping explosion-particle effect and restart-on-Space.
 
 #### `game/scene/definition/` — level-XML DTOs
@@ -322,7 +319,7 @@ with the `impl` segment dropped).
 - `EnemyShoterRocket.java` — Enemy armed with the `RocketLauncer` weapon.
 - `EnemyBackGround.java` — Non-interactive decorative "enemy" used purely as scrolling background filler (never collides, never dies).
 - `Asteroid.java` — Rotating obstacle enemy (no weapon, high life, spins continuously).
-- `EnemyManager.java` — `EntityManagerEntityRequest<Enemy>` specialization driving the horde state machine and per-enemy target scanning.
+- `EnemyManager.java` — `EntityGroupScreenBound<Enemy>` specialization driving the horde state machine and per-enemy target scanning.
 - `EnergeticShield.java` — Shield visual/behaviour entity attached to a shielded enemy.
 - `ExplosionParticle.java` — Single particle used to compose fire/energy explosion effects.
 - `LithingBolt.java` — Lightning-bolt beam projectile entity (boss weapon) *(class name contains a "Lithing"/"Lightning" typo)*.
@@ -401,8 +398,8 @@ with the `impl` segment dropped).
   string-named state/event constants in `StaticResources`.
 
 ### Composite
-- **Location**: `entity.manager.EntityManager` (and its `EntityManagerEntityRequest`/
-  `EntityManagerRemovable` variants) implements the `Entity` interface itself.
+- **Location**: `entity.EntityGroup` (and its `EntityGroupScreenBound` off-screen-pruning
+  variant) implements the `Entity` interface itself.
 - **Purpose**: Let `LevelScene` treat "all enemies" or "all player shots" as a single `Entity`
   for update/render calls.
 

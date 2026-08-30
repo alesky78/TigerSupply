@@ -6,7 +6,7 @@ import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.entity.EnemyRocket;
 import it.spaghettisource.tigersupply.game.entity.EnergeticShield;
@@ -41,7 +41,7 @@ public class EntityFactoryWrapper {
 		return new ExplosionParticle(ExplosionParticle.TYPE_ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}		
 	
-	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityManagerEntityRequest<Entity> effectManager,Position position,GameContext context) throws Exception{
+	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityGroupScreenBound<Entity> effectManager,Position position,GameContext context) throws Exception{
 		EnergeticShield shield = new EnergeticShield(shieldSize,shieldLifeTimeInSeconds, context);
 		shield.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newCopyPosition(0, 0, position));
 		shield.setContext(context);

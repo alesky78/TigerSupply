@@ -2,7 +2,7 @@ package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 
 public class PlayerRocket extends BaseEntity {
@@ -10,14 +10,14 @@ public class PlayerRocket extends BaseEntity {
 	
 	private float maxSpeed;
 	private float smokeCounter = 0;	
-	private EntityManagerEntityRequest<Entity> effectManager;
+	private EntityGroupScreenBound<Entity> effectManager;
 	
 	
 	public PlayerRocket(){
 		maxSpeed = 350;
 	}
 	
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 

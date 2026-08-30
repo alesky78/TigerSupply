@@ -8,7 +8,7 @@ import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
@@ -23,8 +23,8 @@ public class Player extends BaseEntity {
 	private int startGameXPoisition;
 
 	//external sprites management
-	private EntityManagerEntityRequest<Entity> shotManager;
-	private EntityManagerEntityRequest<Entity> effectManager;	
+	private EntityGroupScreenBound<Entity> shotManager;
+	private EntityGroupScreenBound<Entity> effectManager;	
 
 	private boolean shotRequest = false;	
 	private float smokeCounter = 0;	
@@ -94,19 +94,19 @@ public class Player extends BaseEntity {
 		initAnimation = true;		
 	}
 
-	public void setShootManager(EntityManagerEntityRequest<Entity> shotManager) {
+	public void setShootManager(EntityGroupScreenBound<Entity> shotManager) {
 		this.shotManager = shotManager;
 	}
 	
-	public EntityManagerEntityRequest<Entity> getShotManager() {
+	public EntityGroupScreenBound<Entity> getShotManager() {
 		return shotManager;
 	}
 
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 
-	public EntityManagerEntityRequest<Entity> getEffectManager() {
+	public EntityGroupScreenBound<Entity> getEffectManager() {
 		return effectManager;
 	}
 

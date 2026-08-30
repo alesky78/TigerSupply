@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.builder.HordeSequencer;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyBuilderDataModel;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyTxManager;
@@ -16,11 +16,11 @@ import it.spaghettisource.tigersupply.game.scene.statemachine.StateAbstract;
  * @author Alessandro D'Ottavio
  *
  */
-public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
+public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 
 	
-	private EntityManagerEntityRequest<Entity> shotManager;
-	private EntityManagerEntityRequest<Entity> effectManager;	
+	private EntityGroupScreenBound<Entity> shotManager;
+	private EntityGroupScreenBound<Entity> effectManager;	
 	private Entity player;
 	
 	private EnemyBuilderDataModel dataModel;
@@ -95,11 +95,11 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 		this.player = player;
 	}	
 
-	public void setShotManager(EntityManagerEntityRequest<Entity> shotManager) {
+	public void setShotManager(EntityGroupScreenBound<Entity> shotManager) {
 		this.shotManager = shotManager;
 	}
 	
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 

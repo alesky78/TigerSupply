@@ -3,7 +3,7 @@ package it.spaghettisource.tigersupply.game.entity;
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
 
@@ -11,9 +11,9 @@ public class Enemy extends BaseEntity {
 
 	protected int life = 0;
 
-	protected EntityManagerEntityRequest<Entity> shotManager;
-	protected EntityManagerEntityRequest<Entity> effectManager;
-	protected EntityManagerEntityRequest<Enemy> enemyManager;		
+	protected EntityGroupScreenBound<Entity> shotManager;
+	protected EntityGroupScreenBound<Entity> effectManager;
+	protected EntityGroupScreenBound<Enemy> enemyManager;		
 	protected Entity target;
 
 	protected GameContext context;
@@ -38,23 +38,23 @@ public class Enemy extends BaseEntity {
 		return context;
 	}
 
-	public void setShotManager(EntityManagerEntityRequest<Entity> shotManager) {
+	public void setShotManager(EntityGroupScreenBound<Entity> shotManager) {
 		this.shotManager = shotManager;
 	}
 
-	public EntityManagerEntityRequest<Entity> getShotManager() {
+	public EntityGroupScreenBound<Entity> getShotManager() {
 		return shotManager;
 	}	
 	
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 	
-	public EntityManagerEntityRequest<Entity> getEffectManager() {
+	public EntityGroupScreenBound<Entity> getEffectManager() {
 		return effectManager;
 	}
 
-	public void setEnemyManager(EntityManagerEntityRequest<Enemy> enemyManager) {
+	public void setEnemyManager(EntityGroupScreenBound<Enemy> enemyManager) {
 		this.enemyManager = enemyManager;
 	}
 

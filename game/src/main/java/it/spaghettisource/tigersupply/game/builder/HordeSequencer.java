@@ -11,7 +11,7 @@ import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactory;
-import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.Enemy;
 import it.spaghettisource.tigersupply.game.scene.definition.AlgorithmPrototype;
 import it.spaghettisource.tigersupply.game.scene.definition.EnemyDefinition;
@@ -37,7 +37,7 @@ import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
  * into hordes as the level progresses. Each horde is associated with a game event (e.g., "wave 1 complete").</p>
  *
  * <p>Clients must inject dependencies via setters ({@link #setContext(GameContext)}, {@link #setPlayer(Entity)},
- * {@link #setEnemyManager(EntityManagerEntityRequest)}, etc.) before calling {@link #initializeLevelData()} and
+ * {@link #setEnemyManager(EntityGroupScreenBound)}, etc.) before calling {@link #loadLevelData()} and
  * {@link #spawnNextHorde()}. Boss death is tracked separately via {@link #markBossAsKilled()} and
  * {@link #isBossDead()}.</p>
  *
@@ -52,9 +52,9 @@ public class HordeSequencer {
 	private int hordeIndex;
 
 	protected Entity player;
-	protected EntityManagerEntityRequest<Entity> shotManager;
-	protected EntityManagerEntityRequest<Entity> effectManager;	
-	protected EntityManagerEntityRequest<Enemy> enemyManager;	
+	protected EntityGroupScreenBound<Entity> shotManager;
+	protected EntityGroupScreenBound<Entity> effectManager;
+	protected EntityGroupScreenBound<Enemy> enemyManager;
 
 	
 	private boolean bossKilled;
@@ -98,27 +98,27 @@ public class HordeSequencer {
 	/**
 	 * Injects the shot manager for spawned enemies to emit projectiles.
 	 *
-	 * @param shotManager the {@link EntityManagerEntityRequest} managing player and enemy shots
+	 * @param shotManager the {@link EntityGroupScreenBound} managing player and enemy shots
 	 */
-	public void setShotManager(EntityManagerEntityRequest<Entity> shotManager) {
+	public void setShotManager(EntityGroupScreenBound<Entity> shotManager) {
 		this.shotManager = shotManager;
 	}
 
 	/**
 	 * Injects the effect manager for visual effects (explosions, etc).
 	 *
-	 * @param effectManager the {@link EntityManagerEntityRequest} managing visual effects
+	 * @param effectManager the {@link EntityGroupScreenBound} managing visual effects
 	 */
-	public void setEffectManager(EntityManagerEntityRequest<Entity> effectManager) {
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager) {
 		this.effectManager = effectManager;
 	}
 
 	/**
 	 * Injects the enemy manager for adding spawned enemies to the scene.
 	 *
-	 * @param enemyManager the {@link EntityManagerEntityRequest} managing active enemies
+	 * @param enemyManager the {@link EntityGroupScreenBound} managing active enemies
 	 */
-	public void setEnemyManager(EntityManagerEntityRequest<Enemy> enemyManager) {
+	public void setEnemyManager(EntityGroupScreenBound<Enemy> enemyManager) {
 		this.enemyManager = enemyManager;
 	}
 
