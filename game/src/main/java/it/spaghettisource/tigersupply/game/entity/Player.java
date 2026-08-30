@@ -53,7 +53,7 @@ public class Player extends BaseEntity {
 	public Player(){
 		particleNum = 100;
 		particleMaxSize = 40;	
-		particleMaxSpeed = 80;	
+		particleMaxSpeed = 100;	
 		particleMaxLifeTime = 0.5f;			
 	}
 	
@@ -171,7 +171,7 @@ public class Player extends BaseEntity {
 			Position smokePosition = new Position(position);
 			smokePosition.increaseX(-size.getHalfWidth()-6);
 			Smoke smokeEffect = EntityFactoryWrapper.newSmoke(smokePosition);
-			effectManager.addRquest(smokeEffect);	
+			effectManager.addRequest(smokeEffect);	
 		}
 	}	
 
@@ -209,7 +209,7 @@ public class Player extends BaseEntity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		effectManager.addRquest(engineSprite);
+		effectManager.addRequest(engineSprite);
 	}	
 	
 	
@@ -276,13 +276,13 @@ public class Player extends BaseEntity {
 
 	protected void createExplosionParticleFire(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
 		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRquest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
+			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
 		}
 	}
 	
 	protected void createExplosionParticleEnergy(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
 		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRquest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
+			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
 		}
 	}
 

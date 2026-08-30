@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.scene.definition;
+package it.spaghettisource.tigersupply.game.scene.builder.definition;
 
 public class Image {
 	

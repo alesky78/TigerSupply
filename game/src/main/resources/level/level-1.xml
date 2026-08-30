@@ -5,14 +5,13 @@
 	<!-- limite attuale con questa risoluzione x=1350 y=650 -->
 	<hordes>								
 		
-		<!-- test use the boss 
+		<!-- uncomment to test the boss 
 		<horde>
 			<generateEvent name="waitKill" />
 			<enemy enemyPrototype="boss" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
 		</horde>
-		   -->
+		-->
 		
-		<!-- BACKGROUND -->
 		<horde>
 			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="enemyBackgroundSyn" posX="1" posY="515" posZ="50" algorithmPrototype="default" />											
@@ -50,19 +49,19 @@
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="350" posZ="20" algorithmPrototype="pathDown" />							
 		</horde>				
 		<horde>
-			<generateEvent name="waitKill" time="1" />
+			<generateEvent name="waitKill" />
 			<enemy enemyPrototype="standard" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />								
 		</horde>
 		<!-- HORDE -->			
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="50" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="250" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="450" posZ="20" algorithmPrototype="default" />						
 			<enemy enemyPrototype="standard" posX="1350" posY="650" posZ="20" algorithmPrototype="default" />
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="100" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />						
@@ -75,7 +74,7 @@
 		</horde>		
 		<!-- Obstacle -->		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="asteroid1" posX="1350" posY="150" posZ="40" algorithmPrototype="default" />
 			<enemy enemyPrototype="asteroid2" posX="1350" posY="550" posZ="40" algorithmPrototype="default" />
 			<enemy enemyPrototype="asteroid3" posX="1350" posY="250" posZ="40" algorithmPrototype="default" />
@@ -83,7 +82,7 @@
 			<enemy enemyPrototype="asteroid5" posX="1" posY="240" posZ="40" algorithmPrototype="default" />			
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="asteroid1" posX="900" posY="1" posZ="40" algorithmPrototype="default" />
 			<enemy enemyPrototype="asteroid2" posX="1100" posY="690" posZ="40" algorithmPrototype="default" />
 			<enemy enemyPrototype="asteroid3" posX="700" posY="1" posZ="40" algorithmPrototype="default" />
@@ -92,42 +91,42 @@
 		</horde>		
 		<!-- HORDE -->
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />			
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>	
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>	
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>	
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>	
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />	
 			<enemy enemyPrototype="standard" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />	
 		</horde>											
@@ -139,13 +138,13 @@
 				
 		<!-- HORDE -->		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="550" posZ="20" algorithmPrototype="default" />			
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="250" posZ="20" algorithmPrototype="sinusoidal" />			
 			<enemy enemyPrototype="standard" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
@@ -153,7 +152,7 @@
 			<enemy enemyPrototype="standard" posX="1350" posY="550" posZ="20" algorithmPrototype="default" />			
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="250" posZ="20" algorithmPrototype="sinusoidal" />			
 			<enemy enemyPrototype="standard" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
@@ -177,43 +176,43 @@
 		</horde>		
 		<!-- HORDE -->				
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="roker" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="250" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="450" posZ="20" algorithmPrototype="default" />			
 		</horde>		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />			
 		</horde>		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="550" posZ="20" algorithmPrototype="default" />			
 		</horde>		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="100" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="250" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="450" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="600" posZ="20" algorithmPrototype="default" />			
 		</horde>		
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />			
 		</horde>			
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="550" posZ="20" algorithmPrototype="default" />			
 		</horde>	
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />			
 		</horde>	
@@ -233,13 +232,13 @@
 			<enemy enemyPrototype="enemyShield" posX="1350" posY="390" posZ="20" algorithmPrototype="default" />			
 		</horde>
 		<horde>
-			<generateEvent name="waitKill" time="1" />
+			<generateEvent name="waitKill" />
 			<enemy enemyPrototype="enemyShield" posX="1350" posY="270" posZ="20" algorithmPrototype="default" />											
 			<enemy enemyPrototype="enemyShield" posX="1350" posY="430" posZ="20" algorithmPrototype="default" />			
 		</horde>		
 		<!-- HORDE -->		
 		<horde>
-			<generateEvent name="waitKill" time="1" />							
+			<generateEvent name="waitKill" />							
 			<enemy enemyPrototype="standard" posX="1350" posY="100" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
 			<enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
@@ -260,19 +259,19 @@
 		</horde>			
 		<!-- HORDE -->
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="roker" posX="1350" posY="250" posZ="20" algorithmPrototype="pathAlfa" />
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="roker" posX="1350" posY="350" posZ="20" algorithmPrototype="pathAlfa" />
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="roker" posX="1350" posY="350" posZ="20" algorithmPrototype="pathAlfa" />
 		</horde>
 		<horde>
-			<generateEvent name="waitTime" />
+			<generateEvent name="waitTime" time="1" />
 			<enemy enemyPrototype="roker" posX="1350" posY="350" posZ="20" algorithmPrototype="pathAlfa" />
 		</horde>				
 		<horde>
@@ -290,7 +289,7 @@
 			<enemy enemyPrototype="standard" posX="1350" posY="600" posZ="20" algorithmPrototype="default" />																						
 		</horde>
 		<horde>
-			<generateEvent name="waitKill" time="1" />							
+			<generateEvent name="waitKill" />							
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="100" posZ="20" algorithmPrototype="sinusoidal" />
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="200" posZ="20" algorithmPrototype="sinusoidal" />
 			<enemy enemyPrototype="sinusoidal" posX="1350" posY="300" posZ="20" algorithmPrototype="sinusoidal" />
@@ -370,7 +369,7 @@
 		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBoss">
 			<speed x="-35" y="0" />
 			<image alias="boss" />
-			<scale value="1" />			
+			<scale value="1.4" />			
 		</enemyPrototype>
 	</enemiesPrototype>
 

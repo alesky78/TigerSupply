@@ -18,7 +18,7 @@ public class StateGenerateHorde extends AbstractState<EnemySpawnContext> {
 	public Event internalProcess(EnemySpawnContext context) throws Exception {
 		
 		//process the new horde and advance ready to run the next horde
-		return context.newHordeEnterInScene();
+		return context.spawnNextHorde();
 		 
 	}
 

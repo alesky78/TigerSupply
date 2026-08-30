@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.builder;
+package it.spaghettisource.tigersupply.game.scene.statemachine;
 
 
 import java.awt.Point;
@@ -13,20 +13,23 @@ import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactory;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.Enemy;
-import it.spaghettisource.tigersupply.game.scene.definition.AlgorithmPrototype;
-import it.spaghettisource.tigersupply.game.scene.definition.EnemyDefinition;
-import it.spaghettisource.tigersupply.game.scene.definition.EnemyPrototype;
-import it.spaghettisource.tigersupply.game.scene.definition.GenerateEvent;
-import it.spaghettisource.tigersupply.game.scene.definition.Horde;
-import it.spaghettisource.tigersupply.game.scene.definition.Image;
-import it.spaghettisource.tigersupply.game.scene.definition.LevelDataRepository;
-import it.spaghettisource.tigersupply.game.scene.definition.PointDefinition;
-import it.spaghettisource.tigersupply.game.scene.definition.Scale;
-import it.spaghettisource.tigersupply.game.scene.definition.Speed;
+import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilder;
+import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilderSaxXml;
+import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyDefinition;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.GenerateEvent;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Image;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.PointDefinition;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Scale;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Speed;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
+import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 
 /**
@@ -42,13 +45,17 @@ import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
  *
  * @author Alessandro D'Ottavio
  */
-public class HordeSequencer {
+public class HordeSpawner {
 
 	private GameContext context;
 	
 	private EnemyDataBuilder builder;
-	private LevelDataRepository lvlData;
+	private LevelDataRepository levelData;
 	private int hordeIndex;
+
+	/** Seconds to wait after the horde most recently spawned by {@link #spawnNextHorde()}, parsed from
+	 * its {@code waitTime} event; only meaningful when that horde's event is {@code waitTime}. */
+	private float currentWaitTime;
 
 	protected Entity player;
 	protected EntityGroupScreenBound<Entity> shotManager;
@@ -57,9 +64,9 @@ public class HordeSequencer {
 
 	
 	/**
-	 * Creates a new horde sequencer for the specified level file.
+	 * Creates a new horde spawner for the specified level file.
 	 *
-	 * <p>The sequencer will parse the XML level definition and prepare horde/enemy/algorithm prototypes
+	 * <p>The spawner will parse the XML level definition and prepare horde/enemy/algorithm prototypes
 	 * for spawning on demand. Dependencies must be injected via setter methods before calling
 	 * {@link #loadLevelData()} or {@link #spawnNextHorde()}.</p>
 	 *
@@ -67,9 +74,9 @@ public class HordeSequencer {
 	 * @see #loadLevelData()
 	 * @see #setContext(GameContext)
 	 */
-	public HordeSequencer(String levelFile){
+	public HordeSpawner(String levelFile){
 		builder = new EnemyDataBuilderSaxXml(levelFile);	//substitute hire the builder if want, should be valorized as set if create IOC
-		lvlData = new LevelDataRepository();
+		levelData = new LevelDataRepository();
 		hordeIndex = 0;
 	}
 
@@ -150,12 +157,41 @@ public class HordeSequencer {
 		List<EnemyPrototype> enemy =  builder.buildEnemyPrototypes();
 		List<AlgorithmPrototype> algorithm =  builder.buildAlgorithmPrototypes();
 
-		lvlData.setHordes(horde);
-		lvlData.setAlgoithmPrototypes(algorithm);
-		lvlData.setEnemyPrototypes(enemy);
+		validateWaitTimeHordes(horde);
 
-		System.out.println(lvlData);	
+		levelData.setHordes(horde);
+		levelData.setAlgorithmPrototypes(algorithm);
+		levelData.setEnemyPrototypes(enemy);
 
+		System.out.println(levelData);	
+
+	}
+
+	/**
+	 * Fails fast when a time-gated ({@code waitTime}) horde declares no valid delay, forcing every
+	 * such horde in the level definition to carry an explicit, human-readable {@code time} in seconds.
+	 *
+	 * <p>A {@code time} value on any other event type is ignored and does not fail validation.</p>
+	 *
+	 * @param hordes the hordes parsed from the level definition, in declaration order
+	 * @throws Exception if a {@code waitTime} horde has a missing, blank, or unparseable {@code time},
+	 *                   naming the offending horde by its zero-based index
+	 */
+	private void validateWaitTimeHordes(List<Horde> hordes) throws Exception{
+		for (int i = 0; i < hordes.size(); i++) {
+			GenerateEvent event = hordes.get(i).getEvent();
+			if(GameResources.EVENT_WAIT_TIME.equals(event.getName())){
+				String time = event.getTime();
+				if(time == null || time.trim().isEmpty()){
+					throw new Exception("horde "+i+" uses a 'waitTime' event without a 'time' attribute; every waitTime horde must declare an explicit time in seconds");
+				}
+				try{
+					Float.parseFloat(time.trim());
+				}catch (NumberFormatException e) {
+					throw new Exception("horde "+i+" uses a 'waitTime' event with an invalid 'time' value '"+time+"'; it must be a number of seconds", e);
+				}
+			}
+		}
 	}
 
 	/**
@@ -182,7 +218,7 @@ public class HordeSequencer {
 		Event event = createHordeEvent();
 		
 		//manage the new enemy
-		enemyManager.addRquest(horde);
+		enemyManager.addRequest(horde);
 		
 		//advance to next horde
 		advanceHorde();
@@ -201,11 +237,29 @@ public class HordeSequencer {
 	/**
 	 * Creates the {@link Event} associated with the current horde.
 	 *
+	 * <p>For a time-gated ({@code waitTime}) horde the declared {@code time} is parsed into
+	 * {@link #getCurrentWaitTime()} so the wait state can honor it. The value is guaranteed parseable
+	 * because {@link #loadLevelData()} validated it up front.</p>
+	 *
 	 * @return the event that will be triggered when this horde completes
 	 */
 	private Event createHordeEvent(){
-		GenerateEvent desc = lvlData.getEventByIndex(hordeIndex); 
+		GenerateEvent desc = levelData.getEventByIndex(hordeIndex); 
+		if(GameResources.EVENT_WAIT_TIME.equals(desc.getName())){
+			currentWaitTime = Float.parseFloat(desc.getTime().trim());
+		}
 		return new Event(desc.getName());
+	}	
+
+	/**
+	 * Returns the wait delay, in seconds, parsed from the horde most recently spawned by
+	 * {@link #spawnNextHorde()}.
+	 *
+	 * @return the current wait delay in seconds; only meaningful when the last spawned horde's event
+	 *         was {@code waitTime}
+	 */
+	public float getCurrentWaitTime(){
+		return currentWaitTime;
 	}	
 
 	/**
@@ -228,7 +282,7 @@ public class HordeSequencer {
 		List<Enemy> entities = new ArrayList<Enemy>();
 		try{
 
-			List<EnemyDefinition> enemies = lvlData.getHordeByIndex(hordeIndex).getEnemies();
+			List<EnemyDefinition> enemies = levelData.getHordeByIndex(hordeIndex).getEnemies();
 
 			SpriteFactory spriteFactory = SpriteFactory.getInstance();
 			EntityFactory entityFactory = EntityFactory.getInstance();			
@@ -244,8 +298,8 @@ public class HordeSequencer {
 			
 			//TODO qui usando il context si possono sovrascrivere i valori come con variabili
 			for (EnemyDefinition enemy : enemies) {	
-				enemyDef = lvlData.getEnemyPrototypeByName(enemy.getEnemyPrototype());
-				algorithmDef = lvlData.getAlgorithmPrototypeByName(enemy.getAlgorithmPrototype());
+				enemyDef = levelData.getEnemyPrototypeByName(enemy.getEnemyPrototype());
+				algorithmDef = levelData.getAlgorithmPrototypeByName(enemy.getAlgorithmPrototype());
 
 				if(enemyDef.getType().equals("imageSingleSprite")){
 					speed = enemyDef.getSpeed();

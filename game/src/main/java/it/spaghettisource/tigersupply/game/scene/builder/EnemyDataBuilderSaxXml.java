@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.builder;
+package it.spaghettisource.tigersupply.game.scene.builder;
 
 
 import java.util.ArrayList;
@@ -13,16 +13,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import it.spaghettisource.tigersupply.game.scene.definition.AlgorithmProperties;
-import it.spaghettisource.tigersupply.game.scene.definition.AlgorithmPrototype;
-import it.spaghettisource.tigersupply.game.scene.definition.EnemyDefinition;
-import it.spaghettisource.tigersupply.game.scene.definition.EnemyPrototype;
-import it.spaghettisource.tigersupply.game.scene.definition.GenerateEvent;
-import it.spaghettisource.tigersupply.game.scene.definition.Horde;
-import it.spaghettisource.tigersupply.game.scene.definition.PointDefinition;
-import it.spaghettisource.tigersupply.game.scene.definition.Scale;
-import it.spaghettisource.tigersupply.game.scene.definition.Image;
-import it.spaghettisource.tigersupply.game.scene.definition.Speed;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmProperties;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyDefinition;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.GenerateEvent;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Image;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.PointDefinition;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Scale;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Speed;
 
 
 /**

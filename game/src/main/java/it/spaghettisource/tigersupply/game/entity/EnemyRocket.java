@@ -36,7 +36,7 @@ public class EnemyRocket extends BaseEntity {
 			Position smokePosition = new Position(position);
 			smokePosition.increaseX(size.getHalfWidth());
 			Smoke smokeEffect = EntityFactoryWrapper.newSmoke(smokePosition);			
-			effectManager.addRquest(smokeEffect);	
+			effectManager.addRequest(smokeEffect);	
 		}
 	}	
 		

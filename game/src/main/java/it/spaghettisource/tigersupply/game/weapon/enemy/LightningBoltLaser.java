@@ -28,7 +28,7 @@ public class LightningBoltLaser extends AbstractWeapon<Enemy> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		owner.getShotManager().addRquest(gunShotSprite);
+		owner.getShotManager().addRequest(gunShotSprite);
 		
 	}
 

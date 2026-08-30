@@ -16,7 +16,7 @@ public class StateWaitTime extends AbstractState<EnemySpawnContext> {
 	}
 
 	public Event internalProcess(EnemySpawnContext context) {
-		if (context.elapsedTime > 1)
+		if (context.elapsedTime > context.waitTime)
 			return new Event(GameResources.EVENT_NEW_HORDE);
 		return new Event(GameResources.EVENT_WAIT);
 	}

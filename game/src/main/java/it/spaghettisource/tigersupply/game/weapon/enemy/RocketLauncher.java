@@ -33,8 +33,8 @@ public class RocketLauncher extends AbstractWeapon<Enemy> {
 		}
 		rocketShotSprite1.setEffectManager(owner.getEffectManager());		
 		rocketShotSprite2.setEffectManager(owner.getEffectManager());			
-		owner.getShotManager().addRquest(rocketShotSprite1);
-		owner.getShotManager().addRquest(rocketShotSprite2);
+		owner.getShotManager().addRequest(rocketShotSprite1);
+		owner.getShotManager().addRequest(rocketShotSprite2);
 	}
 
 

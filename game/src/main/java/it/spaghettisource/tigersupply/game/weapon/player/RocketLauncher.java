@@ -31,8 +31,8 @@ public class RocketLauncher extends AbstractWeapon<Player> implements HangarWeap
 		PlayerRocket rocketShotSprite2 = EntityFactoryWrapper.playerShotRocket(sp2);			
 		rocketShotSprite1.setEffectManager(owner.getEffectManager());
 		rocketShotSprite2.setEffectManager(owner.getEffectManager());
-		owner.getShotManager().addRquest(rocketShotSprite1);
-		owner.getShotManager().addRquest(rocketShotSprite2);
+		owner.getShotManager().addRequest(rocketShotSprite1);
+		owner.getShotManager().addRequest(rocketShotSprite2);
 		
 		AudioManager.getInstance().playFx("rocket", false);		
 	}

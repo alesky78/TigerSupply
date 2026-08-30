@@ -1,24 +1,29 @@
-package it.spaghettisource.tigersupply.game.scene.definition;
+package it.spaghettisource.tigersupply.game.scene.builder;
 
 import java.util.List;
+
+import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.GenerateEvent;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
 
 public class LevelDataRepository {
 
 	private List<Horde> hordes;
-	List<EnemyPrototype> prototypeEnemies;
-	List<AlgorithmPrototype> algoithmPrototypes;
+	List<EnemyPrototype> enemyPrototypes;
+	List<AlgorithmPrototype> algorithmPrototypes;
 
 
 	public void setHordes(List<Horde> hordes) {
 		this.hordes = hordes;
 	}
 
-	public void setEnemyPrototypes(List<EnemyPrototype> prototypeEnemies) {
-		this.prototypeEnemies = prototypeEnemies;
+	public void setEnemyPrototypes(List<EnemyPrototype> enemyPrototypes) {
+		this.enemyPrototypes = enemyPrototypes;
 	}
 
-	public void setAlgoithmPrototypes(List<AlgorithmPrototype> algoithmPrototypes) {
-		this.algoithmPrototypes = algoithmPrototypes;
+	public void setAlgorithmPrototypes(List<AlgorithmPrototype> algorithmPrototypes) {
+		this.algorithmPrototypes = algorithmPrototypes;
 	}
 
 	public Horde getHordeByIndex(int i){
@@ -30,7 +35,7 @@ public class LevelDataRepository {
 	}	
 
 	public EnemyPrototype getEnemyPrototypeByName(String name){
-		for (EnemyPrototype proto : prototypeEnemies) {
+		for (EnemyPrototype proto : enemyPrototypes) {
 			if(proto.getName().equals(name))
 				return proto;
 		}
@@ -38,7 +43,7 @@ public class LevelDataRepository {
 	}
 
 	public AlgorithmPrototype getAlgorithmPrototypeByName(String name){
-		for (AlgorithmPrototype proto : algoithmPrototypes) {
+		for (AlgorithmPrototype proto : algorithmPrototypes) {
 			if(proto.getName().equals(name))
 				return proto;
 		}
@@ -52,10 +57,10 @@ public class LevelDataRepository {
 		for (Horde single: hordes) {
 			buffer.append(single.toString());
 		}
-		for (EnemyPrototype single: prototypeEnemies) {
+		for (EnemyPrototype single: enemyPrototypes) {
 			buffer.append(single.toString());
 		}	
-		for (AlgorithmPrototype single: algoithmPrototypes) {
+		for (AlgorithmPrototype single: algorithmPrototypes) {
 			buffer.append(single.toString());
 		}
 		

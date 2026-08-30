@@ -18,7 +18,7 @@ import java.util.List;
  * It is the composite half of a Composite design pattern, letting callers treat a single entity and a
  * whole group of entities through the same {@link Entity} contract.</p>
  *
- * <p><b>Deferred spawning.</b> New children can be queued with {@link #addRquest(Entity)} /
+ * <p><b>Deferred spawning.</b> New children can be queued with {@link #addRequest(Entity)} /
  * {@link #addRquest(List)} while the group is being iterated; queued entities are inserted at the end
  * of the next {@link #updateEntity(float)} call rather than immediately. This avoids a
  * {@link java.util.ConcurrentModificationException} when an entity spawns siblings during its own
@@ -99,7 +99,7 @@ public class EntityGroup<T extends Entity> implements Entity {
 	/**
 	 * Adds a child immediately to the managed group.
 	 *
-	 * <p>Prefer {@link #addRquest(Entity)} when adding a child while the group is being iterated (for
+	 * <p>Prefer {@link #addRequest(Entity)} when adding a child while the group is being iterated (for
 	 * example from within another entity's update).</p>
 	 *
 	 * @param entity the child to manage
@@ -113,7 +113,7 @@ public class EntityGroup<T extends Entity> implements Entity {
 	 *
 	 * @param entity the child to add
 	 */
-	public void addRquest(T entity) {
+	public void addRequest(T entity) {
 		entityRequest.add(entity);
 	}
 
@@ -122,7 +122,7 @@ public class EntityGroup<T extends Entity> implements Entity {
 	 *
 	 * @param entities the children to add
 	 */
-	public void addRquest(List<T> entities) {
+	public void addRequest(List<T> entities) {
 		entityRequest.addAll(entities);
 	}
 

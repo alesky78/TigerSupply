@@ -17,7 +17,7 @@ public class Paser extends AbstractWeapon<Player> implements HangarWeapon {
 	
 	protected void doFire(Entity target) throws Exception {
 		Entity gunShotSprite = EntityFactoryWrapper.playerShotPaser(owner.getPosition());
-		owner.getShotManager().addRquest(gunShotSprite);
+		owner.getShotManager().addRequest(gunShotSprite);
 	}
 
 	protected void doReload() {

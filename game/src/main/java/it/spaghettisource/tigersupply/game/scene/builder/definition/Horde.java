@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.scene.definition;
+package it.spaghettisource.tigersupply.game.scene.builder.definition;
 
 import java.util.ArrayList;
 import java.util.List;

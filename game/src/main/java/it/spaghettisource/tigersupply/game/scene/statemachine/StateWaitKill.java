@@ -13,7 +13,7 @@ public class StateWaitKill extends AbstractState<EnemySpawnContext> {
 
 	@Override
 	public Event internalProcess(EnemySpawnContext context) {
-		if (context.isKilledAllEnemiesInScene())
+		if (context.areAllEnemiesKilled())
 			return new Event(GameResources.EVENT_NEW_HORDE);
 
 		return new Event(GameResources.EVENT_WAIT);

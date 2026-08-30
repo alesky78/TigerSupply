@@ -33,7 +33,7 @@ public class PlasmaCannon extends AbstractWeapon<Enemy> {
 			explosionInversion = !explosionInversion;
 		}
 
-		owner.getShotManager().addRquest(gunShotSprite);
+		owner.getShotManager().addRequest(gunShotSprite);
 
 	}
 

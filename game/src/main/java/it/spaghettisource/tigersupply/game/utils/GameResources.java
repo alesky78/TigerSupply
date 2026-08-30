@@ -49,10 +49,6 @@ public class GameResources {
 	public static final String GAME_STATE_PRESENTATION = "presentation";
 	public static final String GAME_STATE_PLAY 		   = "play";
 
-//	public static final String GAME_STATE_GAME_OVER    = "gameover";
-//	public static final String GAME_STATE_HANGAR 	   = "hangar";
-//	public static final String GAME_STATE_GAME_END 	   = "gameend";	
-
 	//State machine level enemy builder events
 	public static final String GAME_EVENT_START  	 	= "start";
 	public static final String GAME_EVENT_PRESENTATION  = "presentation";	

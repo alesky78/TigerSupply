@@ -16,7 +16,7 @@ public class StateKillBoss extends AbstractState<EnemySpawnContext> {
 
 	public Event internalProcess(EnemySpawnContext context) {
 		
-		if(context.isKilledAllEnemiesInScene()){
+		if(context.areAllEnemiesKilled()){
 			return KILLED;
 		}
 

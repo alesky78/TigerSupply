@@ -28,7 +28,7 @@ public class DoubleGun extends AbstractWeapon<Player> implements HangarWeapon  {
 		shotUp = !shotUp;		
 		
 		Entity gunShotSprite = EntityFactoryWrapper.playerShotGun(pos);
-		owner.getShotManager().addRquest(gunShotSprite);
+		owner.getShotManager().addRequest(gunShotSprite);
 	}
 
 	protected void doReload() {

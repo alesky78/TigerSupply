@@ -36,7 +36,7 @@ public class PlayerRocket extends BaseEntity {
 			Position smokePosition = new Position(position);
 			smokePosition.increaseX(-size.getHalfWidth() -6);
 			Smoke smokeEffect = EntityFactoryWrapper.newSmoke(smokePosition);			
-			effectManager.addRquest(smokeEffect);	
+			effectManager.addRequest(smokeEffect);	
 		}
 				
 		

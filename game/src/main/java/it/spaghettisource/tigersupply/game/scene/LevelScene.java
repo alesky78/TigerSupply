@@ -126,7 +126,7 @@ public class LevelScene extends AbstractScene {
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doGameOver();
 		}
-		if(enemyManager.isBossDeath()){
+		if(enemyManager.isBossDead()){
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doNextLevel();
 		}

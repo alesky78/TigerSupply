@@ -20,9 +20,9 @@ public class SynusoidalGun extends AbstractWeapon<Player>  implements HangarWeap
 	
 	protected void doFire(Entity target) throws Exception {
 		Entity gunShotSprite = EntityFactoryWrapper.playerShotGunSynuisodal(owner.getPosition(),0);
-		owner.getShotManager().addRquest(gunShotSprite);
+		owner.getShotManager().addRequest(gunShotSprite);
 		gunShotSprite = EntityFactoryWrapper.playerShotGunSynuisodal(owner.getPosition(),180);
-		owner.getShotManager().addRquest(gunShotSprite);	
+		owner.getShotManager().addRequest(gunShotSprite);	
 		
 		AudioManager.getInstance().playFx("laser", false);
 	}

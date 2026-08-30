@@ -2,8 +2,8 @@ package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
-import it.spaghettisource.tigersupply.game.builder.HordeSequencer;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemySpawnContext;
+import it.spaghettisource.tigersupply.game.scene.statemachine.HordeSpawner;
 import it.spaghettisource.tigersupply.game.scene.statemachine.StateBossKilled;
 import it.spaghettisource.tigersupply.game.scene.statemachine.StateGenerateHorde;
 import it.spaghettisource.tigersupply.game.scene.statemachine.StateKillBoss;
@@ -30,7 +30,7 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 	private EnemySpawnContext dataModel;
 	private StateMachine<EnemySpawnContext> stateMachine;
 	
-	private HordeSequencer horderSequencer;
+	private HordeSpawner hordeSpawner;
 	private String levelDataFile;
 	
 	public EnemyManager(){
@@ -44,7 +44,7 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		entities.clear();
 	}
 	
-	public boolean isBossDeath() {
+	public boolean isBossDead() {
 		return stateMachine.isInFinalState();
 	}		
 	
@@ -55,16 +55,16 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 	public void initComponents() throws Exception{
 		
 		//set all the manager
-		horderSequencer = new HordeSequencer(levelDataFile);
-		horderSequencer.setEffectManager(effectManager);
-		horderSequencer.setShotManager(shotManager);
-		horderSequencer.setEnemyManager(this);		
-		horderSequencer.setPlayer(player);
-		horderSequencer.setContext(context);
-		horderSequencer.loadLevelData();	//load the data			
+		hordeSpawner = new HordeSpawner(levelDataFile);
+		hordeSpawner.setEffectManager(effectManager);
+		hordeSpawner.setShotManager(shotManager);
+		hordeSpawner.setEnemyManager(this);		
+		hordeSpawner.setPlayer(player);
+		hordeSpawner.setContext(context);
+		hordeSpawner.loadLevelData();	//load the data			
 		
 		dataModel = new EnemySpawnContext();
-		dataModel.setHorderSequencer(horderSequencer);
+		dataModel.setHordeSpawner(hordeSpawner);
 
 		//build the states once (stateless, reused as singletons) and declare the transition graph
 		StateWaitTime waitTime = new StateWaitTime();
@@ -120,8 +120,8 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		this.effectManager = effectManager;
 	}
 
-	public void setHorderSequencer(HordeSequencer dataManager) {
-		this.horderSequencer = dataManager;
+	public void setHordeSpawner(HordeSpawner hordeSpawner) {
+		this.hordeSpawner = hordeSpawner;
 	}
 
 

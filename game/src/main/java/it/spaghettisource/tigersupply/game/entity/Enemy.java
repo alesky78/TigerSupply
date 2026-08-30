@@ -104,13 +104,13 @@ public class Enemy extends BaseEntity {
 
 	protected void createExplosionParticleFire(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
 		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRquest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
+			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
 		}
 	}
 
 	protected void createExplosionParticleEnergy(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
 		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRquest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
+			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
 		}
 	}
 
@@ -158,7 +158,7 @@ public class Enemy extends BaseEntity {
 	 * @throws Exception
 	 */
 	protected void generateShield(int size, float lifeInSeconds) throws Exception {
-		enemyManager.addRquest(EntityFactoryWrapper.newEnergeticShield(size, lifeInSeconds, effectManager, position, context));
+		enemyManager.addRequest(EntityFactoryWrapper.newEnergeticShield(size, lifeInSeconds, effectManager, position, context));
 	}	
 
 }
