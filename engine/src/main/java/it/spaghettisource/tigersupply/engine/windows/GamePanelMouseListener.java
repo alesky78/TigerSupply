@@ -11,12 +11,12 @@ import it.spaghettisource.tigersupply.engine.control.SceneHost;
  * @author Alessandro D'Ottavio
  *
  */
-public class GamePanelMauseListener extends MouseAdapter {
+public class GamePanelMouseListener extends MouseAdapter {
 
 
 	private SceneHost sceneHost;
 
-	public GamePanelMauseListener(SceneHost sceneHost){
+	public GamePanelMouseListener(SceneHost sceneHost){
 		this.sceneHost = sceneHost;
 	}
 

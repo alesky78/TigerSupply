@@ -265,7 +265,7 @@ public class HordeSequencer {
 			//TODO qui usando il context si possono sovrascrivere i valori come con variabili
 			for (EnemyDefinition enemy : enemies) {	
 				enemyDef = lvlData.getEnemyPrototypeByName(enemy.getEnemyPrototype());
-				algorithmDef = lvlData.getAlgorithmPrototypeByName(enemy.getAlgoritmPrototype());
+				algorithmDef = lvlData.getAlgorithmPrototypeByName(enemy.getAlgorithmPrototype());
 
 				if(enemyDef.getType().equals("imageSingleSprite")){
 					speed = enemyDef.getSpeed();

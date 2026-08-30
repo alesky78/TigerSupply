@@ -92,7 +92,7 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 			GenerateEvent event = new GenerateEvent(atts.getValue("name"), atts.getValue("time"));
 			actualHorde.setEvent(event);
 		}else if(localName.equals(TAG_ENEMY)){	//it is a enemy
-			EnemyDefinition enemy = new EnemyDefinition(atts.getValue("enemyPrototype"), atts.getValue("algoritmPrototype"), atts.getValue("posX"), atts.getValue("posY"),atts.getValue("posZ"));
+			EnemyDefinition enemy = new EnemyDefinition(atts.getValue("enemyPrototype"), atts.getValue("algorithmPrototype"), atts.getValue("posX"), atts.getValue("posY"),atts.getValue("posZ"));
 			actualHorde.addEnemy(enemy);
 		}else if(localName.equals(TAG_ENEMY_PROTO)){	//it is a new enemy prototype
 			actualEnemyPrototype = new EnemyPrototype(atts.getValue("name"), atts.getValue("type"), atts.getValue("class"));

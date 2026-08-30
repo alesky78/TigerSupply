@@ -2,16 +2,16 @@ package it.spaghettisource.tigersupply.game.weapon.enemy;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.game.entity.Enemy;
-import it.spaghettisource.tigersupply.game.entity.LithingBolt;
+import it.spaghettisource.tigersupply.game.entity.LightningBolt;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 
 
-public class LightinBoltLaser extends AbstractWeapon<Enemy> {
+public class LightningBoltLaser extends AbstractWeapon<Enemy> {
 
-	LithingBolt gunShotSprite;
+	LightningBolt gunShotSprite;
 	
-	public LightinBoltLaser(){
+	public LightningBoltLaser(){
 		reloadingTime = 4f;	//4 seconds and shot
 		fireingTime = 3f;//;
 	}
@@ -24,7 +24,7 @@ public class LightinBoltLaser extends AbstractWeapon<Enemy> {
 
 	protected void doReload() {
 		try {
-			gunShotSprite = EntityFactoryWrapper.newEnemyShotLightinBolt(owner.getContext(),owner.getPosition(),fireingTime,reloadingTime);
+			gunShotSprite = EntityFactoryWrapper.newEnemyShotLightningBolt(owner.getContext(),owner.getPosition(),fireingTime,reloadingTime);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

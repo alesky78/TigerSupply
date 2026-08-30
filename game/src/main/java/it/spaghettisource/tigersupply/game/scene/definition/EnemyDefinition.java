@@ -3,14 +3,14 @@ package it.spaghettisource.tigersupply.game.scene.definition;
 public class EnemyDefinition {
 
 	private String enemyPrototype;
-	private String algoritmPrototype;
+	private String algorithmPrototype;
 	private String posX;
 	private String posY;
 	private String posZ;	
 	
-	public EnemyDefinition(String enemyPrototype, String algoritmPrototype, String posX,String posY,String posZ) {
+	public EnemyDefinition(String enemyPrototype, String algorithmPrototype, String posX,String posY,String posZ) {
 		this.enemyPrototype = enemyPrototype;
-		this.algoritmPrototype = algoritmPrototype;
+		this.algorithmPrototype = algorithmPrototype;
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;		
@@ -22,11 +22,11 @@ public class EnemyDefinition {
 	public void setEnemyPrototype(String enemyPrototype) {
 		this.enemyPrototype = enemyPrototype;
 	}
-	public String getAlgoritmPrototype() {
-		return algoritmPrototype;
+	public String getAlgorithmPrototype() {
+		return algorithmPrototype;
 	}
-	public void setAlgoritmPrototype(String algoritmPrototype) {
-		this.algoritmPrototype = algoritmPrototype;
+	public void setAlgorithmPrototype(String algorithmPrototype) {
+		this.algorithmPrototype = algorithmPrototype;
 	}
 	public int getPosX() {
 		return Integer.parseInt(posX);
@@ -51,7 +51,7 @@ public class EnemyDefinition {
 
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("enemy-> type:"+enemyPrototype+" algo:"+algoritmPrototype+" x:"+posX+" y:"+posY);		
+		buffer.append("enemy-> type:"+enemyPrototype+" algo:"+algorithmPrototype+" x:"+posX+" y:"+posY);		
 		return buffer.toString();
 	}	
 

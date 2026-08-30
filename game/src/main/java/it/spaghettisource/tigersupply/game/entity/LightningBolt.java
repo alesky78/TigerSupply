@@ -18,13 +18,13 @@ import it.spaghettisource.tigersupply.engine.entity.Position;
 
 
 /**
- * LithingBolt gun weapon
+ * LightningBolt gun weapon
  * 
  * 
  * @author DOttavio
  *
  */
-public class LithingBolt extends BaseEntity {
+public class LightningBolt extends BaseEntity {
 
 	private int statusWeapon; // 0 --> loading; 1 --> shot
 	
@@ -48,7 +48,7 @@ public class LithingBolt extends BaseEntity {
 	private int		pointsFrequency;
 	private int		pointsOffset;		
 
-	public LithingBolt(GameContext context,Position position,float shotTime,float loadingTime){
+	public LightningBolt(GameContext context,Position position,float shotTime,float loadingTime){
 
 		lifeTimeShot = 2;
 		lifeTickShot = lifeTimeShot/context.getPeriodSeconds();

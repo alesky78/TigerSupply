@@ -9,9 +9,9 @@ import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 
-public class RocketLauncer extends AbstractWeapon<Enemy> {
+public class RocketLauncher extends AbstractWeapon<Enemy> {
 
-	public RocketLauncer(){
+	public RocketLauncher(){
 		reloadingTime = 1.8f;	//2 seconds and shot
 	}
 	

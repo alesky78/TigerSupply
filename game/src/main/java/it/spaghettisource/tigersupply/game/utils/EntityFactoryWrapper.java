@@ -11,7 +11,7 @@ import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.entity.EnemyRocket;
 import it.spaghettisource.tigersupply.game.entity.EnergeticShield;
 import it.spaghettisource.tigersupply.game.entity.ExplosionParticle;
-import it.spaghettisource.tigersupply.game.entity.LithingBolt;
+import it.spaghettisource.tigersupply.game.entity.LightningBolt;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.entity.PlayerBomb;
 import it.spaghettisource.tigersupply.game.entity.PlayerEngine;
@@ -74,9 +74,9 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algo, sprite, EnemyRocket.class);			
 	}	
 	
-	public static LithingBolt newEnemyShotLightinBolt(GameContext context,Position shotPosition,float fireTime,float loadTime) throws Exception{	
+	public static LightningBolt newEnemyShotLightningBolt(GameContext context,Position shotPosition,float fireTime,float loadTime) throws Exception{	
 		shotPosition.setPosZ(GameResources.Z_SHOT);
-		LithingBolt shot = new LithingBolt(context,shotPosition,fireTime,loadTime);
+		LightningBolt shot = new LightningBolt(context,shotPosition,fireTime,loadTime);
 		return shot;			
 	}		
 

@@ -13,9 +13,9 @@ import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 
-public class RocketLauncer extends AbstractWeapon<Player> implements HangarWeapon {
+public class RocketLauncher extends AbstractWeapon<Player> implements HangarWeapon {
 
-	public RocketLauncer(){
+	public RocketLauncher(){
 		reloadingTime = 2f;	//0.5 reload tyme
 	}
 

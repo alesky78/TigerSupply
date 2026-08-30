@@ -61,10 +61,10 @@ public abstract class AbstractSprite implements Sprite {
 
 		BufferedImage filtered = ImageRepositoryManager.getInstance().getVolatileImage(bf.toString());
 		if(filtered!=null){
-			dbg.drawImage(filtered, (int)(position.getPosX() - filtered.getWidth()/2), (int)(position.getPosY() - size.getHeigh()/2), null);			
+			dbg.drawImage(filtered, (int)(position.getPosX() - filtered.getWidth()/2), (int)(position.getPosY() - size.getHeight()/2), null);			
 		}else{
 			filtered = EffectManager.getInstance().chain(filters,image, position, size, color);
-			dbg.drawImage(filtered, (int)(position.getPosX() - filtered.getWidth()/2), (int)(position.getPosY() - size.getHeigh()/2), null);
+			dbg.drawImage(filtered, (int)(position.getPosX() - filtered.getWidth()/2), (int)(position.getPosY() - size.getHeight()/2), null);
 			ImageRepositoryManager.getInstance().addVolatileImage(bf.toString(), filtered);
 		}
 

@@ -130,10 +130,11 @@ outside `game.*` that names `game.control.TigerSupplysceneHost`). Its POM builds
 - Don't introduce a DI framework, ORM, servlet/web layer, or database — this is an offline
   Swing desktop game with zero external runtime dependencies by design.
 - Don't assume a REST API, database, or network call exists anywhere in this codebase — none do.
-- Don't silently "fix" long-standing typos in public identifiers (`RocketLauncer`,
-  `GamePanelMauseListener`, `LithingBolt`, the XML attribute `algoritmPrototype`,
-  `Size.getHeigh()`) as a drive-by change — renaming them breaks the level XML/class hierarchy
-  and should only be done as its own deliberate, requested change.
+- Don't silently "fix" the remaining long-standing typos in public identifiers (e.g.
+  `EnemyShoterRocket`, `addRquest`, `SynusoidalGun`, `fireingTime`) as a drive-by change —
+  renaming them can ripple into the level XML/class hierarchy and should only be done as its own
+  deliberate, requested change. (The earlier `RocketLauncer`/`LithingBolt`/`GamePanelMause*`/
+  `algoritmPrototype`/`Size.getHeigh()` typos have since been corrected in a dedicated change.)
 - Don't add new dependencies without a clear reason — beyond the JDK, the only declared
   dependency is JUnit (test scope, currently unused).
 
@@ -141,8 +142,8 @@ outside `game.*` that names `game.control.TigerSupplysceneHost`). Its POM builds
 - `it.spaghettisource.tigersupply.game.entity.Entity` is an empty, unused class that
   shadows the real `it.spaghettisource.tigersupply.engine.entity.Entity` interface — double
   check imports when working with "Entity" under `game.entity`.
-- Simple-name collisions across sibling packages, e.g. `game.weapon.player.RocketLauncer` vs
-  `game.weapon.enemy.RocketLauncer`, and `game.scene.definition.Speed` vs `engine.entity.Speed`
+- Simple-name collisions across sibling packages, e.g. `game.weapon.player.RocketLauncher` vs
+  `game.weapon.enemy.RocketLauncher`, and `game.scene.definition.Speed` vs `engine.entity.Speed`
   — verify the fully-qualified import before reusing a name.
 - The play field is hard-coded to 1360x660 in `launcher.Launcher` (`PLAYFIELD_WIDTH`/
   `PLAYFIELD_HEIGHT`, passed into `windows.GameFrame`), and `level-1.xml`'s spawn coordinates

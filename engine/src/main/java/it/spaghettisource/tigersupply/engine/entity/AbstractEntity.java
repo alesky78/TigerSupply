@@ -31,7 +31,7 @@ public abstract class AbstractEntity implements Entity {
 	
 	//TODO attenzione il rettangolo ottenuto tiene in considerazione solo la scala ma non la rotazione implementare di java non permette rotazione su rettangoli
 	public Rectangle[] getEntityRectangle(){
-		Rectangle rect = new Rectangle((int)(position.getPosX() - size.getHalfWidth()), (int)(position.getPosY() - size.getHalfHeigh()), size.getWidth(), size.getHeigh());
+		Rectangle rect = new Rectangle((int)(position.getPosX() - size.getHalfWidth()), (int)(position.getPosY() - size.getHalfHeight()), size.getWidth(), size.getHeight());
 		return new Rectangle[]{rect}; 
 	}
 

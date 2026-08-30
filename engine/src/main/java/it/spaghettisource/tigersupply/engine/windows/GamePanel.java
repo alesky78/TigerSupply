@@ -49,9 +49,9 @@ public class GamePanel extends JPanel{
 		gameLoop = new GameLoop(context,sceneHost);
 				
 		//create the game listeners
-	    addMouseListener( new GamePanelMauseListener(sceneHost));
+	    addMouseListener( new GamePanelMouseListener(sceneHost));
 	    addKeyListener(new GamePanelKeyListener(sceneHost));
-		addMouseMotionListener(new GamePanelMauseMotionListener(sceneHost));
+		addMouseMotionListener(new GamePanelMouseMotionListener(sceneHost));
 	    
 	    
 	}

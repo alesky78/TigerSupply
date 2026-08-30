@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
-import it.spaghettisource.tigersupply.game.weapon.enemy.LightinBoltLaser;
+import it.spaghettisource.tigersupply.game.weapon.enemy.LightningBoltLaser;
 import it.spaghettisource.tigersupply.game.weapon.enemy.PlasmaCannon;
 
 public class EnemyBoss extends Enemy {
@@ -24,7 +24,7 @@ public class EnemyBoss extends Enemy {
 		weapons = new Weapon[2];
 		weapons[0] = new PlasmaCannon(); 
 		weapons[0].setOwner(this);		
-		weapons[1] = new LightinBoltLaser(); 
+		weapons[1] = new LightningBoltLaser(); 
 		weapons[1].setOwner(this);				
 		
 	}
@@ -56,7 +56,7 @@ public class EnemyBoss extends Enemy {
 	
 	
 	private void addRandomExplosion(){			
-		createExplosionParticleFire(particleNum, (int)(position.getPosX()+(Math.random()*size.getHalfWidth())),(int)(position.getPosY()+(Math.random()*size.getHalfHeigh())), 
+		createExplosionParticleFire(particleNum, (int)(position.getPosX()+(Math.random()*size.getHalfWidth())),(int)(position.getPosY()+(Math.random()*size.getHalfHeight())), 
 				60, 150, 0.5f);
 	}
 

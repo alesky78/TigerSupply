@@ -9,21 +9,21 @@ package it.spaghettisource.tigersupply.engine.entity;
 public class Size {
 
 	protected int width;	//width of the sprite
-	protected int heigh;	//height of the sprite
+	protected int height;	//height of the sprite
 	protected float scale;	//scale for the dimension of the sprite deafult 1 that mean original size, 1.1 mean 110%	
 	
 	public Size() {
 	}
 
-	public Size(int width, int heigh) {
+	public Size(int width, int height) {
 		this.width = width;
-		this.heigh = heigh;
+		this.height = height;
 		this.scale = 1;
 	}
 
-	public Size(int width, int heigh,float scale) {
+	public Size(int width, int height,float scale) {
 		this.width = width;
-		this.heigh = heigh;
+		this.height = height;
 		this.scale = scale;
 	}	
 	
@@ -39,16 +39,16 @@ public class Size {
 		this.width = width;
 	}
 
-	public int getHeigh() {
-		return (int) (heigh*scale);
+	public int getHeight() {
+		return (int) (height*scale);
 	}
 
-	public int getHalfHeigh() {
-		return (int) (heigh*scale)/2;
+	public int getHalfHeight() {
+		return (int) (height*scale)/2;
 	}	
 	
-	public void setHeigh(int heigh) {
-		this.heigh = heigh;
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 	public double getScale() {

@@ -7,11 +7,11 @@ import java.awt.event.MouseMotionAdapter;
 
 import it.spaghettisource.tigersupply.engine.control.SceneHost;
 
-public class GamePanelMauseMotionListener extends MouseMotionAdapter {
+public class GamePanelMouseMotionListener extends MouseMotionAdapter {
 
 	private SceneHost sceneHost;
 
-	public GamePanelMauseMotionListener(SceneHost sceneHost){
+	public GamePanelMouseMotionListener(SceneHost sceneHost){
 		this.sceneHost = sceneHost;
 
 	}	

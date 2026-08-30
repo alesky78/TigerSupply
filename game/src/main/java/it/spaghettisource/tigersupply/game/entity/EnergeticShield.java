@@ -68,7 +68,7 @@ public class EnergeticShield extends Enemy {
 		color-=decreaseColorForLoop;
 		
 		//increse the size of the protection of the shield
-		size.setHeigh((int)sizeShield);
+		size.setHeight((int)sizeShield);
 		size.setWidth((int)sizeShield);
 		
 		if(sizeShield > maxSize || color <= 0){

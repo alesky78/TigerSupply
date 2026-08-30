@@ -21,7 +21,7 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
 import it.spaghettisource.tigersupply.game.weapon.player.Paser;
 import it.spaghettisource.tigersupply.game.weapon.player.DoubleGun;
 import it.spaghettisource.tigersupply.game.weapon.player.SynusoidalGun;
-import it.spaghettisource.tigersupply.game.weapon.player.RocketLauncer;
+import it.spaghettisource.tigersupply.game.weapon.player.RocketLauncher;
 import it.spaghettisource.tigersupply.game.weapon.player.Bomb;
 
 import java.awt.Color;
@@ -106,7 +106,7 @@ public class HangarScene extends AbstractScene {
 		composition.addInterface(wbutton);		
 		
 		//SECONDARY WEAPON SELECTION				
-		weapon = new RocketLauncer();
+		weapon = new RocketLauncher();
 		wbutton = new WeaponButtonHangar(150, 375, 100, 100, paint, weapon, model,WeaponButtonHangar.SECONDARY_WEAPON);
 		wbutton.addMouseOverListener(listener);
 		wbutton.addMouseOutListener(listener);
