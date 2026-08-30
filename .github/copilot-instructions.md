@@ -16,10 +16,12 @@ API/data model, component inventory, technology stack, dependencies, code-qualit
 - **[system overview](../documentation/architecture/system-overview/)**
 
 ### Subsystems
-- None registered yet. See
+- **[enemy-spawn-lifecycle](../documentation/subsystems/enemy-spawn-lifecycle/index.md)** — how
+  enemy entities are spawned into a level and how the horde spawn state machine sequences them.
+- See
   [documentation/subsystems/subsystem-documentation-guide.md](../documentation/subsystems/subsystem-documentation-guide.md)
-  for how to document one (e.g. the sprite/animation pipeline, the horde/level-script loader,
-  or the weapon fire-control model) when it becomes worth extracting.
+  for how to document a new one (e.g. the sprite/animation pipeline or the weapon fire-control
+  model) when it becomes worth extracting.
 
 ## Technology Stack
 

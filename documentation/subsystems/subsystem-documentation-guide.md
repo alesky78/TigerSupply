@@ -70,7 +70,7 @@ flowchart TD
 |------|---------|----------------|
 | **Hub** | `index.md` | The single entry point. Defines the concept, holds every top-level diagram, and links out to all other pages. A reader must be able to understand the subsystem from the hub alone. |
 | **Flow detail pages** | one file per flow (e.g. `outbound-export.md`) | The step-by-step behaviour of **one** flow: triggers, sequence, data touched, edge cases. |
-| **Recipe page** | one `*-add-new.md` (or similar) | The **how-to-extend** procedure: the exact, ordered steps to add a new case/UC/column/type. |
+| **Recipe page** | one `*-add-new.md` (or similar) | The **how-to-extend** procedure: the exact, ordered steps to add a new case/type. |
 
 > A subsystem **must** have a hub. Flow pages and a recipe page are **strongly recommended**;
 > a pure "catalogue" subsystem (see [§4](#4-choose-the-archetype)) omits the flow pages and the
@@ -86,7 +86,7 @@ flowchart TD
 | Subsystem folder | lowercase kebab-case, describes the capability | `horde-level-pipeline`, `weapon-loadout`, `entity-movement-framework` |
 | Hub file | always `index.md` | `index.md` |
 | Flow page | descriptive kebab-case | `horde-spawn-lifecycle.md`, `level-script-loading.md`, `weapon-fire-cycle.md`, `hangar-loadout-selection.md` |
-| Recipe page | `implement-new-*` / `*-add-new` / `*-add-uc` / `add-new-*` | `implement-new-scene.md`, `weapon-loadout-add-new.md`, `entity-movement-framework-add-new.md` |
+| Recipe page | `implement-new-*` / `*-add-new` / `add-new-*` | `implement-new-scene.md`, `weapon-loadout-add-new.md`, `entity-movement-framework-add-new.md` |
 
 - Use **kebab-case** for every file name.
 - Keep names **specific** (`level-script-loading.md`, not `loading.md`).
@@ -109,7 +109,7 @@ flowchart TD
     Q2 -->|No| FAM_C["<b>Catalogue variant</b><br/>reduced skeleton"]
 
     FAM_A --> A1["Signature section: <b>Component Inventory</b><br/>Signature diagram: <b>classDiagram</b><br/>Extend by: add a subclass / handler"]
-    FAM_B --> B1["Signature section: <b>Data / Configuration Model</b><br/>Signature diagram: <b>erDiagram</b><br/>Extend by: add a DB row / procedure / file"]
+    FAM_B --> B1["Signature section: <b>Data / Configuration Model</b><br/>Signature diagram: <b>erDiagram</b><br/>Extend by: add an XML entry / catalog line"]
     FAM_C --> C1["Keep only: Overview + Conventions + Reference table<br/>No flows / no recipe"]
 ```
 
@@ -160,7 +160,7 @@ archetype.
 
 ### §1 — Overview (Required)
 
-- Open with a **"What is X?"** subsection that defines the domain concept in **business terms**
+- Open with a **"What is X?"** subsection that defines the domain concept in **game/design terms**
   first, then technically.
 - Include **exactly one** high-level `flowchart LR` that shows the subsystem's boxes and the
   main data/flow direction end to end.
@@ -185,7 +185,7 @@ archetype.
 
 ### §4 — Conventions (Recommended)
 
-- Document the **naming / folder / file / column** conventions the subsystem relies on:
+- Document the **naming / folder / file / output** conventions the subsystem relies on:
   configuration property keys, file-name tokens, output formats, sheet/file naming, etc.
 - Use a **key → meaning** table.
 
@@ -237,7 +237,7 @@ Beyond the hub, a subsystem has **detail pages**. **Every** detail page opens wi
 Contents. The body template depends on the archetype:
 
 - **Integration / data family** → *flow pages* (§7.1): one page per flow, 5-section template.
-- **Framework / web-flow family** → a *Request Lifecycle* page + a *Vertical Slice / anatomy* page (§7.2).
+- **Framework / in-process-API family** → a *Runtime Lifecycle* page + a *Vertical Slice / anatomy* page (§7.2).
 - **Catalogue variant** → *module / utility pages* (§7.3).
 
 ### 7.1 Flow detail pages (integration / data family)
@@ -250,7 +250,7 @@ flow page reads alike:
 |---|---------|---------|
 | — | `> Related index` back-link | Placed directly under the `# <Flow Name>` title: `> **Related index**: [<Hub Title>](index.md)`. |
 | — | **Table of Contents** | Numbered and anchor-linked; every flow page carries its own ToC. |
-| 1 | **Business Context** | *Purpose*, *Business Goal*, the **trigger** (frame tick / player input / horde timer / scene transition) and any flow-local *Key Concepts*. |
+| 1 | **Context** | *Purpose*, *Goal*, the **trigger** (frame tick / player input / horde timer / scene transition) and any flow-local *Key Concepts*. |
 | 2 | **Component Descriptions** | Layered tables (columns: Component, Module, Class/Interface, Responsibility) for the entity / manager / factory / builder classes involved. |
 | 3 | **Data Flow** | The concrete runtime steps as a `sequenceDiagram` (or `flowchart TD`) plus a step-by-step narrative that matches the diagram. |
 | 4 | **Integration Points** | External touch points (classpath resource files, level-XML elements/attributes, catalog-file lines) with their exact format documented. |
@@ -263,14 +263,14 @@ Keep the **same worked example** as the hub so a reader can follow one case acro
 > state should keep **Integration Points** and **Engine State Touched** explicit — those are the
 > sections readers rely on most.
 
-### 7.2 Detail pages for the framework / web-flow family
+### 7.2 Detail pages for the framework / in-process-API family
 
 A framework or in-process-API subsystem (e.g. `weapon-loadout`) usually splits its
 detail into **two complementary pages** instead of the 5-section flow template:
 
 | Page | Purpose | Signature device |
 |------|---------|------------------|
-| **Request Lifecycle** | The end-to-end runtime path: entry points, dispatch / validation, the core call chain, return value, error handling. | `sequenceDiagram` + numbered narrative |
+| **Runtime Lifecycle** | The end-to-end runtime path: entry points, dispatch / update, the core call chain, return value, error handling. | `sequenceDiagram` + numbered narrative |
 | **Vertical Slice / anatomy** | The per-case slice layer by layer (data/XML model → factory → entity/algorithm → render/behaviour) plus a *shared vs. per-case* table. | `flowchart TD` slice map + per-layer sections |
 
 A framework subsystem may instead use a *lifecycle* + *library* + *configuration* split. The
@@ -302,11 +302,11 @@ using this template:
 The recipe page is the **"add a new X" procedure**. It must be **ordered, exhaustive, and
 copy-pasteable**. Recommended structure:
 
-1. **Goal** — "Add a new `<UC / PW type / column / flow>` end to end."
+1. **Goal** — "Add a new `<enemy / weapon / movement algorithm / scene / flow>` end to end."
 2. **Prerequisites** — what must already exist.
 3. **Numbered steps**, one per artefact to create/modify, each with:
    - the **module** and **path**,
-   - what to write (a minimal code/XML/SQL skeleton),
+   - what to write (a minimal code/XML skeleton),
    - why it is needed.
 4. **Wiring** — engine registration (add to `StaticResources` constants, an asset catalog
    file, or a Manager's registration map/constructor).
@@ -328,11 +328,11 @@ Every hub is built from the same toolkit — use them consistently:
 | **Table of Contents** | Numbered, anchor-linked; first element after the title on the hub. **Every flow page also carries its own ToC.** |
 | **Related-index back-link** | Every **detail page** (flow, recipe, or module/utility) opens with `> **Related index**: [<Hub Title>](index.md)` directly under the title. |
 | **Mermaid diagrams** | ≥ 1 high-level `flowchart LR` in *Overview*; plus the signature diagram for your family; add a `sequenceDiagram` for request/response flows. See [§10](#10-mermaid-diagram-reference). |
-| **Tables** | Prefer tables over prose for config keys, columns, components, Scenes/features, external systems. |
+| **Tables** | Prefer tables over prose for config keys, components, Scenes/features, external systems. |
 | **Callout blockquotes** | Use `>` for **Goal / Important / Rationale / Legacy behaviour / Note / Asymmetry**. |
 | **Worked example** | Thread **one** concrete case through every page. The Level 1 horde pipeline (level XML → `EnemyDataBuilderSaxXml` → `EnemyDataManager` → `EnemyManager` → `Enemy`) is the house standard; reuse it unless your subsystem is unrelated. |
 | **Cross-links** | Link every referenced page and source file (see [§12](#12-cross-linking-rules)). |
-| **"What is X?" opener** | Always define the domain concept in business terms before going technical. |
+| **"What is X?" opener** | Always define the domain concept in game/design terms before going technical. |
 
 ---
 
@@ -346,8 +346,8 @@ Pick the diagram type by **intent**:
 | Class hierarchy / strategy / collaborators | `classDiagram` | Component Inventory (framework) |
 | Tables, keys, cardinality | `erDiagram` | Data / Configuration Model (integration) |
 | Ordered runtime steps (loading/spawn pipeline) | `flowchart TD` | Lifecycle / Pipeline |
-| Request → handler → factory → entity/algorithm | `sequenceDiagram` | Request Lifecycle / flow pages |
-| State transitions of an entity | `flowchart TD` (state-style) | Lifecycle (e.g. Work Order lifecycle) |
+| Input/tick → handler → factory → entity/algorithm | `sequenceDiagram` | Runtime Lifecycle / flow pages |
+| State transitions of an entity | `flowchart TD` (state-style) | Lifecycle (e.g. Enemy lifecycle) |
 
 ### Rendering rules
 
@@ -361,7 +361,7 @@ Pick the diagram type by **intent**:
 ## 11. Writing Style Rules
 
 - **English only.** Use clear, neutral technical English.
-- **Business first, then technical.** Define *what* and *why* before *how*.
+- **Concept first, then technical.** Define *what* and *why* before *how*.
 - **Present tense, active voice.** "The horde spawns the enemy", not "the enemy will be spawned".
 - **One worked example.** Choose a single concrete case (the Level 1 horde pipeline by default)
   and reuse it everywhere.
@@ -469,7 +469,7 @@ Follow this order when creating a **new** subsystem:
 
 ### What is <X>?
 
-<Business definition first, then technical.>
+<Game/design definition first, then technical.>
 
 ```mermaid
 flowchart LR
@@ -483,7 +483,7 @@ flowchart LR
 
 ## 2. System Context
 
-<External systems, who is authoritative, integration style (sync vs async).>
+<External systems, who is authoritative, integration style (in-process API vs file/XML-driven).>
 
 ---
 
@@ -547,20 +547,20 @@ flowchart TD
 
 ## Table of Contents
 
-1. [Business Context](#1-business-context)
+1. [Context](#1-context)
 2. [Component Descriptions](#2-component-descriptions)
 3. [Data Flow](#3-data-flow)
 4. [Integration Points](#4-integration-points)
-5. [Database](#5-database)
+5. [Engine State Touched](#5-engine-state-touched)
 
 ---
 
-## 1. Business Context
+## 1. Context
 
 ### Purpose
 <What this flow does + its trigger: frame tick / player input / horde timer / scene transition.>
 
-### Business Goal
+### Goal
 <The outcome, step by step.>
 
 ## 2. Component Descriptions
@@ -632,10 +632,10 @@ sequenceDiagram
 <Table: Library / Version / Role.>
 
 ## 3. How to Import
-<The include order: `<script>` / `<link>`.>
+<The exact Java package/class to import, plus any catalog/XML registration needed.>
 
 ## 4. Public API
-### 4.1 `functionName(args)`
+### 4.1 `methodName(args)`
 <Description + params table + return value.>
 
 ## 5. Internal Design

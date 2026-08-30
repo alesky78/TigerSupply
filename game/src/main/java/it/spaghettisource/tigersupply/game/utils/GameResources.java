@@ -63,6 +63,7 @@ public class GameResources {
 	//State machine level enemy builder states
 	public static final String STATE_GENERATE_HORDE  = "generateHorde";
 	public static final String STATE_KILL_BOSS 	 	 = "killBoss";
+	public static final String STATE_BOSS_KILLED 	 = "bossKilledFinal";	//terminal state: boss dead / level won (distinct from EVENT_BOSS_KILLED)
 	public static final String STATE_WAIT_KILL  	 = "waitKill";
 	public static final String STATE_WAIT_TIME  	 = "waitTime";
 

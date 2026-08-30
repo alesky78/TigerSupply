@@ -38,8 +38,7 @@ import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
  *
  * <p>Clients must inject dependencies via setters ({@link #setContext(GameContext)}, {@link #setPlayer(Entity)},
  * {@link #setEnemyManager(EntityGroupScreenBound)}, etc.) before calling {@link #loadLevelData()} and
- * {@link #spawnNextHorde()}. Boss death is tracked separately via {@link #markBossAsKilled()} and
- * {@link #isBossDead()}.</p>
+ * {@link #spawnNextHorde()}.</p>
  *
  * @author Alessandro D'Ottavio
  */
@@ -57,8 +56,6 @@ public class HordeSequencer {
 	protected EntityGroupScreenBound<Enemy> enemyManager;
 
 	
-	private boolean bossKilled;
-	
 	/**
 	 * Creates a new horde sequencer for the specified level file.
 	 *
@@ -74,7 +71,6 @@ public class HordeSequencer {
 		builder = new EnemyDataBuilderSaxXml(levelFile);	//substitute hire the builder if want, should be valorized as set if create IOC
 		lvlData = new LevelDataRepository();
 		hordeIndex = 0;
-		bossKilled = false;
 	}
 
 	/**
@@ -131,22 +127,6 @@ public class HordeSequencer {
 		return !enemyManager.hasEntities();
 	}	
 	
-	
-	/**
-	 * Checks if the boss of this level has been defeated.
-	 *
-	 * @return {@code true} if the boss has been killed; {@code false} otherwise
-	 */
-	public boolean isBossDead() {
-		return bossKilled;
-	}
-	
-	/**
-	 * Marks the boss as defeated. This state is typically set when the boss entity is destroyed.
-	 */
-	public void markBossAsKilled() {
-		bossKilled = true;
-	}	
 	
 	/**
 	 * Parses and loads the level XML file, populating the repository with horde, enemy, and algorithm definitions.

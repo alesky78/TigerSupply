@@ -1,9 +1,10 @@
 package it.spaghettisource.tigersupply.game.scene.statemachine;
 
+import it.spaghettisource.tigersupply.engine.statemachine.AbstractState;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
-public class StateWaitKill extends StateAbstract {
+public class StateWaitKill extends AbstractState<EnemySpawnContext> {
 
 	@Override
 	public String getStateName() {
@@ -11,8 +12,8 @@ public class StateWaitKill extends StateAbstract {
 	}
 
 	@Override
-	public Event internalProcess() {
-		if(dataModel.isKilledAllEnemiesInScene())
+	public Event internalProcess(EnemySpawnContext context) {
+		if (context.isKilledAllEnemiesInScene())
 			return new Event(GameResources.EVENT_NEW_HORDE);
 
 		return new Event(GameResources.EVENT_WAIT);

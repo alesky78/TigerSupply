@@ -3,12 +3,16 @@ package it.spaghettisource.tigersupply.game.entity;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.builder.HordeSequencer;
-import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyBuilderDataModel;
-import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyTxManager;
+import it.spaghettisource.tigersupply.game.scene.statemachine.EnemySpawnContext;
+import it.spaghettisource.tigersupply.game.scene.statemachine.StateBossKilled;
+import it.spaghettisource.tigersupply.game.scene.statemachine.StateGenerateHorde;
+import it.spaghettisource.tigersupply.game.scene.statemachine.StateKillBoss;
+import it.spaghettisource.tigersupply.game.scene.statemachine.StateWaitKill;
 import it.spaghettisource.tigersupply.game.scene.statemachine.StateWaitTime;
 import it.spaghettisource.tigersupply.engine.statemachine.StateMachine;
 import it.spaghettisource.tigersupply.engine.statemachine.StateMachineImpl;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateAbstract;
+import it.spaghettisource.tigersupply.engine.statemachine.TransitionTable;
+import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
  * 
@@ -23,9 +27,8 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 	private EntityGroupScreenBound<Entity> effectManager;	
 	private Entity player;
 	
-	private EnemyBuilderDataModel dataModel;
-	private EnemyTxManager txManager;
-	private StateMachine stateMachine;
+	private EnemySpawnContext dataModel;
+	private StateMachine<EnemySpawnContext> stateMachine;
 	
 	private HordeSequencer horderSequencer;
 	private String levelDataFile;
@@ -42,7 +45,7 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 	}
 	
 	public boolean isBossDeath() {
-		return horderSequencer.isBossDead();
+		return stateMachine.isInFinalState();
 	}		
 	
 	public void setLevelDataFile(String levelDataFile){
@@ -60,21 +63,35 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		horderSequencer.setContext(context);
 		horderSequencer.loadLevelData();	//load the data			
 		
-		dataModel = new EnemyBuilderDataModel();
-		dataModel.setEnemyDataManager(horderSequencer);
-		
-		txManager = new EnemyTxManager();
-		txManager.setDataModel(dataModel);
-		
-		//state machine fo the management of the life cicle of the enemy in a level
-		//WAIT_FOR_KILL <-> GENERATE ORDE
-		//WAIT_TIME <-> GENERATE ORDE
-		//GENERATE ORDE -> KILL BOSS	
-		stateMachine = new StateMachineImpl();
-		stateMachine.setTrxManager(txManager);
-		StateWaitTime state = new StateWaitTime();
-		state.setDataModel(dataModel);
-		stateMachine.setState(state);
+		dataModel = new EnemySpawnContext();
+		dataModel.setHorderSequencer(horderSequencer);
+
+		//build the states once (stateless, reused as singletons) and declare the transition graph
+		StateWaitTime waitTime = new StateWaitTime();
+		StateWaitKill waitKill = new StateWaitKill();
+		StateGenerateHorde generateHorde = new StateGenerateHorde();
+		StateKillBoss killBoss = new StateKillBoss();
+		StateBossKilled bossKilled = new StateBossKilled();
+
+		TransitionTable<EnemySpawnContext> table = new TransitionTable<EnemySpawnContext>();
+		table.selfLoop(waitTime, GameResources.EVENT_WAIT);
+		table.add(waitTime, GameResources.EVENT_NEW_HORDE, generateHorde);
+		table.selfLoop(waitKill, GameResources.EVENT_WAIT);
+		table.add(waitKill, GameResources.EVENT_NEW_HORDE, generateHorde);
+		table.add(generateHorde, GameResources.EVENT_WAIT_TIME, waitTime);
+		table.add(generateHorde, GameResources.EVENT_WAIT_KILL, waitKill);
+		table.add(generateHorde, GameResources.EVENT_BOSS_GENERATED, killBoss);
+		table.selfLoop(killBoss, GameResources.EVENT_WAIT);
+		table.add(killBoss, GameResources.EVENT_BOSS_KILLED, bossKilled);
+
+		//state machine for the life cycle of the enemy in a level
+		//WAIT_FOR_KILL <-> GENERATE HORDE
+		//WAIT_TIME <-> GENERATE HORDE
+		//GENERATE HORDE -> KILL BOSS -> BOSS KILLED (final)
+		stateMachine = new StateMachineImpl<EnemySpawnContext>();
+		stateMachine.setTransitionTable(table);
+		stateMachine.setContext(dataModel);
+		stateMachine.setState(waitTime);
 		
 	}
 	
