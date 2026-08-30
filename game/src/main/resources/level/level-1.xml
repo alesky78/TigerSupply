@@ -81,7 +81,6 @@
 			<enemy enemyPrototype="asteroid3" posX="1350" posY="250" posZ="40" algoritmPrototype="default" />
 			<enemy enemyPrototype="asteroid4" posX="1350" posY="400" posZ="40" algoritmPrototype="default" />	
 			<enemy enemyPrototype="asteroid5" posX="1" posY="240" posZ="40" algoritmPrototype="default" />			
-								
 		</horde>
 		<horde>
 			<generateEvent name="waitTime" />
@@ -311,18 +310,18 @@
 		<enemyPrototype name="enemyBackgroundSt" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
 			<speed x="80" y="0" />
 			<image alias="enemy1" />
-			<scale value="0.6" />
+			<scale value="0.7" />
 		</enemyPrototype>
 		<enemyPrototype name="enemyBackgroundSyn" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
 			<speed x="80" y="0" />
 			<image alias="enemy2" />
-			<scale value="0.6" />
+			<scale value="0.7" />
 		</enemyPrototype>	
 		<enemyPrototype name="enemyBackgroundRk" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
 			<speed x="80" y="0" />
 			<image alias="enemy3" />
-			<scale value="0.4" />
-		</enemyPrototype>	
+			<scale value="0.5" />
+		</enemyPrototype>
 		<enemyPrototype name="asteroid1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
 			<speed x="-40" y="11" />
 			<image alias="asteroid1" />

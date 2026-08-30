@@ -87,7 +87,7 @@ public class LevelScene extends AbstractSceneJPanel {
 		collisionDetectorPlayerVsEnemyShot = new CollisionDetector(playerShip,enemyShootManager);
 		collisionDetectorPlayerShotVsEnemy = new CollisionDetector(playerShootManager, enemyManager);
 
-		//TODO il backGround deve essere configurabile cosi � statico in questo costruttore e non si puo' generalizzare 
+		//TODO il backGround deve essere configurabile cosi e statico in questo costruttore e non si puo' generalizzare 
 		ParallaxBackGround px = new ParallaxBackGround();				
 		//px.addBackGround(new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_space"), 0.2f, pWidth, pHeight,true)); 
 		px.addBackGround(new BackGroundTexture(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );

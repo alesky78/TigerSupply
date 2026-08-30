@@ -44,7 +44,7 @@ public class EntityManager<T extends Entity> implements Entity {
 		}	
 	}
 
-	public void addSrpiteToBeManaged(T entity){
+	public void addEntityToBeManaged(T entity){
 		entities.add(entity);
 	}
 	

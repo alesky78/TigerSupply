@@ -49,7 +49,7 @@ public class GameOverScene extends AbstractSceneJPanel {
 	
 	protected void addExplosionToManager(){
 		for (int i = 0; i < particleNum; i++) {					
-			spriteManger.addSrpiteToBeManaged(EntityFactoryWrapper.newExplosionParticleEnergetic(context.getScreenWidth()/2, context.getScreenHeight()/2, particleDeathMaxSize, particleDeathMaxSpeed, particleDeathMaxLifeTime,context));			
+			spriteManger.addEntityToBeManaged(EntityFactoryWrapper.newExplosionParticleEnergetic(context.getScreenWidth()/2, context.getScreenHeight()/2, particleDeathMaxSize, particleDeathMaxSpeed, particleDeathMaxLifeTime,context));			
 		}	
 	}	
 	

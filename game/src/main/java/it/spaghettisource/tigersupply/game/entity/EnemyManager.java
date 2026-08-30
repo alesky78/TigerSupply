@@ -2,7 +2,7 @@ package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.manager.EntityManagerEntityRequest;
-import it.spaghettisource.tigersupply.game.builder.EnemyDataManager;
+import it.spaghettisource.tigersupply.game.builder.HordeSequencer;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyBuilderDataModel;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemyTxManager;
 import it.spaghettisource.tigersupply.game.scene.statemachine.StateWaitTime;
@@ -27,7 +27,7 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 	private EnemyTxManager txManager;
 	private StateMachine stateMachine;
 	
-	private EnemyDataManager dataManager;
+	private HordeSequencer horderSequencer;
 	private String levelDataFile;
 	
 	public EnemyManager(){
@@ -42,7 +42,7 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 	}
 	
 	public boolean isBossDeath() {
-		return dataManager.isBossDeath();
+		return horderSequencer.isBossDead();
 	}		
 	
 	public void setLevelDataFile(String levelDataFile){
@@ -52,16 +52,16 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 	public void initComponents() throws Exception{
 		
 		//set all the manager
-		dataManager = new EnemyDataManager(levelDataFile);
-		dataManager.setEffectManager(effectManager);
-		dataManager.setShotManager(shotManager);
-		dataManager.setEnemyManager(this);		
-		dataManager.setPlayer(player);
-		dataManager.setContext(context);
-		dataManager.loadEnemyData();	//load the data			
+		horderSequencer = new HordeSequencer(levelDataFile);
+		horderSequencer.setEffectManager(effectManager);
+		horderSequencer.setShotManager(shotManager);
+		horderSequencer.setEnemyManager(this);		
+		horderSequencer.setPlayer(player);
+		horderSequencer.setContext(context);
+		horderSequencer.loadLevelData();	//load the data			
 		
 		dataModel = new EnemyBuilderDataModel();
-		dataModel.setEnemyDataManager(dataManager);
+		dataModel.setEnemyDataManager(horderSequencer);
 		
 		txManager = new EnemyTxManager();
 		txManager.setDataModel(dataModel);
@@ -72,7 +72,7 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 		//GENERATE ORDE -> KILL BOSS	
 		stateMachine = new StateMachineImpl();
 		stateMachine.setTrxManager(txManager);
-		StateAbstract state = new StateWaitTime();
+		StateWaitTime state = new StateWaitTime();
 		state.setDataModel(dataModel);
 		stateMachine.setState(state);
 		
@@ -103,8 +103,8 @@ public class EnemyManager extends EntityManagerEntityRequest<Enemy>{
 		this.effectManager = effectManager;
 	}
 
-	public void setDataManager(EnemyDataManager dataManager) {
-		this.dataManager = dataManager;
+	public void setHorderSequencer(HordeSequencer dataManager) {
+		this.horderSequencer = dataManager;
 	}
 
 

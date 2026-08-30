@@ -41,7 +41,7 @@ public class Star extends AbstractFinalEffect {
 		periodCounter += deltaSeconds; 
 		
 		if(periodCounter>=secondNextStar){
-			manager.addSrpiteToBeManaged(new StarEntity(screenWidth-1, screenHeight));
+			manager.addEntityToBeManaged(new StarEntity(screenWidth-1, screenHeight));
 			periodCounter = 0;
 		}
 		

@@ -25,7 +25,7 @@ public  class CollisionDetector{
 		collisionType = MANY_TO_MANY;
 	}
 
-
+	@SuppressWarnings("rawtypes")
 	public <T extends EntityManager> CollisionDetector(Entity a,T b) {
 		spriteA = a;
 		managerA = b;

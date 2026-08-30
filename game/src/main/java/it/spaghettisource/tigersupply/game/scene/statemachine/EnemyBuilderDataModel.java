@@ -1,15 +1,15 @@
 package it.spaghettisource.tigersupply.game.scene.statemachine;
 
-import it.spaghettisource.tigersupply.game.builder.EnemyDataManager;
+import it.spaghettisource.tigersupply.game.builder.HordeSequencer;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
 
 public class EnemyBuilderDataModel {
 	
 	protected double elapsedTime;
-	protected EnemyDataManager enemyDataManager;
+	protected HordeSequencer enemyDataManager;
 
 
-	public void setEnemyDataManager(EnemyDataManager enemyDataManager) {
+	public void setEnemyDataManager(HordeSequencer enemyDataManager) {
 		this.enemyDataManager = enemyDataManager;
 	}
 
@@ -18,11 +18,11 @@ public class EnemyBuilderDataModel {
 	}
 	
 	public void bossKilled(){
-		enemyDataManager.bossKilled();
+		enemyDataManager.markBossAsKilled();
 	}
 	
 	public Event newHordeEnterInScene() throws Exception{
-		return enemyDataManager.manageActualHordeAndGenerateEvent();
+		return enemyDataManager.spawnNextHorde();
 	}	
 	
 	public void increaseElapsedTime(double time){
