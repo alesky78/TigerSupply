@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneManagerJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractSceneHost;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.control.Scene;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
@@ -16,13 +16,13 @@ import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryMan
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 
 /**
- * TigerSupply's concrete scene manager: it extends {@link AbstractSceneManagerJPanel} to bootstrap
- * the shared repositories and managers, hold the active {@link Scene}, and intercept the global
- * pause/quit keys before delegating input to the active scene.
+ * TigerSupply's concrete scene host: it extends {@link AbstractSceneHost} to bootstrap the shared
+ * repositories and managers, hold the active {@link Scene}, and intercept the global pause/quit
+ * keys before delegating input to the active scene.
  *
  * @author Alessandro D'Ottavio
  */
-public class TigerSupplySceneManager extends AbstractSceneManagerJPanel {
+public class TigerSupplySceneHost extends AbstractSceneHost {
 
 
 	public void setActiveScene(Scene activeScene){
@@ -37,7 +37,7 @@ public class TigerSupplySceneManager extends AbstractSceneManagerJPanel {
 		return context;
 	}	
 	
-	public TigerSupplySceneManager(JPanel panel,GameContext context) throws Exception{
+	public TigerSupplySceneHost(JPanel panel,GameContext context) throws Exception{
 		this.panel = panel;
 		this.context = context;		
 

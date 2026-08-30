@@ -5,19 +5,19 @@ package it.spaghettisource.tigersupply.engine.windows;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
-import it.spaghettisource.tigersupply.engine.control.SceneManager;
+import it.spaghettisource.tigersupply.engine.control.SceneHost;
 
 public class GamePanelMauseMotionListener extends MouseMotionAdapter {
 
-	private SceneManager sceneManager;
+	private SceneHost sceneHost;
 
-	public GamePanelMauseMotionListener(SceneManager sceneManager){
-		this.sceneManager = sceneManager;
+	public GamePanelMauseMotionListener(SceneHost sceneHost){
+		this.sceneHost = sceneHost;
 
 	}	
 	
 	  public void mouseMoved(MouseEvent event) {
-		  sceneManager.mouseMoved(event);
+		  sceneHost.mouseMoved(event);
 	  }
 	
 	

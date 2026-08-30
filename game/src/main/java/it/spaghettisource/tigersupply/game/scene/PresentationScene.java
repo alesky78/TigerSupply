@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.scene;
 
 import it.spaghettisource.tigersupply.engine.background.BackGround;
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.finaleffect.FinalEffectManager;
@@ -21,7 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 
-public class PresentationScene extends AbstractSceneJPanel {
+public class PresentationScene extends AbstractScene {
 
 	private GameContext context;
 	private BackGround backGround;	

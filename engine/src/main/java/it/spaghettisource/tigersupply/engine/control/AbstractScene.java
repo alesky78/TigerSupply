@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  * @author Alessandro D'Ottavio
  *
  */
-public abstract class AbstractSceneJPanel implements Scene {
+public abstract class AbstractScene implements Scene {
 
 	
 	// off screen rendering
@@ -28,11 +28,22 @@ public abstract class AbstractSceneJPanel implements Scene {
 	protected int pWidth,pHeight;	//size of the panel
 	
 	
+	/**
+	 * Set the Swing panel this scene renders into.
+	 *
+	 * @param gamePanel the hosting panel, never {@code null}
+	 */
 	public void setGamePanel(JPanel gamePanel){
 		this.gamePanel = gamePanel;
 	}
 	
 	
+	/**
+	 * Lazily creates the off-screen buffer and draws the scene into it by invoking the
+	 * {@link #internalRender(Graphics2D)} and {@link #doFinalEffect(Graphics2D)} template methods.
+	 *
+	 * @throws Exception if rendering fails
+	 */
 	public void render() throws Exception {
 
 		if (dbImage == null){
@@ -60,14 +71,19 @@ public abstract class AbstractSceneJPanel implements Scene {
 	public abstract void internalRender(Graphics2D dbg) throws Exception;
 
 	/**
-	 * specific duty of the single game, hire render all the final effect over the image
-	 *  
-	 * @param dbg
-	 * @throws Exception
+	 * Scene-specific post-processing: render any final effect over the already drawn image
+	 * (for example a screen transition or overlay).
+	 *
+	 * @param dbg the off-screen graphics to draw into
+	 * @throws Exception if the effect rendering fails
 	 */
 	public abstract void doFinalEffect(Graphics2D dbg) throws Exception;
 	
 	
+	/**
+	 * Blits the off-screen buffer onto the panel's on-screen graphics, applying antialiasing and
+	 * syncing the toolkit. Graphics errors (common at teardown) are swallowed.
+	 */
 	public void paintScreen() {
 		Graphics2D g;
 		try {

@@ -3,13 +3,19 @@ package it.spaghettisource.tigersupply.engine.control;
 
 
 /**
- * this is the animation loop it has this targets:
- * 
- *  - manage the application loop {update, render, sleep}
- *  - starting and terminating animation
- *  - ensure that the progerssion of FPS and UPS is manage at consistent rate 
- * 
- * 
+ * The animation loop of the game. Its responsibilities are:
+ *
+ * <ul>
+ *   <li>drive the application loop {@code update, render, sleep};</li>
+ *   <li>start and terminate the animation thread;</li>
+ *   <li>keep the progression of FPS and UPS at a consistent rate.</li>
+ * </ul>
+ *
+ * <p>On every iteration the loop asks the {@link SceneHost} for the active {@link Scene} and
+ * calls {@link Scene#update(float)}, {@link Scene#render()} and {@link Scene#paintScreen()}; when
+ * a frame runs long it may skip rendering (up to {@code MAX_FRAME_SKIPS}) while still updating the
+ * game state, to keep the update rate close to the target.
+ *
  * @author Alessandro D'Ottavio
  *
  */
@@ -25,24 +31,30 @@ public class GameLoop extends Thread {
 
 
 	private GameContext context;
-	private SceneManager sceneManager;
+	private SceneHost sceneHost;
 	private long nanosecondPeriod;
 	private float secondPeriod;	
 
 	/**
-	 * 
+	 * Create the loop.
+	 *
 	 * @param context the shared game context, never {@code null}
-	 * @param manager the scene manager that supplies the active scene, never {@code null}
+	 * @param sceneHost the scene host that supplies the active scene, never {@code null}
 	 */
-	public GameLoop(GameContext context,SceneManager manager){
+	public GameLoop(GameContext context,SceneHost sceneHost){
 		this.context = context;
 		this.nanosecondPeriod = context.getPeriodNanoseconds();	// ms -> nano
 		this.secondPeriod = context.getPeriodSeconds();			// ms -> sec	
-		this.sceneManager = manager;
+		this.sceneHost = sceneHost;
 
 	}
 
 
+	/**
+	 * Run the animation loop until {@link GameContext#isStop()} becomes {@code true}, then
+	 * terminate the JVM. Each iteration updates, renders and paints the active scene at the
+	 * configured frame period, catching up missed updates when frames overrun.
+	 */
 	public void run(){
 
 		long beforeTime, afterTime, timeDiff, sleepTime;
@@ -58,7 +70,7 @@ public class GameLoop extends Thread {
 						
 			try{
 				//get the scene to render
-				scene = sceneManager.getActiveScene();
+				scene = sceneHost.getActiveScene();
 				
 				scene.update(secondPeriod);
 				scene.render();

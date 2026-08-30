@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.engine.windows;
 
 import it.spaghettisource.tigersupply.engine.control.GameContext;
-import it.spaghettisource.tigersupply.engine.control.SceneManagerFactory;
+import it.spaghettisource.tigersupply.engine.control.SceneHostFactory;
 
 import java.awt.Container;
 import java.awt.event.WindowEvent;
@@ -16,7 +16,7 @@ import javax.swing.JFrame;
  * the AWT window lifecycle to the {@link GameContext}.
  *
  * <p>The shell is game-agnostic: the concrete game is supplied indirectly through
- * the {@link SceneManagerFactory} handed to the panel. The window title and the
+ * the {@link SceneHostFactory} handed to the panel. The window title and the
  * playfield dimensions are provided by the composition root (the launcher module),
  * rather than hard-coded here.
  *
@@ -41,10 +41,10 @@ public class GameFrame extends JFrame implements WindowListener{
 	 * @param width the playfield width in pixels
 	 * @param height the playfield height in pixels
 	 * @param gameContext the shared game lifecycle context, never {@code null}
-	 * @param sceneManagerFactory factory that builds the concrete scene manager, never {@code null}
+	 * @param sceneHostFactory factory that builds the concrete scene host, never {@code null}
 	 * @throws Exception if the hosted game panel fails to initialize
 	 */
-	public GameFrame(String title, int width, int height, GameContext gameContext, SceneManagerFactory sceneManagerFactory) throws Exception{
+	public GameFrame(String title, int width, int height, GameContext gameContext, SceneHostFactory sceneHostFactory) throws Exception{
 
 		super(title);
 
@@ -55,7 +55,7 @@ public class GameFrame extends JFrame implements WindowListener{
 
 		//create the content of the frame
 		Container c = getContentPane();
-		GamePanel gamePanel = new GamePanel(gameContext, pWidth, pHeight, sceneManagerFactory);
+		GamePanel gamePanel = new GamePanel(gameContext, pWidth, pHeight, sceneHostFactory);
 		c.add(gamePanel, "Center");
 		pack();  // size the frame to fit the game panel
 

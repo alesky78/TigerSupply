@@ -9,8 +9,8 @@ import javax.swing.JPanel;
 
 import it.spaghettisource.tigersupply.engine.control.GameLoop;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
-import it.spaghettisource.tigersupply.engine.control.SceneManager;
-import it.spaghettisource.tigersupply.engine.control.SceneManagerFactory;
+import it.spaghettisource.tigersupply.engine.control.SceneHost;
+import it.spaghettisource.tigersupply.engine.control.SceneHostFactory;
 
 /**
  * this is the panel that will be use to draw the game
@@ -27,7 +27,7 @@ public class GamePanel extends JPanel{
 	private GameContext context;
 	private GameLoop gameLoop;
 
-	public GamePanel(GameContext context, int pWidth, int pHeight, SceneManagerFactory sceneManagerFactory) throws Exception{
+	public GamePanel(GameContext context, int pWidth, int pHeight, SceneHostFactory sceneHostFactory) throws Exception{
 
 		float period = 1000.0f/FPS_REQUIRED;
 		
@@ -44,14 +44,14 @@ public class GamePanel extends JPanel{
 		context.setScreenHeight(pHeight+10);
 		context.setScreenWidth(pWidth+10);
 		
-		SceneManager manager = sceneManagerFactory.create(this, context);
+		SceneHost sceneHost = sceneHostFactory.create(this, context);
 		
-		gameLoop = new GameLoop(context,manager);
+		gameLoop = new GameLoop(context,sceneHost);
 				
 		//create the game listeners
-	    addMouseListener( new GamePanelMauseListener(manager));
-	    addKeyListener(new GamePanelKeyListener(manager));
-		addMouseMotionListener(new GamePanelMauseMotionListener(manager));
+	    addMouseListener( new GamePanelMauseListener(sceneHost));
+	    addKeyListener(new GamePanelKeyListener(sceneHost));
+		addMouseMotionListener(new GamePanelMauseMotionListener(sceneHost));
 	    
 	    
 	}

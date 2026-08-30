@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.EnemyManager;
 import it.spaghettisource.tigersupply.game.entity.Player;
@@ -29,7 +29,7 @@ import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 public class SceneFlowController {
 
 	private static SceneFlowController instance;		
-	private TigerSupplySceneManager sceneManager;
+	private TigerSupplySceneHost sceneHost;
 	private Player player;
 	private EnemyManager enemyManager;	
 
@@ -38,9 +38,9 @@ public class SceneFlowController {
 	private int numberLevel = 1;
 	private int actualLevel = 0;	
 
-	private SceneFlowController(TigerSupplySceneManager sceneManager) throws Exception {
-		this.sceneManager = sceneManager;		
-		player = EntityFactoryWrapper.newPlayer(sceneManager.getGameContext().getScreenHeight(), sceneManager.getGameContext().getPeriodMilliseconds());
+	private SceneFlowController(TigerSupplySceneHost sceneHost) throws Exception {
+		this.sceneHost = sceneHost;		
+		player = EntityFactoryWrapper.newPlayer(sceneHost.getGameContext().getScreenHeight(), sceneHost.getGameContext().getPeriodMilliseconds());
 		player.getsize().setScale(1.2f);
 		enemyManager = new EnemyManager();
 
@@ -49,11 +49,11 @@ public class SceneFlowController {
 
 	}
 
-	public static void init(TigerSupplySceneManager sceneManager) throws Exception{
+	public static void init(TigerSupplySceneHost sceneHost) throws Exception{
 		if(instance==null){
 			synchronized (SceneFlowController.class) {
 				if(instance==null){
-					instance = new SceneFlowController(sceneManager);
+					instance = new SceneFlowController(sceneHost);
 				}
 			}
 		}
@@ -87,9 +87,9 @@ public class SceneFlowController {
 		try{
 			actualLevel = 0;	//set to no level so that the first call to level move to first level
 			clear(true);		
-			AbstractSceneJPanel scene = new PresentationScene(sceneManager.getGameContext());
-			scene.setGamePanel(sceneManager.getGamePanel());
-			sceneManager.setActiveScene(scene);
+			AbstractScene scene = new PresentationScene(sceneHost.getGameContext());
+			scene.setGamePanel(sceneHost.getGamePanel());
+			sceneHost.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -99,9 +99,9 @@ public class SceneFlowController {
 	public void doGameOver() throws Exception{
 		try{
 			clear(true);
-			AbstractSceneJPanel scene = new GameOverScene(sceneManager.getGameContext());
-			scene.setGamePanel(sceneManager.getGamePanel());
-			sceneManager.setActiveScene(scene);
+			AbstractScene scene = new GameOverScene(sceneHost.getGameContext());
+			scene.setGamePanel(sceneHost.getGamePanel());
+			sceneHost.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -111,9 +111,9 @@ public class SceneFlowController {
 	public void doHangar() throws Exception{
 		try{
 			clear(false);
-			AbstractSceneJPanel scene = new HangarScene(sceneManager.getGameContext(),player);
-			scene.setGamePanel(sceneManager.getGamePanel());
-			sceneManager.setActiveScene(scene);
+			AbstractScene scene = new HangarScene(sceneHost.getGameContext(),player);
+			scene.setGamePanel(sceneHost.getGamePanel());
+			sceneHost.setActiveScene(scene);
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);
 			throw e;
@@ -136,9 +136,9 @@ public class SceneFlowController {
 				
 				String nextLevelCode =Integer.toString(actualLevel);
 				enemyManager.setLevelDataFile(levelConfiguration.get(nextLevelCode));
-				AbstractSceneJPanel scene = new LevelScene(sceneManager.getGameContext(),player,enemyManager);
-				scene.setGamePanel(sceneManager.getGamePanel());
-				sceneManager.setActiveScene(scene);
+				AbstractScene scene = new LevelScene(sceneHost.getGameContext(),player,enemyManager);
+				scene.setGamePanel(sceneHost.getGamePanel());
+				sceneHost.setActiveScene(scene);
 			}
 		}catch(Exception ex){
 			Exception e =new Exception("error in the GameflowManger:"+ex.getMessage(),ex);

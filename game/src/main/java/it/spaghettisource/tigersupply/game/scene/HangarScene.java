@@ -2,11 +2,9 @@ package it.spaghettisource.tigersupply.game.scene;
 
 import it.spaghettisource.tigersupply.engine.background.BackGround;
 import it.spaghettisource.tigersupply.engine.background.StaticBackGroundFitImage;
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
-import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
-import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.ui.DescriptionListenerHangar;
@@ -14,7 +12,6 @@ import it.spaghettisource.tigersupply.game.ui.HangarDataModel;
 import it.spaghettisource.tigersupply.game.ui.ShipButtonHangar;
 import it.spaghettisource.tigersupply.game.ui.StartButtonHangar;
 import it.spaghettisource.tigersupply.game.ui.WeaponButtonHangar;
-import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
 import it.spaghettisource.tigersupply.engine.sprite.ImagePlayerCenterControllerSprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
@@ -34,7 +31,7 @@ import java.awt.Paint;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class HangarScene extends AbstractSceneJPanel {
+public class HangarScene extends AbstractScene {
 
 	private GameContext context;
 	private BackGround backGround;	

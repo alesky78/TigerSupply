@@ -1,25 +1,21 @@
 package it.spaghettisource.tigersupply.game.scene;
 
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
-import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JPanel;
-
-public class GameOverScene extends AbstractSceneJPanel {
+public class GameOverScene extends AbstractScene {
 
 	private GameContext context;
 

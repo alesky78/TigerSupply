@@ -1,14 +1,14 @@
 package it.spaghettisource.tigersupply.launcher;
 
 import it.spaghettisource.tigersupply.engine.control.GameContext;
-import it.spaghettisource.tigersupply.engine.control.SceneManagerFactory;
+import it.spaghettisource.tigersupply.engine.control.SceneHostFactory;
 import it.spaghettisource.tigersupply.engine.windows.GameFrame;
 
 /**
  * Application entry point and composition root for TigerSupply.
  *
  * <p>Owns the game-specific launch configuration (window title and playfield
- * dimensions), selects the concrete game via {@link TigerSupplySceneManagerFactory},
+ * dimensions), selects the concrete game via {@link TigerSupplySceneHostFactory},
  * and hands both to the engine {@link GameFrame} window shell.
  */
 public class Launcher {
@@ -26,9 +26,9 @@ public class Launcher {
 	public static void main(String[] args) throws Exception {
 
 		GameContext gameContext = new GameContext();
-		SceneManagerFactory sceneManagerFactory = new TigerSupplySceneManagerFactory();
+		SceneHostFactory sceneHostFactory = new TigerSupplySceneHostFactory();
 
-		new GameFrame(WINDOW_TITLE, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT, gameContext, sceneManagerFactory);
+		new GameFrame(WINDOW_TITLE, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT, gameContext, sceneHostFactory);
 	}
 
 }

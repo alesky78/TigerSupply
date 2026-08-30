@@ -16,7 +16,7 @@ import it.spaghettisource.tigersupply.engine.background.BackGround;
 import it.spaghettisource.tigersupply.engine.background.BackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.BackGroundTexture;
 import it.spaghettisource.tigersupply.engine.background.ParallaxBackGround;
-import it.spaghettisource.tigersupply.engine.control.AbstractSceneJPanel;
+import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.collision.CollisionDetector;
@@ -29,7 +29,7 @@ import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
-public class LevelScene extends AbstractSceneJPanel {
+public class LevelScene extends AbstractScene {
 
 	private GameContext context;
 
