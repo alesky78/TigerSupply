@@ -2,7 +2,6 @@ package it.spaghettisource.tigersupply.game.scene.statemachine;
 
 import it.spaghettisource.tigersupply.engine.statemachine.AbstractState;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
  * Terminal state of the enemy-spawn machine: the boss is dead and the level is won. Reaching this
@@ -13,10 +12,8 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
  */
 public class StateLevelCleared extends AbstractState<EnemySpawnContext> {
 
-	private final static Event PENDING = new Event(GameResources.EVENT_PENDING);
-
-	public String getStateName() {
-		return GameResources.STATE_LEVEL_CLEARED;
+	public StateLevelCleared(String stateName) {
+		super(stateName);
 	}
 
 	@Override
@@ -26,7 +23,7 @@ public class StateLevelCleared extends AbstractState<EnemySpawnContext> {
 
 	public Event internalProcess(EnemySpawnContext context) {
 		//never invoked: the machine halts on a final state
-		return PENDING;
+		return EnemySpawnStateMachineFactory.PENDING;
 	}
 
 }

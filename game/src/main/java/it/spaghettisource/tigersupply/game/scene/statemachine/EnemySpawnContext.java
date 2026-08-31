@@ -1,7 +1,6 @@
 package it.spaghettisource.tigersupply.game.scene.statemachine;
 
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
  * Shared context of the enemy-spawn state machine: it holds the running elapsed time, the wait delay
@@ -31,7 +30,7 @@ public class EnemySpawnContext {
 
 	public Event spawnNextHorde() throws Exception{
 		Event event = hordeSpawner.spawnNextHorde();
-		if(GameResources.EVENT_HORDE_TIMED.equals(event.getName())){
+		if(EnemySpawnStateMachineFactory.EVENT_HORDE_TIMED.equals(event.getName())){
 			waitTime = hordeSpawner.getCurrentWaitTime();
 		}
 		return event;

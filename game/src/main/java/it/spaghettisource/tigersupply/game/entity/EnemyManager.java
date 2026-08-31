@@ -3,16 +3,9 @@ package it.spaghettisource.tigersupply.game.entity;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.scene.statemachine.EnemySpawnContext;
+import it.spaghettisource.tigersupply.game.scene.statemachine.EnemySpawnStateMachineFactory;
 import it.spaghettisource.tigersupply.game.scene.statemachine.HordeSpawner;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateLevelCleared;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateSpawningHorde;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateAwaitingBossDefeat;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateAwaitingClear;
-import it.spaghettisource.tigersupply.game.scene.statemachine.StateAwaitingTimer;
 import it.spaghettisource.tigersupply.engine.statemachine.StateMachine;
-import it.spaghettisource.tigersupply.engine.statemachine.StateMachineImpl;
-import it.spaghettisource.tigersupply.engine.statemachine.TransitionTable;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
  * 
@@ -66,32 +59,9 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		spawnContext = new EnemySpawnContext();
 		spawnContext.setHordeSpawner(hordeSpawner);
 
-		//build the states once (stateless, reused as singletons) and declare the transition graph
-		StateAwaitingTimer awaitingTimer = new StateAwaitingTimer();
-		StateAwaitingClear awaitingClear = new StateAwaitingClear();
-		StateSpawningHorde spawningHorde = new StateSpawningHorde();
-		StateAwaitingBossDefeat awaitingBossDefeat = new StateAwaitingBossDefeat();
-		StateLevelCleared levelCleared = new StateLevelCleared();
-
-		TransitionTable<EnemySpawnContext> table = new TransitionTable<EnemySpawnContext>();
-		table.selfLoop(awaitingTimer, GameResources.EVENT_PENDING);
-		table.add(awaitingTimer, GameResources.EVENT_READY, spawningHorde);
-		table.selfLoop(awaitingClear, GameResources.EVENT_PENDING);
-		table.add(awaitingClear, GameResources.EVENT_READY, spawningHorde);
-		table.add(spawningHorde, GameResources.EVENT_HORDE_TIMED, awaitingTimer);
-		table.add(spawningHorde, GameResources.EVENT_HORDE_CLEARABLE, awaitingClear);
-		table.add(spawningHorde, GameResources.EVENT_BOSS_SPAWNED, awaitingBossDefeat);
-		table.selfLoop(awaitingBossDefeat, GameResources.EVENT_PENDING);
-		table.add(awaitingBossDefeat, GameResources.EVENT_BOSS_DEFEATED, levelCleared);
-
-		//state machine for the life cycle of the enemy in a level
-		//AWAITING_CLEAR <-> SPAWNING HORDE
-		//AWAITING_TIMER <-> SPAWNING HORDE
-		//SPAWNING HORDE -> AWAITING BOSS DEFEAT -> LEVEL CLEARED (final)
-		stateMachine = new StateMachineImpl<EnemySpawnContext>();
-		stateMachine.setTransitionTable(table);
-		stateMachine.setContext(spawnContext);
-		stateMachine.setState(awaitingTimer);
+		//the whole enemy-spawn state machine (states, events, transition graph, initial state)
+		//is defined centrally in EnemySpawnStateMachineFactory
+		stateMachine = EnemySpawnStateMachineFactory.build(spawnContext);
 		
 	}
 	

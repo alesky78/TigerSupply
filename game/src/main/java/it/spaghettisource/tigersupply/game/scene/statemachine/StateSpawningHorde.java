@@ -2,12 +2,11 @@ package it.spaghettisource.tigersupply.game.scene.statemachine;
 
 import it.spaghettisource.tigersupply.engine.statemachine.AbstractState;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 public class StateSpawningHorde extends AbstractState<EnemySpawnContext> {
 
-	public String getStateName() {
-		return GameResources.STATE_SPAWNING_HORDE;
+	public StateSpawningHorde(String stateName) {
+		super(stateName);
 	}
 
 	/**

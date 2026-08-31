@@ -16,6 +16,7 @@
 8. [Flussi documentati](#8-flussi-documentati)
 9. [Ricette](#9-ricette)
 10. [Scenari di riferimento](#10-scenari-di-riferimento)
+11. [Possibili migliorie](#11-possibili-migliorie)
 
 ---
 
@@ -70,7 +71,7 @@ uniche risorse esterne che tocca sono file sul classpath e costanti di gioco.
 | Risorsa | Modulo | Ruolo | Autorevole? |
 |---|---|---|---|
 | [level/level-1.xml](../../../game/src/main/resources/level/level-1.xml) | `game` (resources) | Definisce l'ordine delle ondate, i prototipi dei nemici e gli algoritmi di movimento del livello. | **Sì** — è la fonte di verità del contenuto del livello. |
-| [GameResources](../../../game/src/main/java/it/spaghettisource/tigersupply/game/utils/GameResources.java) | `game` | Costanti `STATE_*` / `EVENT_*` che nominano stati ed eventi della macchina a stati del gioco. | Sì per i nomi di stato/evento. |
+| [EnemySpawnStateMachineFactory](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnStateMachineFactory.java) | `game` | Costanti `STATE_*` / `EVENT_*` e `Event` condivisi che nominano stati ed eventi della macchina a stati; ne costruisce anche il grafo delle transizioni. | Sì per i nomi di stato/evento e per il grafo. |
 | Cataloghi immagini/audio/font (`*-catalog.txt`) | `game` (resources) | Risolvono gli alias (`enemy1`, `boss`, …) usati dai prototipi nemico in immagini reali. | Sì per gli asset. |
 
 **Stile di integrazione.** La parte `game` è **guidata dai dati**: l'XML è letto con SAX e i nomi di
@@ -92,7 +93,7 @@ una `List<EnemyDefinition>` + un `GenerateEvent`.
 ### 3.2 GenerateEvent (evento di completamento)
 
 Ogni ondata dichiara **come** si completa tramite il tag `<generateEvent>`. I valori possibili
-(costanti `EVENT_*` in `GameResources`) sono:
+(costanti `EVENT_*` in `EnemySpawnStateMachineFactory`) sono:
 
 | `name` | Significato | Attributo `time` |
 |---|---|---|
@@ -397,3 +398,15 @@ funzionamento generico della macchina in [motore-macchina-a-stati.md](motore-mac
 | Scenario | Stato |
 |---|---|
 | Pipeline delle ondate del Livello 1 | Esempio verticale di riferimento usato in tutte le pagine: `level-1.xml` → `EnemyDataBuilderSaxXml` → `LevelDataRepository` → `HordeSpawner` → macchina a stati in `EnemyManager` → `Enemy`. |
+
+---
+
+## 11. Possibili migliorie
+
+Idee di design emerse esplorando il sottosistema ma **non ancora eseguite**: sono promemoria da
+trasformare in una OpenSpec change quando sarà il momento, non descrizioni del comportamento
+attuale.
+
+| Miglioria | Cosa propone | Stato | Dettaglio |
+|---|---|---|---|
+| Payload sugli eventi consegnato agli stati | Far portare all'`Event` i suoi attributi (oggi `hordeTimed` porta `time` solo via canale laterale sul contesto) e consegnare l'evento scatenante allo stato entrante in `onEnter`, rendendo esplicito il contratto e abilitando eventi parametrici futuri. | **Proposta, non pianificata** | [migliorie-payload-eventi.md](migliorie-payload-eventi.md) |

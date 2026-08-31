@@ -16,6 +16,14 @@ package it.spaghettisource.tigersupply.engine.control;
  * a frame runs long it may skip rendering (up to {@code MAX_FRAME_SKIPS}) while still updating the
  * game state, to keep the update rate close to the target.
  *
+ * <p><b>Scene reference caveat:</b> the active {@link Scene} is read once at the start of each loop
+ * iteration and reused for that iteration's catch-up updates. If a scene swaps the active scene from
+ * within its {@link Scene#update(float)} (for example a level requesting a transition), the now-stale
+ * scene may still receive the remaining catch-up updates of the same iteration before the loop
+ * re-reads the active scene on the next iteration. Scenes that trigger transitions must therefore
+ * guard against being updated again (see {@code LevelScene}'s one-shot flow guard), otherwise the
+ * transition can fire more than once.
+ *
  * @author Alessandro D'Ottavio
  *
  */

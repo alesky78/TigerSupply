@@ -45,32 +45,6 @@ public class GameResources {
 	public static final String ASTEROID_3  = "asteroid3";
 	public static final String ASTEROID_4  = "asteroid4";	
 
-	//Game state used by the scene manager
-	public static final String GAME_STATE_PRESENTATION = "presentation";
-	public static final String GAME_STATE_PLAY 		   = "play";
-
-	//State machine level enemy builder events
-	public static final String GAME_EVENT_START  	 	= "start";
-	public static final String GAME_EVENT_PRESENTATION  = "presentation";	
-	public static final String GAME_EVENT_PLAYER_DEATH  = "playerdeath";
-	public static final String GAME_EVENT_BOSS_DEATH    = "bossdeath";	
-	public static final String GAME_EVENT_CONTINUE_LVL  = "contiuneLevel";	
-	
-	//State machine level enemy builder states
-	public static final String STATE_SPAWNING_HORDE       = "spawningHorde";
-	public static final String STATE_AWAITING_BOSS_DEFEAT = "awaitingBossDefeat";
-	public static final String STATE_LEVEL_CLEARED 	      = "levelCleared";	//terminal state: boss dead / level won (distinct from EVENT_BOSS_DEFEATED)
-	public static final String STATE_AWAITING_CLEAR       = "awaitingClear";
-	public static final String STATE_AWAITING_TIMER       = "awaitingTimer";
-
-	//State machine level enemy builder events
-	public static final String EVENT_PENDING         = "pending";
-	public static final String EVENT_READY           = "ready";
-	public static final String EVENT_HORDE_CLEARABLE = "hordeClearable";
-	public static final String EVENT_HORDE_TIMED     = "hordeTimed";
-	public static final String EVENT_BOSS_SPAWNED    = "bossSpawned";
-	public static final String EVENT_BOSS_DEFEATED   = "bossDefeated";
-
 	//Z coordinate 
 	public static final int Z_EXPLOSION  			= 5;
 	public static final int Z_SHOT  				= 25;

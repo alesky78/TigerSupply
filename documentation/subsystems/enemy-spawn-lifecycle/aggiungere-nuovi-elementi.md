@@ -130,21 +130,23 @@ si tocca.**
   [sequenziamento del gioco](sequenziamento-horde.md).
 
 ### Passi
-1. **Costanti** — in [GameResources](../../../game/src/main/java/it/spaghettisource/tigersupply/game/utils/GameResources.java)
-   aggiungi la costante di stato `STATE_*` e, se serve, l'evento `EVENT_*`. Se lo stato è raggiunto
-   da un `generateEvent`, il valore dell'evento deve coincidere con il `name` usato nell'XML.
+1. **Costanti** — in [EnemySpawnStateMachineFactory](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnStateMachineFactory.java)
+   aggiungi la costante di stato `STATE_*` e, se serve, l'evento `EVENT_*` (più l'eventuale `Event`
+   condiviso). Se lo stato è raggiunto da un `generateEvent`, il valore dell'evento deve coincidere
+   con il `name` usato nell'XML.
 2. **Classe stato** — `game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/`:
    estendi [`AbstractState<EnemySpawnContext>`](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/AbstractState.java),
-   implementa `getStateName()` (ritorna la costante) e `internalProcess(context)` (ritorna un
-   `Event`). Mantieni lo stato **senza campi mutabili**: la memoria vive in `EnemySpawnContext`.
+   passa il nome al costruttore con `super(stateName)` e implementa solo `internalProcess(context)`
+   (ritorna un `Event`, tipicamente un singleton della factory). Mantieni lo stato **senza campi
+   mutabili**: la memoria vive in `EnemySpawnContext`.
 3. **Contesto** (se serve) — aggiungi a
    [`EnemySpawnContext`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java)
    i dati/deleghe necessari.
-4. **Cablaggio** — in `EnemyManager.initComponents()`
-   ([EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java)):
-   costruisci lo stato una volta e dichiara le sue transizioni sulla `TransitionTable` (`add` /
-   `selfLoop`). Se è terminale, fai in modo che `isFinal()` ritorni `true` (come `StateLevelCleared`)
-   e **non** aggiungerlo come sorgente nella tabella.
+4. **Cablaggio** — in `EnemySpawnStateMachineFactory.build()`
+   ([EnemySpawnStateMachineFactory.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnStateMachineFactory.java)):
+   costruisci lo stato (passandogli il nome) e dichiara le sue transizioni sulla `TransitionTable`
+   (`add` / `selfLoop`). Se è terminale, fai in modo che `isFinal()` ritorni `true` (come
+   `StateLevelCleared`) e **non** aggiungerlo come sorgente nella tabella.
 
 ### Verifica
 - Compila; il grafo dichiarato deve coprire ogni coppia `(stato,evento)` che può prodursi. Una

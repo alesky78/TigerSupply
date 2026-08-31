@@ -47,45 +47,48 @@ Il **frame update** della scena di gioco. `LevelScene.update(...)` chiama
 
 ### Il cablaggio (dove engine e game si incontrano)
 
-`EnemyManager.initComponents()` è il **punto di composizione**: costruisce gli stati concreti,
-dichiara la tabella delle transizioni e avvia la macchina generica dell'engine.
+Tutta la definizione della macchina a stati — stati, nomi, eventi, grafo delle transizioni e stato
+iniziale — vive in un unico punto: `EnemySpawnStateMachineFactory.build(...)`.
+`EnemyManager.initComponents()` si limita a prepararne il contesto e a chiamare la factory.
 
 | Componente | Modulo | Classe | Responsabilità |
 |---|---|---|---|
-| Cablaggio | `game` | `EnemyManager` | Costruisce stati + `TransitionTable`, imposta contesto e stato iniziale, fa il tick. |
+| Definizione FSM | `game` | `EnemySpawnStateMachineFactory` | Costanti di stato/evento, `Event` condivisi, `TransitionTable`, stato iniziale; costruisce la `StateMachine`. |
+| Cablaggio | `game` | `EnemyManager` | Prepara il contesto e ottiene la macchina dalla factory; fa il tick. |
 | Contesto | `game` | `EnemySpawnContext` | Il `C` della macchina: tempo, ritardo, delega a `HordeSpawner`. |
 | Coordinatore | `game` | `HordeSpawner` | Genera l'ondata corrente e ne restituisce l'`Event`. |
 
-Estratto da [EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java):
+Estratto da [EnemySpawnStateMachineFactory.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnStateMachineFactory.java):
 
 ```java
-// costruisci gli stati una volta (senza stato interno, riusati come singleton)
-StateAwaitingTimer      awaitingTimer      = new StateAwaitingTimer();
-StateAwaitingClear      awaitingClear      = new StateAwaitingClear();
-StateSpawningHorde      spawningHorde      = new StateSpawningHorde();
-StateAwaitingBossDefeat awaitingBossDefeat = new StateAwaitingBossDefeat();
-StateLevelCleared       levelCleared       = new StateLevelCleared();
+// i nomi degli stati sono iniettati dalla factory (unico punto in cui compaiono)
+State<EnemySpawnContext> awaitingTimer      = new StateAwaitingTimer(STATE_AWAITING_TIMER);
+State<EnemySpawnContext> awaitingClear      = new StateAwaitingClear(STATE_AWAITING_CLEAR);
+State<EnemySpawnContext> spawningHorde      = new StateSpawningHorde(STATE_SPAWNING_HORDE);
+State<EnemySpawnContext> awaitingBossDefeat = new StateAwaitingBossDefeat(STATE_AWAITING_BOSS_DEFEAT);
+State<EnemySpawnContext> levelCleared       = new StateLevelCleared(STATE_LEVEL_CLEARED);
 
 TransitionTable<EnemySpawnContext> table = new TransitionTable<EnemySpawnContext>();
-table.selfLoop(awaitingTimer, GameResources.EVENT_PENDING);
-table.add(awaitingTimer, GameResources.EVENT_READY, spawningHorde);
-table.selfLoop(awaitingClear, GameResources.EVENT_PENDING);
-table.add(awaitingClear, GameResources.EVENT_READY, spawningHorde);
-table.add(spawningHorde, GameResources.EVENT_HORDE_TIMED,     awaitingTimer);
-table.add(spawningHorde, GameResources.EVENT_HORDE_CLEARABLE, awaitingClear);
-table.add(spawningHorde, GameResources.EVENT_BOSS_SPAWNED,    awaitingBossDefeat);
-table.selfLoop(awaitingBossDefeat, GameResources.EVENT_PENDING);
-table.add(awaitingBossDefeat, GameResources.EVENT_BOSS_DEFEATED, levelCleared);
+table.selfLoop(awaitingTimer, EVENT_PENDING);
+table.add(awaitingTimer, EVENT_READY, spawningHorde);
+table.selfLoop(awaitingClear, EVENT_PENDING);
+table.add(awaitingClear, EVENT_READY, spawningHorde);
+table.add(spawningHorde, EVENT_HORDE_TIMED,     awaitingTimer);
+table.add(spawningHorde, EVENT_HORDE_CLEARABLE, awaitingClear);
+table.add(spawningHorde, EVENT_BOSS_SPAWNED,    awaitingBossDefeat);
+table.selfLoop(awaitingBossDefeat, EVENT_PENDING);
+table.add(awaitingBossDefeat, EVENT_BOSS_DEFEATED, levelCleared);
 
-stateMachine = new StateMachineImpl<EnemySpawnContext>();
+StateMachine<EnemySpawnContext> stateMachine = new StateMachineImpl<EnemySpawnContext>();
 stateMachine.setTransitionTable(table);
-stateMachine.setContext(spawnContext);   // spawnContext = EnemySpawnContext
-stateMachine.setState(awaitingTimer);    // stato iniziale
+stateMachine.setContext(context);       // context = EnemySpawnContext
+stateMachine.setState(awaitingTimer);   // stato iniziale
+return stateMachine;
 ```
 
 ### I cinque stati concreti
 
-| Stato | Nome (`GameResources`) | Evento prodotto | Comportamento |
+| Stato | Nome (`EnemySpawnStateMachineFactory`) | Evento prodotto | Comportamento |
 |---|---|---|---|
 | [`StateAwaitingTimer`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | `awaitingTimer` | `ready` se `elapsedTime > waitTime`, altrimenti `pending` | In `onEnter` azzera il timer; conta i secondi. |
 | [`StateAwaitingClear`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingClear.java) | `awaitingClear` | `ready` se lo schermo è ripulito, altrimenti `pending` | Attende che tutti i nemici siano morti. |

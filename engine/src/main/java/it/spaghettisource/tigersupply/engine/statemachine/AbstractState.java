@@ -8,6 +8,19 @@ package it.spaghettisource.tigersupply.engine.statemachine;
  */
 public abstract class AbstractState<C> implements State<C> {
 
+	private final String stateName;
+
+	/**
+	 * @param stateName the unique name identifying this state within its {@link TransitionTable}
+	 */
+	protected AbstractState(String stateName) {
+		this.stateName = stateName;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
 	public Event process(C context) throws StateMachineException {
 		try {
 			return internalProcess(context);

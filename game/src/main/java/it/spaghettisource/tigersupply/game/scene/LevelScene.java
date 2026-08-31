@@ -48,6 +48,10 @@ public class LevelScene extends AbstractScene {
 
 	private BackGround backGround;
 
+	//guard so a single LevelScene requests a scene transition (game-over / next level) only once,
+	//even if the game loop re-updates this (now stale) scene during its catch-up frames
+	private boolean flowTransitionTriggered = false;
+
 	List<Entity> renderSprites = new ArrayList<Entity>();	//used to manage the sprites to render	
 	EntityZComparator comparator = new EntityZComparator();	//use to order the renderSprites list
 
@@ -125,11 +129,15 @@ public class LevelScene extends AbstractScene {
 	 * @throws Exception 
 	 */
 	private void magageGameFlow() throws Exception {
+		if(flowTransitionTriggered){
+			return;	//transition already requested by this scene; ignore stale catch-up updates
+		}
 		if(!playerShip.isLive()){
+			flowTransitionTriggered = true;
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doGameOver();
-		}
-		if(enemyManager.isBossDead()){
+		}else if(enemyManager.isBossDead()){
+			flowTransitionTriggered = true;
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doNextLevel();
 		}

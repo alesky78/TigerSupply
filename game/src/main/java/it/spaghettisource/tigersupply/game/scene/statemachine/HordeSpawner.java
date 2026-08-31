@@ -29,7 +29,6 @@ import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.engine.statemachine.Event;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 
 /**
@@ -180,7 +179,7 @@ public class HordeSpawner {
 	private void validateWaitTimeHordes(List<Horde> hordes) throws Exception{
 		for (int i = 0; i < hordes.size(); i++) {
 			GenerateEvent event = hordes.get(i).getEvent();
-			if(GameResources.EVENT_HORDE_TIMED.equals(event.getName())){
+			if(EnemySpawnStateMachineFactory.EVENT_HORDE_TIMED.equals(event.getName())){
 				String time = event.getTime();
 				if(time == null || time.trim().isEmpty()){
 					throw new Exception("horde "+i+" uses a 'hordeTimed' event without a 'time' attribute; every hordeTimed horde must declare an explicit time in seconds");
@@ -245,7 +244,7 @@ public class HordeSpawner {
 	 */
 	private Event createHordeEvent(){
 		GenerateEvent desc = levelData.getEventByIndex(hordeIndex); 
-		if(GameResources.EVENT_HORDE_TIMED.equals(desc.getName())){
+		if(EnemySpawnStateMachineFactory.EVENT_HORDE_TIMED.equals(desc.getName())){
 			currentWaitTime = Float.parseFloat(desc.getTime().trim());
 		}
 		return new Event(desc.getName());
