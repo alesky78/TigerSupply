@@ -11,10 +11,14 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * the use of this class required a {@link DynaProperties} configured in this way
- * 1 list properties with key {@link StaticResources#ALGPRO_LIST_POINTS} valorized with a List of {@link Point}
- * 
- * 
+ * {@link UpdateAlgorithm} that drives the entity along a smooth path sampled from a natural cubic
+ * spline.
+ *
+ * <p>{@link #init(DynaProperties)} builds a {@link NatCubicSpline} from the control points supplied
+ * under the {@code ALGPRO_LIST_POINTS} key (a {@link List} of {@link Point}) and precomputes the
+ * interpolated path; every frame {@link #updateLogic(Position, Speed, float)} snaps the entity to the
+ * next precomputed point. Once the path is exhausted the entity stops moving.</p>
+ *
  * @author Alessandro D'Ottavio
  *
  */
@@ -22,6 +26,12 @@ public class UpdateAlgorithmBspline extends AbstractUpdateAlgorithm {
 
 	private Iterator<Point> points;	
 		
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Advances the entity to the next precomputed spline point, if any; the speed and elapsed time
+	 * are ignored because the motion is fully determined by the precomputed path.</p>
+	 */
 	public void updateLogic(Position position, Speed speed, float deltaSeconds) {
 	
 		if(points.hasNext()){
@@ -31,6 +41,12 @@ public class UpdateAlgorithmBspline extends AbstractUpdateAlgorithm {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Reads the control points from the {@code ALGPRO_LIST_POINTS} property, feeds them to a
+	 * {@link NatCubicSpline} and precomputes the interpolated path traversed by {@code updateLogic}.</p>
+	 */
 	@SuppressWarnings("unchecked")
 	public void init(DynaProperties properties){
 		NatCubicSpline path = new NatCubicSpline();

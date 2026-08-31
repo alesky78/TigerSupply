@@ -9,7 +9,15 @@ import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
 
 /**
- * 
+ * {@link UpdateAlgorithm} that overlays a sinusoidal oscillation on the entity's vertical motion while
+ * it keeps moving horizontally at its {@link Speed}.
+ *
+ * <p>The vertical position follows
+ * {@code Y = Y + Sy*T + delta*(sin(angle + increment*T) - sin(angle))}, where {@code delta} is the
+ * oscillation amplitude and {@code increment} the angular speed in degree/second. Configuration keys
+ * (from {@code StaticResources}): {@code ALGPRO_DELTA} (amplitude), {@code ALGPRO_INCREMENT} (angular
+ * speed) and the optional {@code ALGPRO_START} (initial angle, defaults to {@code 0}).</p>
+ *
  * @author Alessandro D'Ottavio
  *
  */
@@ -19,6 +27,12 @@ public class UpdateAlgorithmSinusoidal  extends AbstractUpdateAlgorithm {
 	private float increment;//speed of increase of the angle   degree/second 		
 	private float angle;
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Advances the horizontal position at constant speed and adds a sine-based vertical offset,
+	 * then advances the internal angle by {@code increment * deltaSeconds}.</p>
+	 */
 	@Override
 	public void updateLogic(Position position, Speed speed, float deltaSeconds) {
 
@@ -32,6 +46,12 @@ public class UpdateAlgorithmSinusoidal  extends AbstractUpdateAlgorithm {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Reads {@code ALGPRO_DELTA} (amplitude) and {@code ALGPRO_INCREMENT} (angular speed), and the
+	 * optional {@code ALGPRO_START} initial angle (defaults to {@code 0} when absent).</p>
+	 */
 	public void init(DynaProperties properties) {
 		delta = getFloat(properties.getString(ALGPRO_DELTA));
 		increment = getFloat(properties.getString(ALGPRO_INCREMENT));

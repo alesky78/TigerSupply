@@ -9,7 +9,15 @@ import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
 
 /**
- * 
+ * {@link UpdateAlgorithm} that moves the entity in a straight line toward a fixed target
+ * {@link Position} at constant speed.
+ *
+ * <p>On the first frame it derives the per-axis speeds from the entity's initial {@link Speed} so that
+ * both axes reach the target at the same time, capping each axis at its configured maximum. After that
+ * the entity travels at those fixed speeds. Configuration keys (from {@code StaticResources}):
+ * {@code ALGPRO_SPEEDX}/{@code ALGPRO_SPEEDY} for the maximum speeds and {@code ALGPRO_POINT} for the
+ * target point.</p>
+ *
  * @author Alessandro D'Ottavio
  *
  */
@@ -27,6 +35,13 @@ public class UpdateAlgoritmGoToPoint extends AbstractUpdateAlgorithm  {
 	
 	
 	
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>On the first invocation it computes the per-axis speeds needed to reach the target together
+	 * (clamping the vertical speed to its maximum); subsequent invocations just integrate those speeds
+	 * over the elapsed time.</p>
+	 */
 	@Override
 	public void updateLogic(Position position, Speed speed, float deltaSeconds) {
 
@@ -57,6 +72,12 @@ public class UpdateAlgoritmGoToPoint extends AbstractUpdateAlgorithm  {
 
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Reads the {@code ALGPRO_SPEEDX}/{@code ALGPRO_SPEEDY} maximum speeds and the
+	 * {@code ALGPRO_POINT} target position.</p>
+	 */
 	public void init(DynaProperties properties) {
 		maxXspeed = getInt(properties.getString(ALGPRO_SPEEDX));
 		maxYspeed = getInt(properties.getString(ALGPRO_SPEEDY));
