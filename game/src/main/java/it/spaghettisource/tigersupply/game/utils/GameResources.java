@@ -57,19 +57,19 @@ public class GameResources {
 	public static final String GAME_EVENT_CONTINUE_LVL  = "contiuneLevel";	
 	
 	//State machine level enemy builder states
-	public static final String STATE_GENERATE_HORDE  = "generateHorde";
-	public static final String STATE_KILL_BOSS 	 	 = "killBoss";
-	public static final String STATE_BOSS_KILLED 	 = "bossKilledFinal";	//terminal state: boss dead / level won (distinct from EVENT_BOSS_KILLED)
-	public static final String STATE_WAIT_KILL  	 = "waitKill";
-	public static final String STATE_WAIT_TIME  	 = "waitTime";
+	public static final String STATE_SPAWNING_HORDE       = "spawningHorde";
+	public static final String STATE_AWAITING_BOSS_DEFEAT = "awaitingBossDefeat";
+	public static final String STATE_LEVEL_CLEARED 	      = "levelCleared";	//terminal state: boss dead / level won (distinct from EVENT_BOSS_DEFEATED)
+	public static final String STATE_AWAITING_CLEAR       = "awaitingClear";
+	public static final String STATE_AWAITING_TIMER       = "awaitingTimer";
 
 	//State machine level enemy builder events
-	public static final String EVENT_WAIT  	 	    = "wait";
-	public static final String EVENT_NEW_HORDE      = "newHorde";
-	public static final String EVENT_WAIT_KILL      = "waitKill";
-	public static final String EVENT_WAIT_TIME      = "waitTime";
-	public static final String EVENT_BOSS_GENERATED = "bossGenerated";	
-	public static final String EVENT_BOSS_KILLED    = "bossKilled";		
+	public static final String EVENT_PENDING         = "pending";
+	public static final String EVENT_READY           = "ready";
+	public static final String EVENT_HORDE_CLEARABLE = "hordeClearable";
+	public static final String EVENT_HORDE_TIMED     = "hordeTimed";
+	public static final String EVENT_BOSS_SPAWNED    = "bossSpawned";
+	public static final String EVENT_BOSS_DEFEATED   = "bossDefeated";
 
 	//Z coordinate 
 	public static final int Z_EXPLOSION  			= 5;

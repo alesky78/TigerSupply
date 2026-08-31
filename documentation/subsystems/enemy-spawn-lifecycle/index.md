@@ -96,9 +96,9 @@ Ogni ondata dichiara **come** si completa tramite il tag `<generateEvent>`. I va
 
 | `name` | Significato | Attributo `time` |
 |---|---|---|
-| `waitTime` | Attendi *N* secondi, poi genera l'ondata successiva. | **obbligatorio** (secondi, anche frazionari) |
-| `waitKill` | Attendi finché tutti i nemici in scena sono morti, poi genera la successiva. | ignorato |
-| `bossGenerated` | Questa ondata è il boss: passa allo stato di attesa uccisione boss. | ignorato |
+| `hordeTimed` | Attendi *N* secondi, poi genera l'ondata successiva. | **obbligatorio** (secondi, anche frazionari) |
+| `hordeClearable` | Attendi finché tutti i nemici in scena sono morti, poi genera la successiva. | ignorato |
+| `bossSpawned` | Questa ondata è il boss: passa allo stato di attesa uccisione boss. | ignorato |
 
 ### 3.3 Prototipo nemico / prototipo algoritmo
 
@@ -131,12 +131,12 @@ Un **tick** è una chiamata a `StateMachine.tick()`, invocata una volta per fram
 
 ### 3.7 Stato finale (fine livello)
 
-Lo stato `bossKilledFinal` è **finale** (`State.isFinal()` → `true`). Quando la macchina lo
+Lo stato `levelCleared` è **finale** (`State.isFinal()` → `true`). Quando la macchina lo
 raggiunge si ferma; `EnemyManager.isBossDead()` diventa `true` e la scena passa al livello
 successivo. È l'**unica fonte di verità** per "boss morto".
 
-> **Attenzione — nome vs evento.** La costante di **stato** `STATE_BOSS_KILLED` vale
-> `"bossKilledFinal"`, mentre la costante di **evento** `EVENT_BOSS_KILLED` vale `"bossKilled"`.
+> **Attenzione — nome vs evento.** La costante di **stato** `STATE_LEVEL_CLEARED` vale
+> `"levelCleared"`, mentre la costante di **evento** `EVENT_BOSS_DEFEATED` vale `"bossDefeated"`.
 > Sono deliberatamente distinti: lo stato finale e l'evento che vi conduce non collidono.
 
 ---
@@ -172,7 +172,7 @@ flowchart LR
 flowchart LR
     subgraph GAME ["game.* (esempio implementativo)"]
         EM["EnemyManager"] -->|costruisce e fa avanzare| CTX["EnemySpawnContext"]
-        EM -->|cabla stati e tabella| STATES["StateWaitTime / StateWaitKill /<br/>StateGenerateHorde / StateKillBoss / StateBossKilled"]
+        EM -->|cabla stati e tabella| STATES["StateAwaitingTimer / StateAwaitingClear /<br/>StateSpawningHorde / StateAwaitingBossDefeat / StateLevelCleared"]
         CTX --> HS["HordeSpawner"]
         HS --> REPO["LevelDataRepository"]
     end
@@ -180,7 +180,7 @@ flowchart LR
 ```
 
 > **Regola pratica.** Se stai scrivendo codice che potrebbe servire a un *altro* gioco basato su
-> questo engine, va in `engine.statemachine`. Se nomina `Enemy`, `Horde`, `waitTime` o l'XML, va in
+> questo engine, va in `engine.statemachine`. Se nomina `Enemy`, `Horde`, `hordeTimed` o l'XML, va in
 > `game.*`. L'unico punto in cui i due mondi si toccano è il **parametro di tipo `C`**: `game`
 > istanzia `StateMachine<EnemySpawnContext>`.
 
@@ -246,11 +246,11 @@ classDiagram
 |---|---|---|---|
 | Cablaggio | `EnemyManager` | [EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java) | Costruisce stati + tabella, tiene la macchina, la fa avanzare a ogni frame. |
 | Contesto | `EnemySpawnContext` | [EnemySpawnContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java) | Il `C` della macchina: tempo, ritardo, delega a `HordeSpawner`. |
-| Stato | `StateWaitTime` | [StateWaitTime.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateWaitTime.java) | Attesa temporizzata fra ondate. |
-| Stato | `StateWaitKill` | [StateWaitKill.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateWaitKill.java) | Attesa finché lo schermo è ripulito. |
-| Stato | `StateGenerateHorde` | [StateGenerateHorde.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateGenerateHorde.java) | Genera l'ondata corrente e ne emette l'evento. |
-| Stato | `StateKillBoss` | [StateKillBoss.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateKillBoss.java) | Attende l'uccisione del boss. |
-| Stato (finale) | `StateBossKilled` | [StateBossKilled.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateBossKilled.java) | Terminale: boss morto, livello vinto. |
+| Stato | `StateAwaitingTimer` | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | Attesa temporizzata fra ondate. |
+| Stato | `StateAwaitingClear` | [StateAwaitingClear.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingClear.java) | Attesa finché lo schermo è ripulito. |
+| Stato | `StateSpawningHorde` | [StateSpawningHorde.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateSpawningHorde.java) | Genera l'ondata corrente e ne emette l'evento. |
+| Stato | `StateAwaitingBossDefeat` | [StateAwaitingBossDefeat.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingBossDefeat.java) | Attende l'uccisione del boss. |
+| Stato (finale) | `StateLevelCleared` | [StateLevelCleared.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateLevelCleared.java) | Terminale: boss morto, livello vinto. |
 | Coordinatore | `HordeSpawner` | [HordeSpawner.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/HordeSpawner.java) | Carica l'XML e istanzia i nemici dell'ondata. |
 | Builder | `EnemyDataBuilderSaxXml` | [EnemyDataBuilderSaxXml.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/EnemyDataBuilderSaxXml.java) | Parser SAX dell'XML del livello. |
 | Repository | `LevelDataRepository` | [LevelDataRepository.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/LevelDataRepository.java) | Custodisce ondate + prototipi, lookup per indice/nome. |
@@ -260,11 +260,11 @@ classDiagram
     class AbstractState~EnemySpawnContext~ {
         <<abstract>>
     }
-    class StateWaitTime
-    class StateWaitKill
-    class StateGenerateHorde
-    class StateKillBoss
-    class StateBossKilled {
+    class StateAwaitingTimer
+    class StateAwaitingClear
+    class StateSpawningHorde
+    class StateAwaitingBossDefeat
+    class StateLevelCleared {
         +isFinal() true
     }
     class EnemySpawnContext {
@@ -278,11 +278,11 @@ classDiagram
         +spawnNextHorde() Event
         +getCurrentWaitTime() float
     }
-    AbstractState~EnemySpawnContext~ <|-- StateWaitTime
-    AbstractState~EnemySpawnContext~ <|-- StateWaitKill
-    AbstractState~EnemySpawnContext~ <|-- StateGenerateHorde
-    AbstractState~EnemySpawnContext~ <|-- StateKillBoss
-    AbstractState~EnemySpawnContext~ <|-- StateBossKilled
+    AbstractState~EnemySpawnContext~ <|-- StateAwaitingTimer
+    AbstractState~EnemySpawnContext~ <|-- StateAwaitingClear
+    AbstractState~EnemySpawnContext~ <|-- StateSpawningHorde
+    AbstractState~EnemySpawnContext~ <|-- StateAwaitingBossDefeat
+    AbstractState~EnemySpawnContext~ <|-- StateLevelCleared
     EnemySpawnContext --> HordeSpawner
 ```
 
@@ -308,8 +308,8 @@ erDiagram
         GenerateEvent event
     }
     GENERATE_EVENT {
-        string name "waitTime | waitKill | bossGenerated"
-        string time "secondi, solo per waitTime"
+        string name "hordeTimed | hordeClearable | bossSpawned"
+        string time "secondi, solo per hordeTimed"
     }
     ENEMY_DEFINITION {
         string enemyPrototype
@@ -344,21 +344,21 @@ Il dettaglio del parsing è in [caricamento-dati-livello.md](caricamento-dati-li
 
 ## 7. Ciclo di vita / pipeline
 
-La macchina a stati dello spawn nemici parte da `waitTime` e termina su `bossKilledFinal`. Ogni
+La macchina a stati dello spawn nemici parte da `awaitingTimer` e termina su `levelCleared`. Ogni
 freccia è una transizione dichiarata in `EnemyManager.initComponents()`.
 
 ```mermaid
 flowchart TD
-    START([stato iniziale]) --> WT["waitTime<br/>(attesa temporizzata)"]
-    WT -->|wait| WT
-    WT -->|newHorde| GH["generateHorde<br/>(genera ondata)"]
-    WK["waitKill<br/>(attesa uccisioni)"] -->|wait| WK
-    WK -->|newHorde| GH
-    GH -->|waitTime| WT
-    GH -->|waitKill| WK
-    GH -->|bossGenerated| KB["killBoss<br/>(attesa boss)"]
-    KB -->|wait| KB
-    KB -->|bossKilled| BK["bossKilledFinal<br/>(FINALE — livello vinto)"]
+    START([stato iniziale]) --> WT["awaitingTimer<br/>(attesa temporizzata)"]
+    WT -->|pending| WT
+    WT -->|ready| GH["spawningHorde<br/>(genera ondata)"]
+    WK["awaitingClear<br/>(attesa uccisioni)"] -->|pending| WK
+    WK -->|ready| GH
+    GH -->|hordeTimed| WT
+    GH -->|hordeClearable| WK
+    GH -->|bossSpawned| KB["awaitingBossDefeat<br/>(attesa boss)"]
+    KB -->|pending| KB
+    KB -->|bossDefeated| BK["levelCleared<br/>(FINALE — livello vinto)"]
 ```
 
 | Passo | Fornito da | Comportamento |
@@ -366,7 +366,7 @@ flowchart TD
 | Tick | `EnemyManager.updateEntity` (game) | Incrementa il tempo e chiama `stateMachine.tick()` una volta per frame. |
 | Calcolo evento | `State.process` (engine → stato game) | Lo stato legge il contesto e restituisce un `Event`. |
 | Risoluzione transizione | `TransitionTable.next` (engine) | Dalla coppia `(stato,evento)` ricava lo stato successivo. |
-| Ingresso stato | `State.onEnter` (engine → `StateWaitTime`) | Solo al cambio di stato; `StateWaitTime` azzera il timer. |
+| Ingresso stato | `State.onEnter` (engine → `StateAwaitingTimer`) | Solo al cambio di stato; `StateAwaitingTimer` azzera il timer. |
 | Arresto | `StateMachineImpl.tick` (engine) | No-op quando lo stato corrente è finale. |
 
 Il dettaglio frame-by-frame è in [sequenziamento-horde.md](sequenziamento-horde.md); il
@@ -379,7 +379,7 @@ funzionamento generico della macchina in [motore-macchina-a-stati.md](motore-mac
 | # | Flusso | Modulo | Trigger | Descrizione | Dettaglio |
 |---|---|---|---|---|---|
 | 1 | Esecuzione della macchina a stati generica | **engine** | `tick()` per tick | Come un tick sceglie l'evento, risolve la transizione e si ferma sul finale. | [motore-macchina-a-stati.md](motore-macchina-a-stati.md) |
-| 2 | Sequenziamento delle ondate | **game** | frame update | Come i 5 stati concreti sequenziano le ondate e rispettano `waitTime`/`waitKill`. | [sequenziamento-horde.md](sequenziamento-horde.md) |
+| 2 | Sequenziamento delle ondate | **game** | frame update | Come i 5 stati concreti sequenziano le ondate e rispettano `hordeTimed`/`hordeClearable`. | [sequenziamento-horde.md](sequenziamento-horde.md) |
 | 3 | Caricamento dati livello (XML → nemici) | **game** | avvio livello | Come il SAX builder e la reflection trasformano l'XML in `Enemy` in scena. | [caricamento-dati-livello.md](caricamento-dati-livello.md) |
 
 ---

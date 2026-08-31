@@ -34,7 +34,7 @@ Due fasi distinte:
 
 ### Trigger
 - **Caricamento:** `EnemyManager.initComponents()` durante l'avvio della `LevelScene` (una volta).
-- **Generazione:** lo stato `StateGenerateHorde`, a ogni ondata (vedi
+- **Generazione:** lo stato `StateSpawningHorde`, a ogni ondata (vedi
   [sequenziamento-horde.md](sequenziamento-horde.md)).
 
 ### Concetti locali
@@ -80,7 +80,7 @@ flowchart TD
 1. `builder.parse()` legge l'XML con SAX; ogni `startElement` costruisce il POJO corrispondente
    (`<horde>` → `Horde`, `<enemy>` → `EnemyDefinition`, `<enemyPrototype>` → `EnemyPrototype`, …).
 2. `buildHordes()` / `buildEnemyPrototypes()` / `buildAlgorithmPrototypes()` restituiscono le liste.
-3. `validateWaitTimeHordes(hordes)` scorre le ondate e **fallisce subito** se un'ondata `waitTime`
+3. `validateWaitTimeHordes(hordes)` scorre le ondate e **fallisce subito** se un'ondata `hordeTimed`
    ha `time` assente o non numerico.
 4. Le tre liste vengono riposte in `LevelDataRepository`.
 
@@ -92,7 +92,7 @@ flowchart TD
    - crea l'algoritmo via `UpdateAlgorithmFactory.newInstance(classe, proprietà)` (**reflection**);
    - crea l'`Enemy` via `EntityFactory.createEntity(x, y, z, vx, vy, scala, algoritmo, sprite, classe)` (**reflection**);
    - inietta effect/shot/enemy manager, target (il player) e contesto.
-2. `createHordeEvent()` costruisce l'`Event` con il `name` del `generateEvent`; se è `waitTime`,
+2. `createHordeEvent()` costruisce l'`Event` con il `name` del `generateEvent`; se è `hordeTimed`,
    fa il parse del `time` in `currentWaitTime`.
 3. `enemyManager.addRequest(horde)` accoda i nemici; `advanceHorde()` incrementa l'indice.
 
@@ -105,7 +105,7 @@ flowchart TD
 | Tag | Attributi | POJO | Note |
 |---|---|---|---|
 | `<horde>` | — | `Horde` | Ondata; ordine di dichiarazione = ordine di spawn. |
-| `<generateEvent>` | `name`, `time` | `GenerateEvent` | `name` ∈ {`waitTime`, `waitKill`, `bossGenerated`}; `time` in secondi (solo `waitTime`). |
+| `<generateEvent>` | `name`, `time` | `GenerateEvent` | `name` ∈ {`hordeTimed`, `hordeClearable`, `bossSpawned`}; `time` in secondi (solo `hordeTimed`). |
 | `<enemy>` | `enemyPrototype`, `algorithmPrototype`, `posX`, `posY`, `posZ` | `EnemyDefinition` | Riferimenti per nome + posizione (la risoluzione assume 1360×660). |
 | `<enemyPrototype>` | `name`, `type`, `class` | `EnemyPrototype` | `type` oggi è sempre `imageSingleSprite`; `class` è l'FQN del nemico. |
 | `<speed>` / `<image>` / `<scale>` | vari | `Speed` / `Image` / `Scale` | Attributi del prototipo nemico. `image alias` risolto dal catalogo immagini. |
@@ -137,11 +137,11 @@ flowchart TD
 
 | Situazione | Comportamento |
 |---|---|
-| Ondata `waitTime` senza `time` valido | `validateWaitTimeHordes` lancia un'eccezione che **nomina l'indice** dell'ondata; il livello non parte. |
-| `time` dichiarato su un'ondata **non** `waitTime` | Ignorato: la validazione passa e il valore non ha effetto sul sequenziamento. |
+| Ondata `hordeTimed` senza `time` valido | `validateWaitTimeHordes` lancia un'eccezione che **nomina l'indice** dell'ondata; il livello non parte. |
+| `time` dichiarato su un'ondata **non** `hordeTimed` | Ignorato: la validazione passa e il valore non ha effetto sul sequenziamento. |
 | `enemyPrototype` / `algorithmPrototype` con nome inesistente | Il lookup nel repository restituisce `null` → `NullPointerException` alla generazione. |
 | FQN di classe nemico/algoritmo errato | La factory di reflection fallisce; l'eccezione viene ripropagata da `createHordeEnemies`. |
 | `type` diverso da `imageSingleSprite` | Nessun ramo lo gestisce: l'entità resta `null` (oggi tutti i prototipi usano `imageSingleSprite`). |
 
-> **Nota.** La validazione fail-fast riguarda **solo** il `time` delle ondate `waitTime`: rende
+> **Nota.** La validazione fail-fast riguarda **solo** il `time` delle ondate `hordeTimed`: rende
 > ogni attesa temporizzata esplicita e leggibile, senza fallback a un valore di default.

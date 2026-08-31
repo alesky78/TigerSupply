@@ -11,12 +11,12 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
  *
  * @author Alessandro D'Ottavio
  */
-public class StateBossKilled extends AbstractState<EnemySpawnContext> {
+public class StateLevelCleared extends AbstractState<EnemySpawnContext> {
 
-	private final static Event WAIT = new Event(GameResources.EVENT_WAIT);
+	private final static Event PENDING = new Event(GameResources.EVENT_PENDING);
 
 	public String getStateName() {
-		return GameResources.STATE_BOSS_KILLED;
+		return GameResources.STATE_LEVEL_CLEARED;
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class StateBossKilled extends AbstractState<EnemySpawnContext> {
 
 	public Event internalProcess(EnemySpawnContext context) {
 		//never invoked: the machine halts on a final state
-		return WAIT;
+		return PENDING;
 	}
 
 }

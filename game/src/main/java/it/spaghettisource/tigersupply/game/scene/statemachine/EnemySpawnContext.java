@@ -14,7 +14,7 @@ public class EnemySpawnContext {
 
 	protected float elapsedTime;
 
-	/** Seconds to wait in {@code waitTime} before spawning the next horde; defaults to the 1s delay
+	/** Seconds to wait in {@code awaitingTimer} before spawning the next horde; defaults to the 1s delay
 	 * applied before the very first horde, then overwritten by each time-gated horde's declared time. */
 	protected float waitTime = 1;
 	
@@ -31,7 +31,7 @@ public class EnemySpawnContext {
 
 	public Event spawnNextHorde() throws Exception{
 		Event event = hordeSpawner.spawnNextHorde();
-		if(GameResources.EVENT_WAIT_TIME.equals(event.getName())){
+		if(GameResources.EVENT_HORDE_TIMED.equals(event.getName())){
 			waitTime = hordeSpawner.getCurrentWaitTime();
 		}
 		return event;

@@ -5,22 +5,22 @@ import it.spaghettisource.tigersupply.engine.statemachine.Event;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 
-public class StateKillBoss extends AbstractState<EnemySpawnContext> {
+public class StateAwaitingBossDefeat extends AbstractState<EnemySpawnContext> {
 
-	private final static Event KILLED = new Event(GameResources.EVENT_BOSS_KILLED);
-	private final static Event WAIT = new Event(GameResources.EVENT_WAIT);	
+	private final static Event DEFEATED = new Event(GameResources.EVENT_BOSS_DEFEATED);
+	private final static Event PENDING = new Event(GameResources.EVENT_PENDING);	
 	
 	public String getStateName() {
-		return GameResources.STATE_KILL_BOSS;
+		return GameResources.STATE_AWAITING_BOSS_DEFEAT;
 	}
 
 	public Event internalProcess(EnemySpawnContext context) {
 		
 		if(context.areAllEnemiesKilled()){
-			return KILLED;
+			return DEFEATED;
 		}
 
-		return WAIT;
+		return PENDING;
 	}
 
 }

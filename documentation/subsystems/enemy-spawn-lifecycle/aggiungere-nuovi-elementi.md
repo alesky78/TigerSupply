@@ -32,21 +32,21 @@ l'engine è già completo e riusabile.
 
    ```xml
    <horde>
-       <generateEvent name="waitTime" time="1.5" />
+       <generateEvent name="hordeTimed" time="1.5" />
        <enemy enemyPrototype="standard" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
        <enemy enemyPrototype="standard" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />
    </horde>
    ```
 3. Scegli il `generateEvent`:
-   - `waitTime` con `time` (secondi, anche frazionari) → attesa temporizzata **obbligatoria**;
-   - `waitKill` → attende lo schermo pulito (nessun `time`);
-   - `bossGenerated` → l'ondata è il boss (passa allo stato di attesa boss).
+   - `hordeTimed` con `time` (secondi, anche frazionari) → attesa temporizzata **obbligatoria**;
+   - `hordeClearable` → attende lo schermo pulito (nessun `time`);
+   - `bossSpawned` → l'ondata è il boss (passa allo stato di attesa boss).
 
 > **Coordinate.** `posX/posY` assumono la risoluzione fissa **1360×660**. Gli spawn a destra usano
 > tipicamente `posX="1350"`; a sinistra `posX="1"`.
 
 ### Verifica
-- Avvia il gioco; l'ondata deve comparire al proprio turno. Un'ondata `waitTime` senza `time`
+- Avvia il gioco; l'ondata deve comparire al proprio turno. Un'ondata `hordeTimed` senza `time`
   valido **impedisce l'avvio del livello** con un errore che ne nomina l'indice.
 
 ---
@@ -143,7 +143,7 @@ si tocca.**
 4. **Cablaggio** — in `EnemyManager.initComponents()`
    ([EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java)):
    costruisci lo stato una volta e dichiara le sue transizioni sulla `TransitionTable` (`add` /
-   `selfLoop`). Se è terminale, fai in modo che `isFinal()` ritorni `true` (come `StateBossKilled`)
+   `selfLoop`). Se è terminale, fai in modo che `isFinal()` ritorni `true` (come `StateLevelCleared`)
    e **non** aggiungerlo come sorgente nella tabella.
 
 ### Verifica
@@ -154,7 +154,7 @@ si tocca.**
 
 ## 5. Checklist
 
-- [ ] **Ondata** aggiunta in `<hordes>` con un `generateEvent` valido (`time` presente se `waitTime`).
+- [ ] **Ondata** aggiunta in `<hordes>` con un `generateEvent` valido (`time` presente se `hordeTimed`).
 - [ ] **Nemico**: nuova sottoclasse di `Enemy` (`game`) + `<enemyPrototype>` con FQN corretto (+ alias immagine).
 - [ ] **Algoritmo**: nuova sottoclasse di `UpdateAlgorithm` (`engine`) + `<algorithmPrototype>` con FQN e proprietà.
 - [ ] **Stato**: costanti `STATE_*`/`EVENT_*` (`game`) + classe `AbstractState<EnemySpawnContext>` + transizioni cablate in `EnemyManager.initComponents()`.

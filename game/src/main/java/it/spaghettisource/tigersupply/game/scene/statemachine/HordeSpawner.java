@@ -54,7 +54,7 @@ public class HordeSpawner {
 	private int hordeIndex;
 
 	/** Seconds to wait after the horde most recently spawned by {@link #spawnNextHorde()}, parsed from
-	 * its {@code waitTime} event; only meaningful when that horde's event is {@code waitTime}. */
+	 * its {@code hordeTimed} event; only meaningful when that horde's event is {@code hordeTimed}. */
 	private float currentWaitTime;
 
 	protected Entity player;
@@ -168,27 +168,27 @@ public class HordeSpawner {
 	}
 
 	/**
-	 * Fails fast when a time-gated ({@code waitTime}) horde declares no valid delay, forcing every
+	 * Fails fast when a time-gated ({@code hordeTimed}) horde declares no valid delay, forcing every
 	 * such horde in the level definition to carry an explicit, human-readable {@code time} in seconds.
 	 *
 	 * <p>A {@code time} value on any other event type is ignored and does not fail validation.</p>
 	 *
 	 * @param hordes the hordes parsed from the level definition, in declaration order
-	 * @throws Exception if a {@code waitTime} horde has a missing, blank, or unparseable {@code time},
+	 * @throws Exception if a {@code hordeTimed} horde has a missing, blank, or unparseable {@code time},
 	 *                   naming the offending horde by its zero-based index
 	 */
 	private void validateWaitTimeHordes(List<Horde> hordes) throws Exception{
 		for (int i = 0; i < hordes.size(); i++) {
 			GenerateEvent event = hordes.get(i).getEvent();
-			if(GameResources.EVENT_WAIT_TIME.equals(event.getName())){
+			if(GameResources.EVENT_HORDE_TIMED.equals(event.getName())){
 				String time = event.getTime();
 				if(time == null || time.trim().isEmpty()){
-					throw new Exception("horde "+i+" uses a 'waitTime' event without a 'time' attribute; every waitTime horde must declare an explicit time in seconds");
+					throw new Exception("horde "+i+" uses a 'hordeTimed' event without a 'time' attribute; every hordeTimed horde must declare an explicit time in seconds");
 				}
 				try{
 					Float.parseFloat(time.trim());
 				}catch (NumberFormatException e) {
-					throw new Exception("horde "+i+" uses a 'waitTime' event with an invalid 'time' value '"+time+"'; it must be a number of seconds", e);
+					throw new Exception("horde "+i+" uses a 'hordeTimed' event with an invalid 'time' value '"+time+"'; it must be a number of seconds", e);
 				}
 			}
 		}
@@ -237,7 +237,7 @@ public class HordeSpawner {
 	/**
 	 * Creates the {@link Event} associated with the current horde.
 	 *
-	 * <p>For a time-gated ({@code waitTime}) horde the declared {@code time} is parsed into
+	 * <p>For a time-gated ({@code hordeTimed}) horde the declared {@code time} is parsed into
 	 * {@link #getCurrentWaitTime()} so the wait state can honor it. The value is guaranteed parseable
 	 * because {@link #loadLevelData()} validated it up front.</p>
 	 *
@@ -245,7 +245,7 @@ public class HordeSpawner {
 	 */
 	private Event createHordeEvent(){
 		GenerateEvent desc = levelData.getEventByIndex(hordeIndex); 
-		if(GameResources.EVENT_WAIT_TIME.equals(desc.getName())){
+		if(GameResources.EVENT_HORDE_TIMED.equals(desc.getName())){
 			currentWaitTime = Float.parseFloat(desc.getTime().trim());
 		}
 		return new Event(desc.getName());
@@ -256,7 +256,7 @@ public class HordeSpawner {
 	 * {@link #spawnNextHorde()}.
 	 *
 	 * @return the current wait delay in seconds; only meaningful when the last spawned horde's event
-	 *         was {@code waitTime}
+	 *         was {@code hordeTimed}
 	 */
 	public float getCurrentWaitTime(){
 		return currentWaitTime;
