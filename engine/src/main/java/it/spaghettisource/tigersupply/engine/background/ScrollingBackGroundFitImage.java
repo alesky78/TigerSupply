@@ -4,13 +4,19 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
- * implementation of a background that scroll at constant speed and fit the image with the size of the window
- * so deform the immage, select the size of the image possible as the resolution screen to have a good result
- * 
+ * Scrolling background that stretches a single image to fill the whole window and
+ * loops it horizontally at a constant speed.
+ *
+ * <p>The image is scaled to the screen resolution, so it is deformed whenever its
+ * aspect ratio differs from the window's; choose an image sized close to the screen
+ * resolution for a good result. Each frame the horizontal offset advances by
+ * {@code speedBackGround} and wraps around the screen width, so the image repeats
+ * seamlessly while it scrolls either to the left or to the right.
+ *
  * @author Alessandro D'Ottavio
  *
  */
-public class BackGroundFitImage implements BackGround {
+public class ScrollingBackGroundFitImage implements BackGround {
 
 	protected BufferedImage image;	//image of the background
 
@@ -28,15 +34,15 @@ public class BackGroundFitImage implements BackGround {
 	protected boolean goToLeft = true;	//direction of the scroll
 
 	/**
-	 * 
-	 * 
-	 * @param image
-	 * @param speedBackGround
-	 * @param widthScreen
-	 * @param heightScreen
-	 * @param direction  r means image move to rigth else l means image move to left
+	 * Creates a scrolling, window-fitting background from the given image.
+	 *
+	 * @param image           the background image; its width and height are cached at construction
+	 * @param speedBackGround  the horizontal scroll speed, in pixels advanced per frame
+	 * @param widthScreen      the window width in pixels, used both as the fit target and the wrap-around length
+	 * @param heightScreen     the window height in pixels, used as the fit target
+	 * @param goToLeft         {@code true} to scroll the image towards the left, {@code false} to scroll it towards the right
 	 */
-	public BackGroundFitImage(BufferedImage image,float speedBackGround,int widthScreen,int heightScreen,boolean goToLeft){
+	public ScrollingBackGroundFitImage(BufferedImage image,float speedBackGround,int widthScreen,int heightScreen,boolean goToLeft){
 		this.image = image;
 		this.widthImage = image.getWidth();
 		this.heightImage = image.getHeight();
@@ -48,7 +54,11 @@ public class BackGroundFitImage implements BackGround {
 	}
 
 	/**
-	 * increments coordinate of the speed
+	 * {@inheritDoc}
+	 *
+	 * <p>Advances the on-screen scroll offset by {@code speedBackGround}, wrapping it
+	 * modulo the screen width, and recomputes the matching cut point on the source
+	 * image so the head and tail can be drawn as a seamless loop.
 	 */
 	public void updateBackground(float deltaSeconds) {
 		xCoordinateWindow = (xCoordinateWindow + speedBackGround) % widthScreen;
@@ -56,6 +66,13 @@ public class BackGroundFitImage implements BackGround {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>When the offset is zero the image is drawn once, stretched to the window.
+	 * Otherwise it is drawn in two pieces (a head and a tail) whose split point depends
+	 * on the scroll direction, so the wrapped image appears continuous across the seam.
+	 */
 	public void renderBackground(Graphics2D dbg) {
 		if(xCoordinateWindow == 0){
 			dbg.drawImage(image,0,0,widthScreen,heightScreen,

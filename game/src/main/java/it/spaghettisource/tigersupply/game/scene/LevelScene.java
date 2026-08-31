@@ -13,8 +13,9 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.background.BackGround;
-import it.spaghettisource.tigersupply.engine.background.BackGroundFitImage;
-import it.spaghettisource.tigersupply.engine.background.BackGroundTexture;
+import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundFitImage;
+import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundTiledImage;
+import it.spaghettisource.tigersupply.engine.background.TraversingBackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.ParallaxBackGround;
 import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
@@ -94,8 +95,8 @@ public class LevelScene extends AbstractScene {
 		//TODO il backGround deve essere configurabile cosi e statico in questo costruttore e non si puo' generalizzare 
 		ParallaxBackGround px = new ParallaxBackGround();				
 		//px.addBackGround(new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_space"), 0.2f, pWidth, pHeight,true)); 
-		px.addBackGround(new BackGroundTexture(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );
-		px.addBackGround(new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_planet"), 0.01f, pWidth, pHeight,false));		
+		px.addBackGround(new ScrollingBackGroundTiledImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );
+		px.addBackGround(new TraversingBackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_planet"), 10f, pWidth, pHeight,true));		
 		backGround = px;		
 
 	}

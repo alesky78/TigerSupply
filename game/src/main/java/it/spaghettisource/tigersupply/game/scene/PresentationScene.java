@@ -8,7 +8,7 @@ import it.spaghettisource.tigersupply.engine.image.finaleffect.FinalEffectManage
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
-import it.spaghettisource.tigersupply.engine.background.BackGroundFitImage;
+import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundFitImage;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -32,7 +32,7 @@ public class PresentationScene extends AbstractScene {
 		this.pWidth = context.getScreenWidth();
 		this.pHeight = context.getScreenHeight();
 				
-		backGround = new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage(GameResources.BCKGROUND_PLANET), 0, pWidth, pHeight, false);
+		backGround = new ScrollingBackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage(GameResources.BCKGROUND_PLANET), 0, pWidth, pHeight, false);
 		
 		finalEffectManager = FinalEffectManager.getInstance();
 		

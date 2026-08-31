@@ -4,9 +4,15 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
- * implementation of a static background that fit the image with the size of the window
- * so deform the immage, select the size of the image possible as the resolution screen to have a good result
- * 
+ * Static background that stretches a single image to fill the whole window and never
+ * scrolls.
+ *
+ * <p>The image is scaled to the screen resolution, so it is deformed whenever its
+ * aspect ratio differs from the window's; choose an image sized close to the screen
+ * resolution for a good result. This is the still counterpart of
+ * {@link BackGroundFitImage}: {@link #updateBackground(float)} is a no-op and each
+ * frame draws the same fitted image.
+ *
  * @author Alessandro D'Ottavio
  *
  */
@@ -21,13 +27,11 @@ public class StaticBackGroundFitImage implements BackGround {
 	protected int heightScreen;  	//heigh of the window
 
 	/**
-	 * 
-	 * 
-	 * @param image
-	 * @param speedBackGround
-	 * @param widthScreen
-	 * @param heightScreen
-	 * @param direction  r means image move to rigth else l means image move to left
+	 * Creates a static, window-fitting background from the given image.
+	 *
+	 * @param image        the background image; its width and height are cached at construction
+	 * @param widthScreen  the window width in pixels, used as the fit target
+	 * @param heightScreen the window height in pixels, used as the fit target
 	 */
 	public StaticBackGroundFitImage(BufferedImage image,int widthScreen,int heightScreen){
 		this.image = image;
@@ -38,12 +42,19 @@ public class StaticBackGroundFitImage implements BackGround {
 	}
 
 	/**
-	 * increments coordinate of the speed
+	 * {@inheritDoc}
+	 *
+	 * <p>No-op: this background is static and holds no animation state.
 	 */
 	public void updateBackground(float deltaSeconds) {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>Draws the image once, stretched to cover the whole window.
+	 */
 	public void renderBackground(Graphics2D dbg) {
 
 		dbg.drawImage(image,0,0,widthScreen,heightScreen,0,0,widthImage,heightImage,null);			
