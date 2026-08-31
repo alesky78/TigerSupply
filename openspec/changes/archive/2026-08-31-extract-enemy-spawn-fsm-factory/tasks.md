@@ -58,5 +58,5 @@
       `EnemyManager`) to point at `EnemySpawnStateMachineFactory`; verify the code snippet reflects
       the new single-call wiring.
 - [x] 6.2 Full reactor build passes (`mvn -q clean install`).
-- [ ] 6.3 Manual smoke test: launch level-1, clear the timed and clearable hordes, spawn and defeat
+- [x] 6.3 Manual smoke test: launch level-1, clear the timed and clearable hordes, spawn and defeat
       the boss, and confirm the machine reaches the level-cleared final state exactly as before.
