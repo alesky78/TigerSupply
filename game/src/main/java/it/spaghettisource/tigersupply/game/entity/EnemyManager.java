@@ -27,7 +27,7 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 	private EntityGroupScreenBound<Entity> effectManager;	
 	private Entity player;
 	
-	private EnemySpawnContext dataModel;
+	private EnemySpawnContext spawnContext;
 	private StateMachine<EnemySpawnContext> stateMachine;
 	
 	private HordeSpawner hordeSpawner;
@@ -63,8 +63,8 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		hordeSpawner.setContext(context);
 		hordeSpawner.loadLevelData();	//load the data			
 		
-		dataModel = new EnemySpawnContext();
-		dataModel.setHordeSpawner(hordeSpawner);
+		spawnContext = new EnemySpawnContext();
+		spawnContext.setHordeSpawner(hordeSpawner);
 
 		//build the states once (stateless, reused as singletons) and declare the transition graph
 		StateWaitTime waitTime = new StateWaitTime();
@@ -90,15 +90,15 @@ public class EnemyManager extends EntityGroupScreenBound<Enemy>{
 		//GENERATE HORDE -> KILL BOSS -> BOSS KILLED (final)
 		stateMachine = new StateMachineImpl<EnemySpawnContext>();
 		stateMachine.setTransitionTable(table);
-		stateMachine.setContext(dataModel);
+		stateMachine.setContext(spawnContext);
 		stateMachine.setState(waitTime);
 		
 	}
 	
 	public void updateEntity(float deltaSeconds) throws Exception {
 		
-		dataModel.increaseElapsedTime(deltaSeconds);
-		stateMachine.event();
+		spawnContext.increaseElapsedTime(deltaSeconds);
+		stateMachine.tick();
 		
 		super.updateEntity(deltaSeconds);		
 		

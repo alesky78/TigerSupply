@@ -1,211 +1,315 @@
-# Enemy Spawn Lifecycle & State Machine
+# Ciclo di vita dello spawn dei nemici (enemy-spawn-lifecycle)
 
-> **Goal of this document:** enable an AI agent or a human developer to understand **how new
-> enemy entities are spawned into a level** and **how the enemy state machine sequences those
-> spawns**, and to add a new horde (or a new spawn state) by following the recipe. It also makes
-> the non-obvious design decisions explicit so the flow stops feeling confusing.
+> **Nota sulla lingua.** Questo sottosistema è documentato in **italiano** su richiesta. La
+> [guida alla documentazione dei sottosistemi](../subsystem-documentation-guide.md) è in inglese e
+> definisce la struttura (spine, archetipi, diagrammi): qui se ne segue la forma, non la lingua.
 
-## Table of Contents
+## Indice
 
-1. [Overview](#1-overview)
-2. [System Context](#2-system-context)
-3. [Key Concepts](#3-key-concepts)
-4. [Component Inventory](#4-component-inventory)
-5. [Data & Configuration Model](#5-data--configuration-model)
-6. [Lifecycle: the spawn state machine](#6-lifecycle-the-spawn-state-machine)
-7. [Flows Documentation](#7-flows-documentation)
-8. [Recipes](#8-recipes)
-9. [Reference Scenario](#9-reference-scenario)
-10. [Design Observations & Asymmetries](#10-design-observations--asymmetries)
+1. [Panoramica](#1-panoramica)
+2. [Contesto di sistema](#2-contesto-di-sistema)
+3. [Concetti chiave](#3-concetti-chiave)
+4. [La netta separazione Engine / Game](#4-la-netta-separazione-engine--game)
+5. [Inventario dei componenti](#5-inventario-dei-componenti)
+6. [Modello dati / configurazione (XML del livello)](#6-modello-dati--configurazione-xml-del-livello)
+7. [Ciclo di vita / pipeline](#7-ciclo-di-vita--pipeline)
+8. [Flussi documentati](#8-flussi-documentati)
+9. [Ricette](#9-ricette)
+10. [Scenari di riferimento](#10-scenari-di-riferimento)
 
 ---
 
-## 1. Overview
+## 1. Panoramica
 
-### What is the "enemy spawn lifecycle"?
+### Cos'è il ciclo di vita dello spawn dei nemici?
 
-In game/design terms, a **level** is a scripted sequence of enemy **waves**. TigerSupply calls a
-single wave a **horde**. The level does not throw every enemy on screen at once: it releases one
-horde, waits for a condition (a short delay, or "all current enemies destroyed"), then releases
-the next horde, until the final **boss** horde. The **enemy spawn lifecycle** is the mechanism
-that decides *when* the next horde appears and *builds* its enemy entities.
+In termini di gioco, un livello di TigerSupply è una **sequenza di ondate** (le *horde*): gruppi di
+nemici che entrano in scena uno dopo l'altro. Fra un'ondata e la successiva il gioco **aspetta** —
+o per un tempo prefissato, o finché il giocatore non ha ripulito lo schermo — e alla fine appare il
+**boss**: abbatterlo conclude il livello. Il "ciclo di vita dello spawn" è il meccanismo che decide
+**quando** generare l'ondata successiva e **quando** il livello è finito.
 
-Technically, this is a small **State-pattern state machine** (four states) that is ticked once
-per frame from the level's `update` loop. The state machine never builds enemies itself — when it
-enters the "generate" state it delegates to a **`HordeSequencer`**, which reads the current horde
-from the parsed level XML and instantiates the enemy entities through the engine factories.
+Tecnicamente il sottosistema è composto da **due parti nettamente distinte** (vedi
+[§4](#4-la-netta-separazione-engine--game)):
+
+- una **macchina a stati generica e riusabile** nel modulo `engine` (`engine.statemachine.*`), che
+  non conosce nulla dei nemici né delle ondate;
+- un **esempio implementativo concreto** nel modulo `game` (`game.scene.statemachine.*`,
+  `game.scene.builder.*`, `game.entity.EnemyManager`), che *usa* quella macchina a stati per
+  sequenziare le ondate lette dall'XML del livello.
 
 ```mermaid
 flowchart LR
-    LS["LevelScene.update()"] --> EM["EnemyManager.updateEntity()"]
-    EM --> SM["StateMachine.event()"]
-    SM --> ST["current State.processState()"]
-    ST --> TX["EnemyTxManager.findNextState()"]
-    ST -.->|"only in StateGenerateHorde"| DM["EnemyBuilderDataModel"]
-    DM --> HS["HordeSequencer.spawnNextHorde()"]
-    HS --> FAC["SpriteFactory + EntityFactory + UpdateAlgorithmFactory"]
-    FAC --> ENZ["new Enemy entities"]
-    ENZ -->|"addRquest(list)"| EM
+    XML["level-1.xml<br/>(hordes + prototipi)"] --> BUILDER["EnemyDataBuilderSaxXml<br/>(SAX, modulo game)"]
+    BUILDER --> REPO["LevelDataRepository<br/>(modulo game)"]
+    REPO --> SPAWNER["HordeSpawner<br/>(modulo game)"]
+    SPAWNER --> FSM["Macchina a stati<br/>(engine.statemachine)"]
+    FSM --> MANAGER["EnemyManager<br/>(modulo game)"]
+    MANAGER --> ENEMY["Enemy in scena<br/>(modulo game)"]
 ```
 
-| Reference | Entry point |
-|-----------|-------------|
-| Level tick that drives everything | [`LevelScene.update`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/LevelScene.java) |
-| The ticked machine + its owner | [`EnemyManager`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java) |
-| Horde/entity builder | [`HordeSequencer`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/builder/HordeSequencer.java) |
-| The scripted level | [`level/level-1.xml`](../../../game/src/main/resources/level/level-1.xml) |
+> **Obiettivo di questa documentazione:** permettere a uno sviluppatore (o a un agente AI) di
+> capire **dove finisce il framework `engine` e dove inizia il gioco `game`**, e di aggiungere una
+> nuova ondata, un nuovo tipo di nemico, un nuovo algoritmo di movimento o un nuovo stato seguendo
+> la [ricetta](aggiungere-nuovi-elementi.md).
+
+| Documento di riferimento | Ruolo |
+|---|---|
+| [motore-macchina-a-stati.md](motore-macchina-a-stati.md) | Il framework `engine` riusabile: come gira la macchina a stati generica. |
+| [sequenziamento-horde.md](sequenziamento-horde.md) | L'esempio `game`: come le ondate vengono sequenziate a ogni frame. |
+| [caricamento-dati-livello.md](caricamento-dati-livello.md) | L'esempio `game`: come l'XML diventa nemici in scena. |
+| [aggiungere-nuovi-elementi.md](aggiungere-nuovi-elementi.md) | Ricetta: aggiungere ondate, nemici, algoritmi, stati. |
 
 ---
 
-## 2. System Context
+## 2. Contesto di sistema
 
-The subsystem is **partly in-process and partly data-driven**.
+Il sottosistema è **offline** e **guidato da file**: non c'è rete, database o servizio esterno. Le
+uniche risorse esterne che tocca sono file sul classpath e costanti di gioco.
 
-| Resource | Role | Authoritative for |
-|----------|------|-------------------|
-| `game/src/main/resources/level/level-1.xml` | The scripted level: an ordered list of hordes, plus reusable enemy and algorithm prototypes. | *Which* enemies spawn, *where*, *in what order*, and *what condition* gates the next horde. |
-| `image-catalog.txt` (+ audio/font catalogs) | Preloaded asset repositories referenced by alias from the XML `<image>` element. | The pixels/sound behind a prototype. |
-| Fully-qualified Java class names in the XML | The `className` of an enemy prototype and of an algorithm prototype, instantiated by reflection. | The *behaviour* class bound to a prototype. |
+| Risorsa | Modulo | Ruolo | Autorevole? |
+|---|---|---|---|
+| [level/level-1.xml](../../../game/src/main/resources/level/level-1.xml) | `game` (resources) | Definisce l'ordine delle ondate, i prototipi dei nemici e gli algoritmi di movimento del livello. | **Sì** — è la fonte di verità del contenuto del livello. |
+| [GameResources](../../../game/src/main/java/it/spaghettisource/tigersupply/game/utils/GameResources.java) | `game` | Costanti `STATE_*` / `EVENT_*` che nominano stati ed eventi della macchina a stati del gioco. | Sì per i nomi di stato/evento. |
+| Cataloghi immagini/audio/font (`*-catalog.txt`) | `game` (resources) | Risolvono gli alias (`enemy1`, `boss`, …) usati dai prototipi nemico in immagini reali. | Sì per gli asset. |
 
-> **Integration style — two mechanisms, not one.** The horde **sequencing** is a formal
-> `StateMachine` (engine `it.spaghettisource.tigersupply.engine.statemachine`). The level
-> **progression** (boss dead → next level, player dead → game over) is *not* part of that machine;
-> it is an in-process **polling** check inside `LevelScene.magageGameFlow()` that calls the
-> `SceneFlowController` singleton. Keeping these two apart is the single biggest source of
-> "where is this decided?" confusion — see [§10](#10-design-observations--asymmetries).
-
----
-
-## 3. Key Concepts
-
-### 3.1 Horde
-One scripted wave of enemies (a `<horde>` element). It owns a list of `EnemyDefinition`s and
-exactly one `generateEvent`. Modelled by
-[`Horde`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/definition/Horde.java).
-
-### 3.2 Prototype (enemy & algorithm)
-A **reusable template** referenced by `name`. An `EnemyPrototype` carries the sprite image, speed,
-scale and the enemy `className`; an `AlgorithmPrototype` carries a movement `className` plus its
-parameters. A horde's `EnemyDefinition` only holds *references* (`enemyPrototype`,
-`algorithmPrototype`) plus a spawn position — the heavy data lives once in the prototype.
-
-### 3.3 `generateEvent` — a transition trigger, not a wave name
-Each horde declares `<generateEvent name="…" time="…" />`. The `name` is the **event** that the
-machine emits **after** that horde is spawned, deciding what to do next:
-
-| `name` | Meaning after the horde spawns | Constant |
-|--------|--------------------------------|----------|
-| `waitTime` | wait a fixed delay, then spawn the next horde | `GameResources.EVENT_WAIT_TIME` |
-| `waitKill` | wait until every enemy on screen is destroyed, then spawn the next horde | `GameResources.EVENT_WAIT_KILL` |
-| `bossGenerated` | this was the boss horde: go to the terminal "wait for boss death" state | `GameResources.EVENT_BOSS_GENERATED` |
-
-> **Important:** the `time` attribute is parsed into `GenerateEvent.time` but is **never read**;
-> `StateWaitTime` hard-codes a 1-second wait. See [§10](#10-design-observations--asymmetries).
-
-### 3.4 State vs Event (and the shared string space)
-A **State** is a node the machine sits in (`waitTime`, `waitKill`, `generateHorde`, `killBoss`).
-An **Event** is emitted by a state's `internalProcess()` and consumed by `EnemyTxManager` to pick
-the next state. Both are plain strings from `GameResources`, and some **event and state literals
-are identical** (`"waitKill"`, `"waitTime"`). They are only disambiguated because the transition
-table keys on the **pair** `(currentStateName, eventName)`.
-
-### 3.5 The shared data model (`EnemyBuilderDataModel`)
-The state instances are stateless-ish strategies; the data they read/write lives in one shared
-[`EnemyBuilderDataModel`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemyBuilderDataModel.java):
-the running `elapsedTime`, plus delegate methods onto the `HordeSequencer`
-(`newHordeEnterInScene`, `isKilledAllEnemiesInScene`, `bossKilled`).
-
-### 3.6 One transition per frame
-`StateMachine.event()` runs the **current** state exactly once per frame and replaces it with the
-returned next state. The machine therefore advances **at most one edge per frame tick**; a
-"spawn → wait" chain takes several frames to walk.
+**Stile di integrazione.** La parte `game` è **guidata dai dati**: l'XML è letto con SAX e i nomi di
+classe (nemici e algoritmi) sono istanziati per **reflection**. La parte `engine`, al contrario, è
+una **API in-process** puramente programmatica: la macchina a stati non legge alcun file e non usa
+reflection — riceve stati, tabella e contesto via setter e viene fatta avanzare a ogni frame.
 
 ---
 
-## 4. Component Inventory
+## 3. Concetti chiave
 
-| Layer | Element | Path | Role |
-|-------|---------|------|------|
-| Engine — contract | `StateMachine` / `StateMachineImpl` | [engine/…/statemachine/StateMachine.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachine.java) · [Impl](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineImpl.java) | Holds the current `State` + a `TransactionManager`; `event()` ticks once and reassigns the state. |
-| Engine — contract | `State` / `AbstractState` | [State.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/State.java) · [AbstractState.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/AbstractState.java) | `processState()` runs `internalProcess()` to get an `Event`, then asks the `TransactionManager` for the next state. |
-| Engine — contract | `TransactionManager` | [TransactionManager.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/TransactionManager.java) | `findNextState(state, event)` — the transition table interface. |
-| Engine — value | `Event` | [Event.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/Event.java) | Immutable named event. |
-| Engine — errors | `StateMachineException` / `…UnsupportedState` / `…UnsupportedEvent` | [statemachine/](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/) | Raised for an unknown state or an unhandled `(state, event)` pair. |
-| Game — base | `StateAbstract` | [game/…/statemachine/StateAbstract.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAbstract.java) | Adds the shared `EnemyBuilderDataModel` to every concrete state. |
-| Game — states | `StateWaitTime`, `StateWaitKill`, `StateGenerateHorde`, `StateKillBoss` | [statemachine/](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/) | The four concrete spawn states. |
-| Game — table | `EnemyTxManager` | [EnemyTxManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemyTxManager.java) | The hard-coded `(state, event) → next state` transition table. |
-| Game — model | `EnemyBuilderDataModel` | [EnemyBuilderDataModel.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemyBuilderDataModel.java) | Shared state + delegate onto the `HordeSequencer`. |
-| Game — builder | `HordeSequencer` | [HordeSequencer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/builder/HordeSequencer.java) | Parses the level, holds `hordeIndex`, and builds each horde's `Enemy` entities. |
-| Game — owner | `EnemyManager` | [EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java) | Owns the machine + sequencer, ticks the machine every frame, and is the live enemy group. |
-| Game — scene | `LevelScene` | [LevelScene.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/LevelScene.java) | Drives the frame `update`, and separately polls for boss/player death. |
+### 3.1 Horde (ondata)
+
+Un'**ondata** è un gruppo di nemici che entra in scena insieme, più l'**evento di completamento**
+che dice come il gioco riconosce che l'ondata è "finita". Nel codice è
+[`Horde`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/Horde.java):
+una `List<EnemyDefinition>` + un `GenerateEvent`.
+
+### 3.2 GenerateEvent (evento di completamento)
+
+Ogni ondata dichiara **come** si completa tramite il tag `<generateEvent>`. I valori possibili
+(costanti `EVENT_*` in `GameResources`) sono:
+
+| `name` | Significato | Attributo `time` |
+|---|---|---|
+| `waitTime` | Attendi *N* secondi, poi genera l'ondata successiva. | **obbligatorio** (secondi, anche frazionari) |
+| `waitKill` | Attendi finché tutti i nemici in scena sono morti, poi genera la successiva. | ignorato |
+| `bossGenerated` | Questa ondata è il boss: passa allo stato di attesa uccisione boss. | ignorato |
+
+### 3.3 Prototipo nemico / prototipo algoritmo
+
+Un **prototipo** è un modello riusabile referenziato per nome dalle ondate. Un
+[`EnemyPrototype`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/EnemyPrototype.java)
+definisce sprite, velocità, scala e classe Java del nemico; un
+[`AlgorithmPrototype`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/AlgorithmPrototype.java)
+definisce la classe dell'algoritmo di movimento e i suoi parametri. Le ondate contengono solo
+**riferimenti per nome** (`enemyPrototype="standard"`, `algorithmPrototype="default"`).
+
+### 3.4 EnemySpawnContext (contesto condiviso)
+
+È il **contesto `C`** che la macchina a stati passa a ogni stato. Tiene il tempo trascorso
+(`elapsedTime`), il ritardo da rispettare (`waitTime`) e delega a `HordeSpawner` le interrogazioni
+"tutti i nemici sono morti?" e "genera la prossima ondata". Codice:
+[`EnemySpawnContext`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java).
+
+### 3.5 State, Event, TransitionTable (vocabolario dell'engine)
+
+- Uno **State** (`State<C>`) calcola un **Event** dal contesto e può essere *finale*.
+- Un **Event** è un semplice contenitore di un nome (`engine.statemachine.Event`).
+- Una **TransitionTable** mappa la coppia `(nomeStato, nomeEvento)` sullo stato successivo.
+- La **StateMachine** avanza di **al massimo una transizione per tick** e si **ferma** su uno stato
+  finale.
+
+### 3.6 Tick
+
+Un **tick** è una chiamata a `StateMachine.tick()`, invocata una volta per frame da
+`EnemyManager.updateEntity(...)`. Non più di una transizione avviene per tick.
+
+### 3.7 Stato finale (fine livello)
+
+Lo stato `bossKilledFinal` è **finale** (`State.isFinal()` → `true`). Quando la macchina lo
+raggiunge si ferma; `EnemyManager.isBossDead()` diventa `true` e la scena passa al livello
+successivo. È l'**unica fonte di verità** per "boss morto".
+
+> **Attenzione — nome vs evento.** La costante di **stato** `STATE_BOSS_KILLED` vale
+> `"bossKilledFinal"`, mentre la costante di **evento** `EVENT_BOSS_KILLED` vale `"bossKilled"`.
+> Sono deliberatamente distinti: lo stato finale e l'evento che vi conduce non collidono.
+
+---
+
+## 4. La netta separazione Engine / Game
+
+Questa è la distinzione centrale del sottosistema, come richiesto: **il modulo `engine` fornisce il
+meccanismo riusabile, il modulo `game` ne è un esempio implementativo concreto.**
+
+| Aspetto | Modulo **engine** (framework) | Modulo **game** (esempio implementativo) |
+|---|---|---|
+| Package | `it.spaghettisource.tigersupply.engine.statemachine` | `...game.scene.statemachine`, `...game.scene.builder`, `...game.entity` |
+| Cosa fornisce | Una macchina a stati **generica** `StateMachine<C>` parametrica sul contesto `C`. | Gli stati concreti, il contesto `EnemySpawnContext`, il caricatore XML, il cablaggio. |
+| Conosce i nemici? | **No.** Nessun riferimento a `Enemy`, `Horde` o all'XML. Compila da solo. | **Sì.** È interamente specifico di TigerSupply. |
+| Come si estende | Aggiungendo un nuovo `State<C>` / una nuova transizione. | Aggiungendo un'ondata/un prototipo nell'XML o un nuovo stato di gioco. |
+| Reflection / file | Nessuno: pura API in-process. | SAX sull'XML + reflection su classi nemico/algoritmo. |
+| Diagramma di firma | `classDiagram` del framework | `erDiagram` del modello XML + `classDiagram` degli stati |
+
+**La parte engine — riusabile, agnostica:**
+
+```mermaid
+flowchart LR
+    subgraph ENGINE ["engine.statemachine (framework riusabile)"]
+        SM["StateMachine&lt;C&gt;"] --> TT["TransitionTable&lt;C&gt;"]
+        SM --> ST["State&lt;C&gt;"]
+        ST --> EV["Event"]
+    end
+```
+
+**La parte game — usa il framework per le ondate:**
+
+```mermaid
+flowchart LR
+    subgraph GAME ["game.* (esempio implementativo)"]
+        EM["EnemyManager"] -->|costruisce e fa avanzare| CTX["EnemySpawnContext"]
+        EM -->|cabla stati e tabella| STATES["StateWaitTime / StateWaitKill /<br/>StateGenerateHorde / StateKillBoss / StateBossKilled"]
+        CTX --> HS["HordeSpawner"]
+        HS --> REPO["LevelDataRepository"]
+    end
+    STATES -. estendono .-> ABS["engine.statemachine.AbstractState&lt;C&gt;"]
+```
+
+> **Regola pratica.** Se stai scrivendo codice che potrebbe servire a un *altro* gioco basato su
+> questo engine, va in `engine.statemachine`. Se nomina `Enemy`, `Horde`, `waitTime` o l'XML, va in
+> `game.*`. L'unico punto in cui i due mondi si toccano è il **parametro di tipo `C`**: `game`
+> istanzia `StateMachine<EnemySpawnContext>`.
+
+---
+
+## 5. Inventario dei componenti
+
+### 5.1 Modulo engine — la macchina a stati generica
+
+| Livello | Elemento | Path | Ruolo |
+|---|---|---|---|
+| Interfaccia | `StateMachine<C>` | [StateMachine.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachine.java) | Contratto: `tick()`, `setState`, `setTransitionTable`, `setContext`, `isInFinalState`. |
+| Impl. | `StateMachineImpl<C>` | [StateMachineImpl.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineImpl.java) | Esegue un tick: `process` → `next` → `onEnter`; no-op se lo stato è finale. |
+| Interfaccia | `State<C>` | [State.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/State.java) | Nodo: `process(C)`, `getStateName()`, `isFinal()`, `onEnter(C)`. |
+| Astratta | `AbstractState<C>` | [AbstractState.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/AbstractState.java) | Wrapper try/catch attorno a `internalProcess(C)`. |
+| Classe | `TransitionTable<C>` | [TransitionTable.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/TransitionTable.java) | Grafo dichiarativo `(stato,evento) → stato`. |
+| Classe | `Event` | [Event.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/Event.java) | Contenitore del nome dell'evento. |
+| Eccezione | `StateMachineException` | [StateMachineException.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineException.java) | Errore di esecuzione della macchina. |
+| Eccezione | `StateMachineUnsupportedState` | [StateMachineUnsupportedState.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineUnsupportedState.java) | Stato sconosciuto alla tabella. |
+| Eccezione | `StateMachineUnsupportedEvent` | [StateMachineUnsupportedEvent.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineUnsupportedEvent.java) | Coppia (stato,evento) non dichiarata. |
 
 ```mermaid
 classDiagram
-    class StateMachine {
+    class StateMachine~C~ {
         <<interface>>
-        +event()
-        +setState(State)
-        +setTrxManager(TransactionManager)
+        +tick()
+        +setState(State~C~)
+        +setTransitionTable(TransitionTable~C~)
+        +setContext(C)
+        +isInFinalState() boolean
     }
-    class StateMachineImpl
-    class State {
+    class StateMachineImpl~C~
+    class State~C~ {
         <<interface>>
-        +processState(TransactionManager) State
+        +process(C) Event
         +getStateName() String
+        +isFinal() boolean
+        +onEnter(C)
     }
-    class AbstractState {
+    class AbstractState~C~ {
         <<abstract>>
-        +internalProcess() Event
+        +internalProcess(C) Event
     }
-    class TransactionManager {
-        <<interface>>
-        +findNextState(State, Event) State
+    class TransitionTable~C~ {
+        +add(State, String, State)
+        +selfLoop(State, String)
+        +next(State, Event) State
     }
-    class StateAbstract {
-        <<abstract>>
-        #EnemyBuilderDataModel dataModel
+    class Event {
+        +getName() String
     }
-    class EnemyTxManager
-    class EnemyBuilderDataModel
-    class HordeSequencer
+    StateMachine~C~ <|.. StateMachineImpl~C~
+    State~C~ <|.. AbstractState~C~
+    StateMachineImpl~C~ --> TransitionTable~C~
+    StateMachineImpl~C~ --> State~C~
+    TransitionTable~C~ --> State~C~
+    State~C~ ..> Event
+```
 
-    StateMachine <|.. StateMachineImpl
-    State <|.. AbstractState
-    AbstractState <|-- StateAbstract
-    StateAbstract <|-- StateWaitTime
-    StateAbstract <|-- StateWaitKill
-    StateAbstract <|-- StateGenerateHorde
-    StateAbstract <|-- StateKillBoss
-    TransactionManager <|.. EnemyTxManager
-    StateMachineImpl --> State : current
-    StateMachineImpl --> TransactionManager
-    StateAbstract --> EnemyBuilderDataModel
-    EnemyTxManager --> EnemyBuilderDataModel
-    EnemyBuilderDataModel --> HordeSequencer
+### 5.2 Modulo game — l'esempio dello spawn nemici
+
+| Livello | Elemento | Path | Ruolo |
+|---|---|---|---|
+| Cablaggio | `EnemyManager` | [EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java) | Costruisce stati + tabella, tiene la macchina, la fa avanzare a ogni frame. |
+| Contesto | `EnemySpawnContext` | [EnemySpawnContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java) | Il `C` della macchina: tempo, ritardo, delega a `HordeSpawner`. |
+| Stato | `StateWaitTime` | [StateWaitTime.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateWaitTime.java) | Attesa temporizzata fra ondate. |
+| Stato | `StateWaitKill` | [StateWaitKill.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateWaitKill.java) | Attesa finché lo schermo è ripulito. |
+| Stato | `StateGenerateHorde` | [StateGenerateHorde.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateGenerateHorde.java) | Genera l'ondata corrente e ne emette l'evento. |
+| Stato | `StateKillBoss` | [StateKillBoss.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateKillBoss.java) | Attende l'uccisione del boss. |
+| Stato (finale) | `StateBossKilled` | [StateBossKilled.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateBossKilled.java) | Terminale: boss morto, livello vinto. |
+| Coordinatore | `HordeSpawner` | [HordeSpawner.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/HordeSpawner.java) | Carica l'XML e istanzia i nemici dell'ondata. |
+| Builder | `EnemyDataBuilderSaxXml` | [EnemyDataBuilderSaxXml.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/EnemyDataBuilderSaxXml.java) | Parser SAX dell'XML del livello. |
+| Repository | `LevelDataRepository` | [LevelDataRepository.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/LevelDataRepository.java) | Custodisce ondate + prototipi, lookup per indice/nome. |
+
+```mermaid
+classDiagram
+    class AbstractState~EnemySpawnContext~ {
+        <<abstract>>
+    }
+    class StateWaitTime
+    class StateWaitKill
+    class StateGenerateHorde
+    class StateKillBoss
+    class StateBossKilled {
+        +isFinal() true
+    }
+    class EnemySpawnContext {
+        +areAllEnemiesKilled() boolean
+        +spawnNextHorde() Event
+        +increaseElapsedTime(float)
+        +resetElapsedTime()
+    }
+    class HordeSpawner {
+        +loadLevelData()
+        +spawnNextHorde() Event
+        +getCurrentWaitTime() float
+    }
+    AbstractState~EnemySpawnContext~ <|-- StateWaitTime
+    AbstractState~EnemySpawnContext~ <|-- StateWaitKill
+    AbstractState~EnemySpawnContext~ <|-- StateGenerateHorde
+    AbstractState~EnemySpawnContext~ <|-- StateKillBoss
+    AbstractState~EnemySpawnContext~ <|-- StateBossKilled
+    EnemySpawnContext --> HordeSpawner
 ```
 
 ---
 
-## 5. Data & Configuration Model
+## 6. Modello dati / configurazione (XML del livello)
 
-The level XML is parsed once (`HordeSequencer.loadLevelData` → `EnemyDataBuilderSaxXml`) into a
-[`LevelDataRepository`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/definition/LevelDataRepository.java)
-holding three lists: hordes, enemy prototypes, algorithm prototypes. Hordes are consumed by index;
-prototypes are resolved by `name`.
+La parte `game` è guidata dall'XML. La struttura di
+[level-1.xml](../../../game/src/main/resources/level/level-1.xml) è:
 
 ```mermaid
 erDiagram
-    LEVEL ||--o{ HORDE : "ordered list"
-    HORDE ||--|| GENERATE_EVENT : "has one"
-    HORDE ||--o{ ENEMY_DEFINITION : "contains"
-    ENEMY_DEFINITION }o--|| ENEMY_PROTOTYPE : "enemyPrototype (by name)"
-    ENEMY_DEFINITION }o--|| ALGORITHM_PROTOTYPE : "algorithmPrototype (by name)"
-    ENEMY_PROTOTYPE ||--|| IMAGE : "sprite alias"
+    LEVEL ||--o{ HORDE : "hordes"
+    LEVEL ||--o{ ENEMY_PROTOTYPE : "enemiesPrototype"
+    LEVEL ||--o{ ALGORITHM_PROTOTYPE : "algorithmsPrototype"
+    HORDE ||--|| GENERATE_EVENT : "completa con"
+    HORDE ||--o{ ENEMY_DEFINITION : "contiene"
+    ENEMY_DEFINITION }o--|| ENEMY_PROTOTYPE : "enemyPrototype (nome)"
+    ENEMY_DEFINITION }o--|| ALGORITHM_PROTOTYPE : "algorithmPrototype (nome)"
 
-    HORDE { int index }
+    HORDE {
+        list enemies
+        GenerateEvent event
+    }
     GENERATE_EVENT {
-        string name
-        string time_UNUSED
+        string name "waitTime | waitKill | bossGenerated"
+        string time "secondi, solo per waitTime"
     }
     ENEMY_DEFINITION {
         string enemyPrototype
@@ -216,130 +320,80 @@ erDiagram
     }
     ENEMY_PROTOTYPE {
         string name
-        string type
-        string className
+        string type "imageSingleSprite"
+        string class "FQN classe nemico"
         Speed speed
+        Image image
         Scale scale
     }
     ALGORITHM_PROTOTYPE {
         string name
-        string className
+        string class "FQN classe algoritmo"
         AlgorithmProperties properties
     }
 ```
 
-| Entity | Role | Looked up by |
-|--------|------|--------------|
-| `Horde` | The scripted wave; consumed in order via `hordeIndex`. | `LevelDataRepository.getHordeByIndex(i)` |
-| `GenerateEvent` | The transition trigger emitted after the wave (`name`); `time` is currently ignored. | `LevelDataRepository.getEventByIndex(i)` |
-| `EnemyDefinition` | One enemy instance in a wave: references + spawn `(x,y,z)`. | iterated from `Horde.getEnemies()` |
-| `EnemyPrototype` | Reusable enemy template (image, speed, scale, `className`). | `getEnemyPrototypeByName(name)` |
-| `AlgorithmPrototype` | Reusable movement template (`className` + params). | `getAlgorithmPrototypeByName(name)` |
+- **`<horde>`** → [`Horde`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/Horde.java): l'ondata scriptata, in ordine di dichiarazione.
+- **`<generateEvent>`** → [`GenerateEvent`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/GenerateEvent.java): come si completa l'ondata (vedi [§3.2](#32-generateevent-evento-di-completamento)).
+- **`<enemy>`** → [`EnemyDefinition`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/definition/EnemyDefinition.java): un'istanza di nemico con posizione e i nomi dei due prototipi.
+- **`<enemyPrototype>`** / **`<algorithmPrototype>`**: i modelli riusabili risolti per nome a runtime tramite `LevelDataRepository`.
 
-> **Only `type = "imageSingleSprite"` is implemented** in `HordeSequencer.createHordeEnemies`.
-> An unknown prototype `type` leaves the entity `null` and throws on the next line.
+Il dettaglio del parsing è in [caricamento-dati-livello.md](caricamento-dati-livello.md).
 
 ---
 
-## 6. Lifecycle: the spawn state machine
+## 7. Ciclo di vita / pipeline
 
-Every frame, `EnemyManager.updateEntity` increments the shared `elapsedTime`, then calls
-`stateMachine.event()` (one transition), then flushes newly requested enemies into the live group.
-The four states and their transitions:
+La macchina a stati dello spawn nemici parte da `waitTime` e termina su `bossKilledFinal`. Ogni
+freccia è una transizione dichiarata in `EnemyManager.initComponents()`.
 
 ```mermaid
 flowchart TD
-    START(("start")) --> WT["StateWaitTime<br/>(reset timer, wait ~1s)"]
-    WT -->|"EVENT_WAIT"| WT
-    WT -->|"EVENT_NEW_HORDE"| GH["StateGenerateHorde<br/>(spawn current horde)"]
-
-    GH -->|"EVENT_WAIT_TIME"| WT
-    GH -->|"EVENT_WAIT_KILL"| WK["StateWaitKill<br/>(wait all enemies dead)"]
-    GH -->|"EVENT_BOSS_GENERATED"| KB["StateKillBoss<br/>(wait boss dead)"]
-
-    WK -->|"EVENT_WAIT"| WK
-    WK -->|"EVENT_NEW_HORDE"| GH
-
-    KB -->|"EVENT_WAIT"| KB
-    KB -->|"EVENT_BOSS_KILLED (sets bossKilled)"| KB
+    START([stato iniziale]) --> WT["waitTime<br/>(attesa temporizzata)"]
+    WT -->|wait| WT
+    WT -->|newHorde| GH["generateHorde<br/>(genera ondata)"]
+    WK["waitKill<br/>(attesa uccisioni)"] -->|wait| WK
+    WK -->|newHorde| GH
+    GH -->|waitTime| WT
+    GH -->|waitKill| WK
+    GH -->|bossGenerated| KB["killBoss<br/>(attesa boss)"]
+    KB -->|wait| KB
+    KB -->|bossKilled| BK["bossKilledFinal<br/>(FINALE — livello vinto)"]
 ```
 
-| State | `internalProcess()` behaviour | Emits | Handled by |
-|-------|-------------------------------|-------|------------|
-| `StateWaitTime` | On first entry resets `elapsedTime`; emits `NEW_HORDE` once `elapsedTime > 1`s, else `WAIT`. | `EVENT_WAIT` / `EVENT_NEW_HORDE` | `EnemyTxManager` |
-| `StateGenerateHorde` | Delegates to `HordeSequencer.spawnNextHorde()` (builds enemies, advances `hordeIndex`) and returns that horde's `generateEvent`. | `EVENT_WAIT_TIME` / `EVENT_WAIT_KILL` / `EVENT_BOSS_GENERATED` | `EnemyTxManager` |
-| `StateWaitKill` | Emits `NEW_HORDE` once the live enemy group is empty, else `WAIT`. | `EVENT_WAIT` / `EVENT_NEW_HORDE` | `EnemyTxManager` |
-| `StateKillBoss` | Once the group is empty, marks the boss killed and emits `BOSS_KILLED`; the machine then stays here forever (level end is handled elsewhere). | `EVENT_WAIT` / `EVENT_BOSS_KILLED` | `EnemyTxManager` |
+| Passo | Fornito da | Comportamento |
+|---|---|---|
+| Tick | `EnemyManager.updateEntity` (game) | Incrementa il tempo e chiama `stateMachine.tick()` una volta per frame. |
+| Calcolo evento | `State.process` (engine → stato game) | Lo stato legge il contesto e restituisce un `Event`. |
+| Risoluzione transizione | `TransitionTable.next` (engine) | Dalla coppia `(stato,evento)` ricava lo stato successivo. |
+| Ingresso stato | `State.onEnter` (engine → `StateWaitTime`) | Solo al cambio di stato; `StateWaitTime` azzera il timer. |
+| Arresto | `StateMachineImpl.tick` (engine) | No-op quando lo stato corrente è finale. |
 
-The detailed frame-by-frame walk is on the [state-machine flow page](enemy-spawn-state-machine.md);
-the enemy-building detail is on the [horde-spawn flow page](horde-spawn-cycle.md).
-
----
-
-## 7. Flows Documentation
-
-| # | Flow | Trigger | Description | Detail page |
-|---|------|---------|-------------|-------------|
-| 1 | Ticking the spawn state machine | every frame (`LevelScene.update`) | How one tick moves the machine one edge, the full transition table, and how it relates to the outer scene-flow control. | [enemy-spawn-state-machine.md](enemy-spawn-state-machine.md) |
-| 2 | Spawning a horde's entities | machine enters `StateGenerateHorde` | How `HordeSequencer` turns the current horde's definitions + prototypes into live `Enemy` entities via the engine factories and reflection. | [horde-spawn-cycle.md](horde-spawn-cycle.md) |
+Il dettaglio frame-by-frame è in [sequenziamento-horde.md](sequenziamento-horde.md); il
+funzionamento generico della macchina in [motore-macchina-a-stati.md](motore-macchina-a-stati.md).
 
 ---
 
-## 8. Recipes
+## 8. Flussi documentati
 
-| Recipe | When to use it | Detail |
-|--------|----------------|--------|
-| Add a new horde (and, optionally, a new spawn state) | You want another wave in a level, or a new gating condition between waves. | [enemy-spawn-lifecycle-add-new.md](enemy-spawn-lifecycle-add-new.md) |
-
----
-
-## 9. Reference Scenario
-
-The single worked example threaded through every page is **Level 1**
-([`level/level-1.xml`](../../../game/src/main/resources/level/level-1.xml)). It is an ordered list
-of hordes that starts with an early `enemyPrototype="boss"` wave gated by `waitKill`, walks a long
-run of `waitTime`/`waitKill` waves, and ends with a final horde whose `generateEvent` is
-`bossGenerated` — the only wave that drives the machine into `StateKillBoss` and, via the boss-death
-poll in `LevelScene`, ends the level.
+| # | Flusso | Modulo | Trigger | Descrizione | Dettaglio |
+|---|---|---|---|---|---|
+| 1 | Esecuzione della macchina a stati generica | **engine** | `tick()` per tick | Come un tick sceglie l'evento, risolve la transizione e si ferma sul finale. | [motore-macchina-a-stati.md](motore-macchina-a-stati.md) |
+| 2 | Sequenziamento delle ondate | **game** | frame update | Come i 5 stati concreti sequenziano le ondate e rispettano `waitTime`/`waitKill`. | [sequenziamento-horde.md](sequenziamento-horde.md) |
+| 3 | Caricamento dati livello (XML → nemici) | **game** | avvio livello | Come il SAX builder e la reflection trasformano l'XML in `Enemy` in scena. | [caricamento-dati-livello.md](caricamento-dati-livello.md) |
 
 ---
 
-## 10. Design Observations & Asymmetries
+## 9. Ricette
 
-These are the current, real behaviours that make the architecture feel confusing. They are
-**documented, not fixed** — do not "correct" them as a drive-by change (identifiers such as the
-`horderSequencer` field and the XML `generateEvent` literals are load-bearing).
+| Ricetta | Quando usarla | Dettaglio |
+|---|---|---|
+| Aggiungere ondate, nemici, algoritmi o un nuovo stato | Estendere il contenuto o la logica di sequenziamento del livello. | [aggiungere-nuovi-elementi.md](aggiungere-nuovi-elementi.md) |
 
-> **Two control loops, only one is a state machine.** The `StateMachine` sequences *hordes* only.
-> The decision to advance to the next level (boss dead) or to game-over (player dead) is a
-> **poll** in `LevelScene.magageGameFlow()` → `SceneFlowController.doNextLevel()/doGameOver()`.
-> `StateKillBoss` deliberately loops on itself; `EnemyTxManager`'s comment
-> *"RITORNA SEMPRE QUI TANTO C'E ALTRA MACCHINA A STATI"* refers to this second, informal loop.
+---
 
-> **States and events share a string namespace.** `EVENT_WAIT_KILL` and `STATE_WAIT_KILL` are both
-> `"waitKill"`; `EVENT_WAIT_TIME` and `STATE_WAIT_TIME` are both `"waitTime"`. The XML
-> `generateEvent name` reuses the same literals. Nothing breaks because `findNextState` keys on the
-> `(stateName, eventName)` pair, but reading a single `"waitKill"` in isolation is ambiguous.
+## 10. Scenari di riferimento
 
-> **`generateEvent` describes the transition *after* the wave.** `HordeSequencer.spawnNextHorde()`
-> reads the event of the horde it just built, *then* increments `hordeIndex`. So a horde's
-> `generateEvent` says what to do once that horde is on screen — not something about the horde
-> itself.
-
-> **The XML `time` attribute is dead config.** `GenerateEvent.time` is parsed but never read;
-> `StateWaitTime` hard-codes `elapsedTime > 1` second. Editing `time="…"` has no effect.
-
-> **`elapsedTime` is global and always counting.** It lives on the shared `EnemyBuilderDataModel`
-> and is incremented every frame regardless of state; it is only reset on entry to `StateWaitTime`
-> (guarded by a per-instance `init` flag on the freshly-created state instance).
-
-> **"boss" the prototype ≠ the boss terminal state.** An enemy prototype may be literally named
-> `"boss"` and appear in an early `waitKill` wave; the boss-death terminal state (`StateKillBoss`)
-> is only entered by the wave whose `generateEvent` is `bossGenerated`.
-
-> **States are re-instantiated on every transition** (`new StateWaitKill()`, …) rather than reused
-> as singletons; only `StateKillBoss` caches its `Event` objects.
-
-> **Naming drift from the refactor.** The builder class is `HordeSequencer`, but `EnemyManager`
-> stores it as `horderSequencer` (with setter `setHorderSequencer`) and `EnemyBuilderDataModel`
-> calls it `enemyDataManager`. They are the same object.
+| Scenario | Stato |
+|---|---|
+| Pipeline delle ondate del Livello 1 | Esempio verticale di riferimento usato in tutte le pagine: `level-1.xml` → `EnemyDataBuilderSaxXml` → `LevelDataRepository` → `HordeSpawner` → macchina a stati in `EnemyManager` → `Enemy`. |
