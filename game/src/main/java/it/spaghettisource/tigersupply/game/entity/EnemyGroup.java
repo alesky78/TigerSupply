@@ -10,27 +10,10 @@ import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
  * @author Alessandro D'Ottavio
  *
  */
-public class EnemyManager extends EntityGroupScreenBound<Enemy>{
-
-	private String levelDataFile;
-
-	public EnemyManager(){
-	}
-
-	public EnemyManager(String levelDataFile){
-		this.levelDataFile = levelDataFile;
-	}
+public class EnemyGroup extends EntityGroupScreenBound<Enemy>{
 
 	public void reset(){
 		entities.clear();
-	}
-
-	public void setLevelDataFile(String levelDataFile){
-		this.levelDataFile = levelDataFile;
-	}
-
-	public String getLevelDataFile(){
-		return levelDataFile;
 	}
 
 	public void updateEntity(float deltaSeconds) throws Exception {

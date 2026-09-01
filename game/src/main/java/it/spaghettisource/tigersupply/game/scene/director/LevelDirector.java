@@ -20,7 +20,7 @@ import it.spaghettisource.tigersupply.game.scene.statemachine.LevelDirectorState
  * Owns and drives the level-director state machine. It loads the level definition, wires the shared
  * {@link DirectorContext} to the game subsystems the step actions command, builds the machine, and
  * advances it once per frame. It is the single coordinator that replaces the enemy-spawn machine that
- * used to live inside {@code EnemyManager}, and is the point where the level timeline can command more
+ * used to live inside {@code EnemyGroup}, and is the point where the level timeline can command more
  * than just enemies.
  *
  * @author Alessandro D'Ottavio

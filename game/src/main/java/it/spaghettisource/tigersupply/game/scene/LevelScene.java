@@ -13,7 +13,6 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.background.BackGround;
-import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundTiledImage;
 import it.spaghettisource.tigersupply.engine.background.TraversingBackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.ParallaxBackGround;
@@ -25,7 +24,7 @@ import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
-import it.spaghettisource.tigersupply.game.entity.EnemyManager;
+import it.spaghettisource.tigersupply.game.entity.EnemyGroup;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.scene.director.LevelDirector;
 import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
@@ -37,7 +36,7 @@ public class LevelScene extends AbstractScene {
 
 	//game entities
 	private Player playerShip;
-	private EnemyManager enemyManager;
+	private EnemyGroup enemyManager;
 	private LevelDirector levelDirector;
 
 
@@ -58,7 +57,7 @@ public class LevelScene extends AbstractScene {
 	List<Entity> renderSprites = new ArrayList<Entity>();	//used to manage the sprites to render	
 	EntityZComparator comparator = new EntityZComparator();	//use to order the renderSprites list
 
-	public LevelScene(GameContext context,Player player,EnemyManager eManager) throws Exception{
+	public LevelScene(GameContext context,Player player) throws Exception{
 		this.context = context;
 		this.pWidth = context.getScreenWidth();
 		this.pHeight = context.getScreenHeight();
@@ -81,7 +80,7 @@ public class LevelScene extends AbstractScene {
 		playerShip.startPosition();
 
 		//enemy manager		
-		enemyManager = eManager; 
+		enemyManager = new EnemyGroup();
 		enemyManager.init(context);
 
 		//the level director owns the sequencing state machine and commands the subsystems (enemies
@@ -92,7 +91,7 @@ public class LevelScene extends AbstractScene {
 		levelDirector.setShotManager(enemyShootManager);
 		levelDirector.setEffectManager(effectManager);
 		levelDirector.setEnemyManager(enemyManager);
-		levelDirector.setLevelDataFile(enemyManager.getLevelDataFile());
+		levelDirector.setLevelDataFile(SceneFlowController.getInstance().getCurrentLevelDataFile());
 		levelDirector.init();
 
 

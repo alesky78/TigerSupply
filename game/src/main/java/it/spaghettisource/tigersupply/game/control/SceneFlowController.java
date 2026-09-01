@@ -6,7 +6,7 @@ import java.util.Map;
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
-import it.spaghettisource.tigersupply.game.entity.EnemyManager;
+import it.spaghettisource.tigersupply.game.entity.EnemyGroup;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.scene.PresentationScene;
 import it.spaghettisource.tigersupply.game.scene.GameOverScene;
@@ -31,7 +31,6 @@ public class SceneFlowController {
 	private static SceneFlowController instance;		
 	private TigerSupplySceneHost sceneHost;
 	private Player player;
-	private EnemyManager enemyManager;	
 
 
 	private Map<String, String> levelConfiguration = new HashMap<String, String>();
@@ -42,7 +41,6 @@ public class SceneFlowController {
 		this.sceneHost = sceneHost;		
 		player = EntityFactoryWrapper.newPlayer(sceneHost.getGameContext().getScreenHeight(), sceneHost.getGameContext().getPeriodMilliseconds());
 		player.getsize().setScale(1.2f);
-		enemyManager = new EnemyManager();
 
 		//hire put all the levels levels
 		levelConfiguration.put("1", "level/level-1.xml");
@@ -77,9 +75,18 @@ public class SceneFlowController {
 		if(clearPlayer){
 			player.reset();
 		}
-		enemyManager.reset();
 		ImageRepositoryManager.getInstance().cleanVolatileImages();
 		System.gc();
+	}
+
+	/**
+	 * Returns the level-definition resource path for the level currently in progress, looked up from
+	 * the level configuration by the active level index.
+	 *
+	 * @return the classpath resource of the current level's XML definition
+	 */
+	public String getCurrentLevelDataFile(){
+		return levelConfiguration.get(Integer.toString(actualLevel));
 	}
 	
 
@@ -134,9 +141,7 @@ public class SceneFlowController {
 			}else{//GO NEXT LEVEL
 				AudioManager.getInstance().playMusic("mainTheme", true);
 				
-				String nextLevelCode =Integer.toString(actualLevel);
-				enemyManager.setLevelDataFile(levelConfiguration.get(nextLevelCode));
-				AbstractScene scene = new LevelScene(sceneHost.getGameContext(),player,enemyManager);
+				AbstractScene scene = new LevelScene(sceneHost.getGameContext(),player);
 				scene.setGamePanel(sceneHost.getGamePanel());
 				sceneHost.setActiveScene(scene);
 			}
