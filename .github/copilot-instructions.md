@@ -16,6 +16,10 @@ API/data model, component inventory, technology stack, dependencies, code-qualit
 - **[system overview](../documentation/architecture/system-overview/)**
 
 ### Subsystems
+- **[entity-movement-algorithms](../documentation/subsystems/entity-movement-algorithms/index.md)** —
+  the catalogue of `UpdateAlgorithm` movement strategies (Default, Sinusoidal, LinearPath, Bspline,
+  GoToPoint(+Increasing), FollowSprite, CopyPosition) an entity delegates its motion to, plus a
+  companion page proposing the missing 90s-shmup archetypes and a composite/sequence algorithm.
 - **[level-director-sequencing](../documentation/subsystems/level-director-sequencing/index.md)** —
   how the `LevelDirector` sequences a level as an ordered list of steps, each running pluggable
   `LevelAction`s (spawning a horde is one action) and then emitting a completion event that routes

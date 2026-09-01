@@ -5,14 +5,6 @@ import java.util.List;
 
 import static it.spaghettisource.tigersupply.engine.utils.StaticResources.*;
 import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmBspline;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmDefault;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactory;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmSinusoidal;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgoritmCopyPosition;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgoritmFollowSprite;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgoritmGoToPoint;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgoritmGoToPointIncreasingSpeed;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
 

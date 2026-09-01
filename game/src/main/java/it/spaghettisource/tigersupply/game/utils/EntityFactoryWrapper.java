@@ -4,7 +4,6 @@ import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
@@ -20,7 +19,6 @@ import it.spaghettisource.tigersupply.game.entity.Smoke;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
-import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 
 public class EntityFactoryWrapper {
