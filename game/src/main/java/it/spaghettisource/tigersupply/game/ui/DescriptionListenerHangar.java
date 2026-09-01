@@ -16,7 +16,6 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 public class DescriptionListenerHangar extends RectangleButton implements MouseOverListener,MouseOutListener{
 
-	private int cx,cy;	
 	private Position position;
 	private Size size;		
 
@@ -30,8 +29,6 @@ public class DescriptionListenerHangar extends RectangleButton implements MouseO
 	public DescriptionListenerHangar(int x, int y, int w, int h, Paint paint,HangarDataModel model) {
 		super(x, y, w, h, paint); 
 		this.model = model;
-		cx = x+w/2;
-		cy = y+h/2;
 
 		position = new Position(x+50, y+50, 0);
 

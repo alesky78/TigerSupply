@@ -40,7 +40,7 @@ public class GamePanel extends JPanel{
 		requestFocus();    // the JPanel now has focus, so receives key events
 		
 		context.setPeriodInMilliseconds(period);
-		//TODO +10 al size dello screen � un bug? avviene anche nelle app del professore
+		//TODO +10 al size dello screen e un bug? avviene anche nelle app del professore
 		context.setScreenHeight(pHeight+10);
 		context.setScreenWidth(pWidth+10);
 		

@@ -2,7 +2,6 @@ package it.spaghettisource.tigersupply.game.ui;
 
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Size;
-import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.weapon.HangarWeapon;
 import it.spaghettisource.tigersupply.game.weapon.Weapon;

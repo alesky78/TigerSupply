@@ -6,7 +6,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.Rectangle;
@@ -34,7 +33,6 @@ public class LightningBolt extends BaseEntity {
 	
 	private float 	actualTickLoading;	//number of update for this entity during loading phase	
 	private float 	lifeTimeLoading;	//life cycle in seconds of this entity during loading phase
-	private float 	lifeTickLoading;	//number of update for the life cycle of this entity during loading phase	
 
 	private float sizeLoadingBall = 1;
 	private float sizeIncreasingLoadingBall = 0;	
@@ -113,7 +111,6 @@ public class LightningBolt extends BaseEntity {
 			
 			int offset = 80;
 			int size = (int) sizeLoadingBall;
-			Paint original = dbg.getPaint();
 			Point center = new Point((int)position.getPosX()-offset, (int)position.getPosY());   
 		    float[] dist = {0.1f, 0.5f};
 		    Color[] colors = {Color.WHITE, Color.BLUE};

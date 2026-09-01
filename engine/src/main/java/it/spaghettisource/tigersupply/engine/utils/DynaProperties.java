@@ -77,23 +77,23 @@ public class DynaProperties {
 	}
 
 	public void setInt( String name, int value ) {
-		properties.put( name, new Integer( value ) );
+		properties.put( name, Integer.valueOf( value ) );
 	}
 
 	public void setLong( String name, long value ) {
-		properties.put( name, new Long( value ) );
+		properties.put( name, Long.valueOf( value ) );
 	}
 
 	public void setDouble( String name, double value ) {
-		properties.put( name, new Double( value ) );
+		properties.put( name, Double.valueOf( value ) );
 	}	  
 	
 	public void setFloat( String name, float value ) {
-		properties.put( name, new Float( value ) );
+		properties.put( name, Float.valueOf( value ) );
 	}		
 
 	public void setBoolean( String name, boolean value ) {
-		properties.put( name, new Boolean( value ) );
+		properties.put( name, Boolean.valueOf( value ) );
 	}
 	
 	public void setObject( String name, Object value ) {

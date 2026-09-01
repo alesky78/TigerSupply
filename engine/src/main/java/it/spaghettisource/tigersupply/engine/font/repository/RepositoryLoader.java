@@ -33,7 +33,6 @@ public class RepositoryLoader {
 
 		String line=null;
 		Scanner scanner = null;
-		String  chunk = null;
 		while((line = bfr.readLine()) != null ){
 			if (!line.startsWith("//") && !line.isEmpty()){ //if line is not a comment or empty
 				scanner = new Scanner(line);

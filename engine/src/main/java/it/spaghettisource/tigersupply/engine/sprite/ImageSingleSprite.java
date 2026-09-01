@@ -1,9 +1,5 @@
 package it.spaghettisource.tigersupply.engine.sprite;
 
-import java.awt.Graphics2D;
-
-import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.engine.entity.Size;
 
 /**
  * implementation of the sprite that have a single image

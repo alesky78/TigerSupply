@@ -1,7 +1,6 @@
 package it.spaghettisource.tigersupply.engine.font.repository;
 
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -270,10 +270,6 @@ public class Player extends BaseEntity {
 	}	
 	
 	
-	private boolean isMoving(){
-		return up || down || left || right;
-	}
-	
 
 	public void KeyboardPressed(KeyEvent event){
 		if(event.getKeyCode() == KeyEvent.VK_I){//up
