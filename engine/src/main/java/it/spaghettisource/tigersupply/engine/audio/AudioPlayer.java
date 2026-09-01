@@ -8,6 +8,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -47,9 +48,11 @@ public class AudioPlayer {
 	 * 
 	 * @param data it is the byte of data of a music file
 	 * @param loop
+	 * @param volume linear playback volume in {@code [0,1]} (0 = silent, 1 = full); applied to the
+	 *               mixer line when a gain control is available, otherwise ignored
 	 * @throws Exception
 	 */
-	public void play(byte[] data, boolean loop) throws Exception{
+	public void play(byte[] data, boolean loop, float volume) throws Exception{
 		
 		AudioInputStream audioInputStream = getAudioInputStream(new ByteArrayInputStream(data));
 		AudioFormat	audioFormat = audioInputStream.getFormat();
@@ -60,6 +63,7 @@ public class AudioPlayer {
 		line = (SourceDataLine) AudioSystem.getLine(info);
 
 		line.open(audioFormat);
+		applyVolume(line, volume);
 		line.start();
 
 		if(loop){
@@ -91,6 +95,32 @@ public class AudioPlayer {
 
 	
 	
+	/**
+	 * apply a linear playback volume to the given line using the mixer's own gain control.
+	 *
+	 * <p>The value is clamped to {@code [0,1]} and mapped to {@link FloatControl.Type#MASTER_GAIN}
+	 * (in decibels) when supported, falling back to {@link FloatControl.Type#VOLUME}. When neither
+	 * control is available the line is left at its default level (best-effort, no error).
+	 *
+	 * @param line   the opened output line
+	 * @param volume linear volume in {@code [0,1]}
+	 */
+	private void applyVolume(SourceDataLine line, float volume) {
+
+		float v = Math.max(0.0f, Math.min(1.0f, volume));
+
+		if (line.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+			FloatControl gain = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+			float decibels = (v <= 0.0f) ? gain.getMinimum() : (float) (20.0 * Math.log10(v));
+			decibels = Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), decibels));
+			gain.setValue(decibels);
+		} else if (line.isControlSupported(FloatControl.Type.VOLUME)) {
+			FloatControl control = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+			float value = control.getMinimum() + (control.getMaximum() - control.getMinimum()) * v;
+			control.setValue(value);
+		}
+	}
+
 	private void sendStreamToMixer(AudioInputStream audioInputStream,SourceDataLine line)throws IOException {
 
 		byte[]	abData = new byte[128000];

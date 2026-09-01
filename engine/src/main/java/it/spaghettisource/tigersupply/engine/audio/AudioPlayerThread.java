@@ -1,5 +1,7 @@
 package it.spaghettisource.tigersupply.engine.audio;
 
+import java.util.function.Consumer;
+
 /**
  * 
  * 
@@ -9,15 +11,19 @@ package it.spaghettisource.tigersupply.engine.audio;
 public class AudioPlayerThread implements Runnable {
 
 	private byte[] buffer;
-	private  int audioType;
+	private AudioType audioType;
 	private boolean loop;
+	private float volume;
+	private Consumer<AudioPlayerThread> onFinished;
 	private AudioPlayer player;		
 		
 
-	public AudioPlayerThread(byte[] buffer, int audioType,boolean loop){
+	public AudioPlayerThread(byte[] buffer, AudioType audioType, boolean loop, float volume, Consumer<AudioPlayerThread> onFinished){
 		this.buffer = buffer;
 		this.audioType = audioType;
 		this.loop = loop;
+		this.volume = volume;
+		this.onFinished = onFinished;
 		player = new AudioPlayer();
 	}
 	
@@ -25,7 +31,7 @@ public class AudioPlayerThread implements Runnable {
 	 * 
 	 * @return FX or MUSIC
 	 */
-	public int getAudioType(){
+	public AudioType getAudioType(){
 		return audioType;
 	}	
 
@@ -37,9 +43,13 @@ public class AudioPlayerThread implements Runnable {
 	
 	public void run() {
 		try {
-			player.play(buffer,loop);
+			player.play(buffer,loop,volume);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if(onFinished != null){
+				onFinished.accept(this);
+			}
 		}
 		
 	}
