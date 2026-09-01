@@ -68,20 +68,17 @@ public class AudioPlayer {
 
 		if(loop){
 
-			int streamLengthInBytes = (int)(audioInputStream.getFrameLength() * audioFormat.getFrameSize());
-			
-			if (streamLengthInBytes > Integer.MAX_VALUE){
-				Exception ex = new Exception("length of AudioInputStream exceeds 2^31, cannot properly reset stream!");
-				throw ex;
-			}
-
-			audioInputStream.mark(streamLengthInBytes);
-			
+			/*
+			 * rewind by recreating the AudioInputStream from the source bytes at each iteration:
+			 * this works identically for every supported encoding (WAV, MP3) because it does not
+			 * rely on mark()/reset(), which is unsupported on SPI-decoded MP3 streams.
+			 */
 			while(!forceStop){	//continue until request to stop
 				sendStreamToMixer(audioInputStream, line);
-				audioInputStream.reset();	
+				audioInputStream.close();
+				audioInputStream = getAudioInputStream(new ByteArrayInputStream(data));
 			}
-			
+
 		}else{
 			sendStreamToMixer(audioInputStream, line);	
 		}
@@ -136,34 +133,44 @@ public class AudioPlayer {
 	}
 
 	/**
-	 * convert the InputStream to supported format
-	 * 
-	 * @param in
-	 * @return
+	 * convert the InputStream to a signed PCM format the mixer can open.
+	 *
+	 * <p>Streams that are already {@link AudioFormat.Encoding#PCM_SIGNED} (typically WAV) are
+	 * returned unchanged. Every other encoding — MPEG for MP3 (decoded by the registered MP3SPI
+	 * provider), as well as ALAW/ULAW — is converted to signed 16-bit PCM derived from the source
+	 * sample rate and channel count, because a {@link SourceDataLine} cannot be opened on a
+	 * compressed/companded format.
+	 *
+	 * @param in the raw audio stream
+	 * @return an {@link AudioInputStream} in signed PCM, ready to be written to a mixer line
 	 * @throws UnsupportedAudioFileException
 	 * @throws IOException
 	 */
 	private AudioInputStream getAudioInputStream(InputStream in) throws UnsupportedAudioFileException, IOException {
 
 		AudioInputStream audio =  AudioSystem.getAudioInputStream(in);
-		AudioFormat format = audio.getFormat();		
+		AudioFormat baseFormat = audio.getFormat();
 
-		/**
-		 * we can't yet open the device for ALAW/ULAW playback,
-		 * convert ALAW/ULAW to PCM
-		 */
-		if ((format.getEncoding() == AudioFormat.Encoding.ULAW) ||(format.getEncoding() == AudioFormat.Encoding.ALAW)) {
-			format = new AudioFormat(
-					AudioFormat.Encoding.PCM_SIGNED, 
-					format.getSampleRate(),
-					format.getSampleSizeInBits() * 2,
-					format.getChannels(),
-					format.getFrameSize() * 2,
-					format.getFrameRate(),
-					true);
+		//already PCM (e.g. WAV): can be opened on a mixer line directly
+		if (baseFormat.getEncoding() == AudioFormat.Encoding.PCM_SIGNED) {
+			return audio;
 		}
 
-		return AudioSystem.getAudioInputStream(format, audio);
+		/*
+		 * every other encoding (MPEG for MP3, ALAW/ULAW, ...) must be decoded to signed PCM before it
+		 * can be opened on a SourceDataLine. Derive a 16-bit PCM target from the source sample rate
+		 * and channels and let the registered SPI providers perform the conversion.
+		 */
+		AudioFormat decodedFormat = new AudioFormat(
+				AudioFormat.Encoding.PCM_SIGNED,
+				baseFormat.getSampleRate(),
+				16,
+				baseFormat.getChannels(),
+				baseFormat.getChannels() * 2,
+				baseFormat.getSampleRate(),
+				false);
+
+		return AudioSystem.getAudioInputStream(decodedFormat, audio);
 	}
 
 

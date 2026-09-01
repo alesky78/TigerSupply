@@ -558,7 +558,7 @@
 		</step>
 		<step>
 			<actions>
-				<action type="playMusic" alias="mainTheme" loop="true" />
+				<action type="playMusic" alias="bossFight" loop="true" />
 			</actions>
 			<completionEvent name="timed" time="2" />
 		</step>

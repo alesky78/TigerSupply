@@ -4,7 +4,8 @@
 //<audioAlias> <audioPath/audioName>  
 
 //music
-mainTheme audio/main-theme.wav
+mainTheme audio/main-theme.mp3
+bossFight audio/boss-fight.mp3
 
 //enemy
 boss-laser audio/boss-laser.wav

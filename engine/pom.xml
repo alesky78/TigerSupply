@@ -17,6 +17,19 @@
 
     <dependencies>
 
+        <!--
+            MP3 decoding via the JavaZoom MP3SPI provider. It registers javax.sound.sampled SPI
+            services so AudioSystem.getAudioInputStream() decodes MP3 transparently, keeping a single
+            playback path for WAV and MP3. Pulls jlayer and tritonus-share transitively.
+            Deliberate, documented exception to the project's "zero external runtime dependencies"
+            convention: the JDK cannot decode MP3 without a third-party decoder.
+        -->
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5.4</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
