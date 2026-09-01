@@ -21,6 +21,8 @@ public class LevelActionFactory {
 	private static final Map<String, String> TYPE_TO_CLASS = new HashMap<String, String>();
 	static {
 		TYPE_TO_CLASS.put("spawnHorde", "it.spaghettisource.tigersupply.game.scene.action.SpawnHordeAction");
+		TYPE_TO_CLASS.put("playMusic", "it.spaghettisource.tigersupply.game.scene.action.PlayMusicAction");
+		TYPE_TO_CLASS.put("stopMusic", "it.spaghettisource.tigersupply.game.scene.action.StopMusicAction");
 	}
 
 	private LevelActionFactory() {

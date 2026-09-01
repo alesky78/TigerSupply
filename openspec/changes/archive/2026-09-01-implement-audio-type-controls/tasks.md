@@ -38,7 +38,7 @@
   constants (inside `AudioManager`) and confirm the `game` call sites
   (`SceneFlowController`, `Enemy`, `RocketLauncher`, `SynusoidalGun`) need no changes; verify a full
   `mvn -q -pl engine,game -am compile` succeeds.
-- [ ] 4.2 Run the game (`mvn -pl launcher exec:java`) and verify: music loops, FX play and can
+- [x] 4.2 Run the game (`mvn -pl launcher exec:java`) and verify: music loops, FX play and can
   overlap, requesting an already-playing music alias does not layer it, lowering music volume keeps
   FX audible, `stopMusic(alias)` stops one of two music tracks while the other continues, and
   repeated FX do not grow the tracked collections unbounded.

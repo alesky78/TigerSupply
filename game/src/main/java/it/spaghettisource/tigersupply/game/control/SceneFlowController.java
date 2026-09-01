@@ -3,7 +3,6 @@ package it.spaghettisource.tigersupply.game.control;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.EnemyGroup;
@@ -139,8 +138,6 @@ public class SceneFlowController {
 			if(actualLevel>numberLevel){//GAME FINISH
 				doPresentation();
 			}else{//GO NEXT LEVEL
-				AudioManager.getInstance().playMusic("mainTheme", true);
-				
 				AbstractScene scene = new LevelScene(sceneHost.getGameContext(),player);
 				scene.setGamePanel(sceneHost.getGamePanel());
 				sceneHost.setActiveScene(scene);

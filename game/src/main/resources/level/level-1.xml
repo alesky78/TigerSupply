@@ -16,6 +16,14 @@
 		</step>
 		-->
 		
+		<!-- MUSIC: start the level soundtrack -->
+		<step>
+			<actions>
+				<action type="playMusic" alias="mainTheme" loop="true" />
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+		
 		<!-- BACKGROUND -->			
 		<step>
 			<actions>
@@ -542,6 +550,18 @@
 		</step>
 
 		<!-- BOSS-->
+		<step>
+			<actions>
+				<action type="stopMusic" alias="mainTheme" />
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+		<step>
+			<actions>
+				<action type="playMusic" alias="mainTheme" loop="true" />
+			</actions>
+			<completionEvent name="timed" time="2" />
+		</step>
 		<step>
 			<actions>
 				<action type="spawnHorde">
