@@ -8,7 +8,6 @@ public class EnemyBoss extends Enemy {
 
 	
 	private int explosionCounter = 0;
-	private float maxSpeed = 30;	
 	
 	public EnemyBoss(){
 		super();
@@ -30,16 +29,22 @@ public class EnemyBoss extends Enemy {
 	}
 
 	public void updateEntity(float deltaSeconds) throws Exception  {
-		//the enemy try to hit player with the laser beam
 		
+		//Y: the boss try to hit player with the laser beam
 		if(target.getPosition().getPosY() > position.getPosY()){
-			speed.setSpeedY(maxSpeed);
+			speed.setSpeedY(Math.abs(speed.getSpeedY()));
 		}else if(target.getPosition().getPosY() < position.getPosY()){
-			speed.setSpeedY(-maxSpeed);
-		}else{
-			speed.setSpeedY(0);
+			speed.setSpeedY(-Math.abs(speed.getSpeedY()));
 		}
-			
+		
+		//X: the boss move from right to screen center and then back (90% screen width)
+		if(position.getPosX() < (0.5 * context.getScreenWidth())){
+			speed.setSpeedX(Math.abs(speed.getSpeedX()));
+		}else if(position.getPosX() > (0.9 * context.getScreenWidth()) ){
+			speed.setSpeedX(- Math.abs(speed.getSpeedX()));
+		}
+		
+		
 		
 		super.updateEntity(deltaSeconds);
 		

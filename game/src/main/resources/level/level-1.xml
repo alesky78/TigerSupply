@@ -640,7 +640,7 @@
 			<scale value="1" />			
 		</enemyPrototype>
 		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBoss">
-			<speed x="-40" y="0" />
+			<speed x="-40" y="40" />
 			<image alias="boss" />
 			<scale value="1.4" />			
 		</enemyPrototype>
