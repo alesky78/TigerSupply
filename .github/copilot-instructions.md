@@ -16,8 +16,11 @@ API/data model, component inventory, technology stack, dependencies, code-qualit
 - **[system overview](../documentation/architecture/system-overview/)**
 
 ### Subsystems
-- **[enemy-spawn-lifecycle](../documentation/subsystems/enemy-spawn-lifecycle/index.md)** — how
-  enemy entities are spawned into a level and how the horde spawn state machine sequences them.
+- **[level-director-sequencing](../documentation/subsystems/level-director-sequencing/index.md)** —
+  how the `LevelDirector` sequences a level as an ordered list of steps, each running pluggable
+  `LevelAction`s (spawning a horde is one action) and then emitting a completion event that routes
+  the reusable engine state machine. (Formerly `enemy-spawn-lifecycle`; the OpenSpec capability
+  keeps that historical name.)
 - See
   [documentation/subsystems/subsystem-documentation-guide.md](../documentation/subsystems/subsystem-documentation-guide.md)
   for how to document a new one (e.g. the sprite/animation pipeline or the weapon fire-control

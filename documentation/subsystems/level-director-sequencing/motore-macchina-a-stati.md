@@ -1,10 +1,10 @@
 # Esecuzione della macchina a stati generica (modulo engine)
 
-> **Indice correlato**: [Ciclo di vita dello spawn dei nemici](index.md)
+> **Indice correlato**: [Sequenziamento del livello tramite il Level Director](index.md)
 
 > **Modulo:** `engine` — framework **riusabile e agnostico**. Questa pagina descrive *solo* il
-> meccanismo generico `engine.statemachine.*`. Non contiene nulla di specifico dei nemici o delle
-> ondate: quello è l'[esempio implementativo del gioco](sequenziamento-horde.md).
+> meccanismo generico `engine.statemachine.*`. Non contiene nulla di specifico dei passi, delle
+> azioni o dei nemici: quello è l'[esempio implementativo del gioco](sequenziamento-step.md).
 
 ## Indice
 
@@ -20,8 +20,8 @@
 
 ### Scopo
 `engine.statemachine` è una **macchina a stati finiti generica**, parametrica sul tipo di contesto
-condiviso `C`. È il motore che il gioco usa per sequenziare le ondate, ma non conosce nulla del
-gioco: potrebbe pilotare qualsiasi flusso a stati di un altro titolo costruito sull'engine.
+condiviso `C`. È il motore che il gioco usa per sequenziare i passi del livello, ma non conosce
+nulla del gioco: potrebbe pilotare qualsiasi flusso a stati di un altro titolo costruito sull'engine.
 
 ### Obiettivo
 A ogni **tick** (`tick()`) la macchina, se non è in uno stato finale:
@@ -35,7 +35,7 @@ Avviene **al massimo una transizione per tick**. Su uno stato finale il tick è 
 
 ### Trigger
 La macchina è **passiva**: non ha un thread proprio. Avanza solo quando qualcuno chiama `tick()`.
-Nel gioco quel chiamante è `EnemyManager.updateEntity(...)`, una volta per frame — ma dal punto di
+Nel gioco quel chiamante è `LevelDirector.tick(deltaSeconds)`, una volta per frame — ma dal punto di
 vista dell'engine il chiamante è irrilevante.
 
 ### Concetti locali
@@ -106,7 +106,7 @@ public Event process(C context) throws StateMachineException {
 
 ```mermaid
 sequenceDiagram
-    participant Caller as Chiamante (es. EnemyManager)
+    participant Caller as Chiamante (es. LevelDirector)
     participant SM as StateMachineImpl~C~
     participant St as State~C~ (corrente)
     participant TT as TransitionTable~C~
@@ -155,8 +155,8 @@ dipendenze oltre la JDK. Si integra esclusivamente per composizione programmatic
 | Impostare lo stato iniziale | `setState(iniziale)`. |
 | Far avanzare | Chiamare `tick()` quando serve (per il gioco, ogni frame). |
 
-Un esempio completo di cablaggio è in `EnemyManager.initComponents()` — vedi
-[sequenziamento-horde.md §2](sequenziamento-horde.md#2-descrizione-dei-componenti).
+Un esempio completo di cablaggio è in `LevelDirectorStateMachineFactory.build(...)` — vedi
+[sequenziamento-step.md §2](sequenziamento-step.md#2-descrizione-dei-componenti).
 
 ---
 

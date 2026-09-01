@@ -1,7 +1,7 @@
 # Possibile miglioria — payload sugli eventi consegnato agli stati
 
 > **Nota sulla lingua.** Pagina in **italiano**, coerente con il resto del sottosistema
-> [enemy-spawn-lifecycle](index.md).
+> [level-director-sequencing](index.md).
 >
 > **Stato: proposta, NON pianificata.** Questa pagina congela una discussione di design: non è
 > stata implementata e non esiste (ancora) una OpenSpec change. È un promemoria di "cosa
@@ -24,8 +24,8 @@
 
 ## 1. In una riga
 
-Oggi l'unico evento che porta un dato — `hordeTimed`, con il suo `time` in secondi — **non** lo
-porta davvero sull'[`Event`](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/Event.java):
+Oggi l'unico evento che porta un dato — `timed`, con il suo `time` in secondi — **non** lo porta
+davvero sull'[`Event`](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/Event.java):
 il valore viaggia in un *side-channel* attraverso il contesto condiviso, legato all'evento solo per
 convenzione (un confronto sul nome). L'idea è far sì che sia l'`Event` a portare il payload e che la
 macchina lo **consegni allo stato entrante** in `onEnter`, rendendo esplicito un contratto oggi
@@ -35,40 +35,40 @@ implicito e aprendo la strada a eventi parametrici futuri.
 
 ## 2. Il problema: `waitTime` viaggia in un canale laterale
 
-L'evento `hordeTimed` è l'unico dei tre eventi di completamento ondata che trasporta un attributo
-(vedi la tabella `GenerateEvent` in [index.md §3.2](index.md#32-generateevent-evento-di-completamento)).
+L'evento `timed` è l'unico dei tre eventi di completamento passo che trasporta un attributo (vedi la
+tabella `CompletionEvent` in [index.md §3.3](index.md#33-completionevent-evento-di-completamento)).
 Ma quel valore non è sull'`Event`: percorre una catena di copie.
 
 ```
-   level-1.xml  time="2"
+   level-1.xml  <completionEvent name="timed" time="2" />
         |
         v
-  GenerateEvent.time  (String)
+  CompletionEvent.time  (String)
         |
-        v   [StateSpawningHorde.process -> context.spawnNextHorde()]
-  HordeSpawner.createHordeEvent()
-        |  if name == hordeTimed:  currentWaitTime = parseFloat(time)   <-- stash in un campo
-        |  return new Event("hordeTimed")   <-- l'Event porta SOLO il nome
+        v   [StateExecutingStep.internalProcess]
+  context.honorCompletion(completion)
+        |  if name == timed:  waitTime = parseFloat(time)   <-- stash in un campo del context
+        |
         v
-  EnemySpawnContext.spawnNextHorde()
-        |  if name == hordeTimed:  waitTime = hordeSpawner.getCurrentWaitTime()  <-- ricopia
+  StateExecutingStep  return new Event(completion.getName())   <-- l'Event porta SOLO il nome
+        |
         v
-  [transizione hordeTimed:  spawningHorde --> awaitingTimer]
+  [transizione timed:  executingStep --> awaitingTimer]
         |
         v
   StateAwaitingTimer.internalProcess():  elapsedTime > context.waitTime ?
 ```
 
-Il punto dolente è l'**accoppiamento implicito**: tre punti diversi devono sapere del payload e
-concordare sulla convenzione "vale solo se il nome è `hordeTimed`":
+Il punto dolente è l'**accoppiamento implicito**: due punti diversi devono conoscere il payload e
+concordare sulla convenzione "vale solo se il nome è `timed`":
 
 | Chi | File | Cosa fa del payload |
 |---|---|---|
-| Produttore | [HordeSpawner.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/HordeSpawner.java) | Campo `currentWaitTime`, il getter `getCurrentWaitTime()`, il parse condizionale in `createHordeEvent()`. |
-| Ponte | [EnemySpawnContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java) | Lo stash condizionale in `spawnNextHorde()` (copia dal getter al campo `waitTime`). |
-| Consumatore | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | Legge `context.waitTime`. |
+| Produttore/Ponte | [DirectorContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/director/DirectorContext.java) | `honorCompletion()` fa il parse condizionale di `time` e lo deposita nel campo `waitTime`. |
+| Innesco | [StateExecutingStep.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateExecutingStep.java) | Chiama `honorCompletion(completion)` **prima** di emettere `new Event(completion.getName())`, che porta solo il nome. |
+| Consumatore | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | Legge `context.getWaitTime()`. |
 
-Lo stato che **emette** l'evento (`spawningHorde`) e lo stato che **consuma** il dato
+Lo stato che **emette** l'evento (`executingStep`) e lo stato che **consuma** il dato
 (`awaitingTimer`) sono diversi: l'evento è il messaggero naturale tra i due, ma oggi il messaggero è
 il contesto (blackboard), non l'evento.
 
@@ -81,8 +81,8 @@ Far portare all'`Event` i suoi attributi e, quando
 cambia stato, passare l'evento scatenante allo stato entrante:
 
 ```
-  HordeSpawner.createHordeEvent()
-        |  Event e = new Event("hordeTimed");  e.<payload> = 2f      <-- payload sull'evento
+  StateExecutingStep.internalProcess()
+        |  Event e = new Event("timed");  e.<payload> = 2f          <-- payload sull'evento
         v
   StateMachineImpl.tick()
         |  if (next != state)  next.onEnter(context, event)          <-- consegna l'evento
@@ -95,16 +95,17 @@ Confronto dell'accoppiamento, prima/dopo:
 ```
   OGGI                                  PROPOSTO
   ----                                  --------
-  time --> HordeSpawner.field           time --> Event.<payload>
-        --> [getter] --> Context.waitTime            |  (nasce sull'evento, in 1 punto)
-        --> StateAwaitingTimer                        v
-  3 punti conoscono il payload          onEnter(ctx, evt): ctx.waitTime = evt.<payload>
-  legame evento<->dato = solo il nome   legame evento<->dato = il payload/tipo
+  time --> CompletionEvent.time         time --> Event.<payload>
+        --> Context.honorCompletion              |  (nasce sull'evento, in 1 punto)
+        --> Context.waitTime                      v
+        --> StateAwaitingTimer          onEnter(ctx, evt): ctx.waitTime = evt.<payload>
+  2 punti conoscono la convenzione      legame evento<->dato = il payload/tipo
+  legame evento<->dato = solo il nome
 ```
 
-Beneficio principale: il dato **nasce e si attacca all'evento in un punto solo** (`createHordeEvent`)
-e arriva esattamente a chi serve, quando serve. Spariscono il campo/getter su `HordeSpawner` e lo
-stash condizionale in `EnemySpawnContext`.
+Beneficio principale: il dato **nasce e si attacca all'evento in un punto solo** (dove lo stato
+emette l'evento) e arriva esattamente a chi serve, quando serve. Sparisce lo stash condizionale
+(`honorCompletion`) dal `DirectorContext`.
 
 ---
 
@@ -129,6 +130,12 @@ Ma quello stesso design **nomina la limitazione** che qui vogliamo rimuovere:
 Quindi non è una contraddizione: la decisione di allora era razionale *dato che* l'evento non arriva
 allo stato. Questa proposta rimuove proprio quel presupposto, aggiungendo un secondo motivo per
 rivedere il vincolo.
+
+> **Nota.** Anche il change che ha generalizzato la macchina nel Level Director
+> ([generalize-horde-fsm-into-level-director](../../../openspec/changes/archive/2026-09-01-generalize-horde-fsm-into-level-director/design.md))
+> ha **esplicitamente lasciato invariato** l'engine `Event` e l'hook `onEnter`, rimandando questa
+> proposta: *"the `timed` wait keeps travelling through the shared context (`waitTime`), exactly as
+> today"*.
 
 ---
 
@@ -164,7 +171,7 @@ ereditano il default e restano intatti.
 | Opzione | Cosa | Pro | Contro |
 |---|---|---|---|
 | **A. Bag sull'`Event` engine** | `Event` con `Map<String,Object>` / `getAttribute(k)` | Dinamico, flessibile; aggiungi parametri senza toccare firme | Non tipizzato (chiave-stringa + cast); aggiunge superficie all'engine agnostico |
-| **B. Sottoclasse tipizzata nel `game`** | `HordeTimedEvent extends Event { float waitTime }` | Type-safe; l'`Event` engine resta un puro segnale; estensibile (un evento = una classe) | Serve `instanceof`/cast nello stato; meno "dinamico" |
+| **B. Sottoclasse tipizzata nel `game`** | `TimedEvent extends Event { float waitTime }` | Type-safe; l'`Event` engine resta un puro segnale; estensibile (un evento = una classe) | Serve `instanceof`/cast nello stato; meno "dinamico" |
 | **C. Azione sull'arco (sapore Mealy)** | Un'azione `(ctx, evt)` associata alla transizione nella `TransitionTable` | Sia `State` sia (quasi) l'`Event` engine restano invariati; la logica vive sull'arco, dove appartiene | Introduce un concetto nuovo (azioni d'arco) nell'engine; richiede comunque un payload sull'evento (la Decisione 2 non sparisce) |
 
 Nota: le opzioni **A** e **B** condividono la Decisione 1 (evento consegnato a `onEnter`) e
@@ -174,22 +181,27 @@ allo stato, quindi lascia `State`/`onEnter` invariati ma aggiunge il concetto di
 Sketch dell'opzione **B** lato produttore e consumatore:
 
 ```java
-// HordeSpawner.createHordeEvent()  -- spariscono currentWaitTime, il getter, e lo stash nel context
-return new HordeTimedEvent(Float.parseFloat(desc.getTime().trim()));   // name = "hordeTimed"
+// StateExecutingStep.internalProcess()  -- sparisce lo stash condizionale in honorCompletion()
+CompletionEvent completion = step.getCompletion();
+context.advanceStep();
+if ("timed".equals(completion.getName())) {
+    return new TimedEvent(Float.parseFloat(completion.getTime().trim()));   // name = "timed"
+}
+return new Event(completion.getName());
 ```
 
 ```java
 // StateAwaitingTimer
 @Override
-public void onEnter(EnemySpawnContext ctx, Event trigger) {
+public void onEnter(DirectorContext ctx, Event trigger) {
     ctx.resetElapsedTime();
-    if (trigger instanceof HordeTimedEvent hte) {
-        ctx.setWaitTime(hte.getWaitTime());
+    if (trigger instanceof TimedEvent te) {
+        ctx.setWaitTime(te.getWaitTime());
     }
 }
 ```
 
-Proprietà utile di B: `HordeTimedEvent.getName()` ritorna `"hordeTimed"`, quindi la
+Proprietà utile di B: `TimedEvent.getName()` ritorna `"timed"`, quindi la
 [TransitionTable](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/TransitionTable.java)
 continua a instradare per nome **senza modifiche**. Solo la *consegna* del dato cambia.
 
@@ -199,21 +211,21 @@ continua a instradare per nome **senza modifiche**. Solo la *consegna* del dato 
 
 - **`onEnter` NON scatta sui self-loop.**
   [StateMachineImpl.tick()](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineImpl.java)
-  salta la notifica quando `next == state`. Oggi `hordeTimed` è una transizione vera
-  (`spawningHorde -> awaitingTimer`), quindi ok; ma un futuro evento con payload mappato su un
+  salta la notifica quando `next == state`. Oggi `timed` è una transizione vera
+  (`executingStep -> awaitingTimer`), quindi ok; ma un futuro evento con payload mappato su un
   self-loop perderebbe silenziosamente il dato. Da documentare nel contratto.
 - **Lo stato iniziale non riceve `onEnter`.** In
-  [EnemyManager.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyManager.java)
+  [LevelDirectorStateMachineFactory.build()](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/LevelDirectorStateMachineFactory.java)
   la macchina parte con `setState(awaitingTimer)`, e `setState` non chiama `onEnter`. Perciò al
   primo giro `awaitingTimer` gira **senza** un evento scatenante: il default `waitTime = 1` in
-  [EnemySpawnContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java)
+  [DirectorContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/director/DirectorContext.java)
   deve **restare**. La proposta non svuota il context: sostituisce solo il *canale* con cui
-  `waitTime` viene alimentato dopo la prima ondata.
+  `waitTime` viene alimentato dopo il primo passo.
 - **La transition table instrada solo per nome** — il payload è ortogonale al routing. È corretto,
   ma va scritto nero su bianco affinché nessuno pensi che il payload influenzi le transizioni.
-- **Gli stati sono singleton stateless riusati** (commento in `EnemyManager.initComponents()`). Il
-  payload consegnato in `onEnter` va depositato nel **context** (`ctx.waitTime`), non in un campo
-  dello stato, per non introdurre stato mutabile su un singleton.
+- **Gli stati sono stateless e riusati** (uno per macchina, costruiti in `build()`). Il payload
+  consegnato in `onEnter` va depositato nel **context** (`ctx.waitTime`), non in un campo dello
+  stato, per non introdurre stato mutabile su un componente condiviso.
 
 ---
 
@@ -224,9 +236,9 @@ Se/quando diventerà una change, l'impatto atteso è:
 | Area | Elementi | Nota |
 |---|---|---|
 | Engine — codice | [State.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/State.java), [StateMachineImpl.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/statemachine/StateMachineImpl.java) (+ `Event`/`TransitionTable` secondo l'opzione) | Overload `onEnter(C, Event)`; consegna nell'`tick()`. |
-| Game — codice | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java), [HordeSpawner.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/HordeSpawner.java), [EnemySpawnContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/EnemySpawnContext.java) (+ eventuale `HordeTimedEvent` in opzione B) | Un solo stato cambia; sparisce il side-channel. |
+| Game — codice | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java), [StateExecutingStep.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateExecutingStep.java), [DirectorContext.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/director/DirectorContext.java) (+ eventuale `TimedEvent` in opzione B) | Un solo stato cambia; sparisce lo stash condizionale in `honorCompletion`. |
 | OpenSpec — spec | [engine-state-machine/spec.md](../../../openspec/specs/engine-state-machine/spec.md) (requisiti *On-enter lifecycle hook* e *Shared typed context threaded to states*), [enemy-spawn-lifecycle/spec.md](../../../openspec/specs/enemy-spawn-lifecycle/spec.md) | Il contratto dell'hook di ingresso si allarga. |
-| Docs | Questa pagina + [index.md](index.md), [motore-macchina-a-stati.md](motore-macchina-a-stati.md), [sequenziamento-horde.md](sequenziamento-horde.md) | Aggiornare quando implementata. |
+| Docs | Questa pagina + [index.md](index.md), [motore-macchina-a-stati.md](motore-macchina-a-stati.md), [sequenziamento-step.md](sequenziamento-step.md) | Aggiornare quando implementata. |
 
 ---
 
@@ -237,13 +249,14 @@ Se/quando diventerà una change, l'impatto atteso è:
 - Tra le rappresentazioni, l'inclinazione è verso **B (sottoclasse tipizzata)**: tiene l'engine
   `Event` puro e game-agnostic, dà type-safety invece di chiavi-stringa + cast, ed è comunque
   estensibile. Il **bag (A)** serve davvero solo se il payload ha forma *dinamica a runtime*; nel
-  dominio attuale (eventi di horde a forma nota, scritti nell'XML) siamo nel caso "estensibile a
-  design-time", che B copre bene. **C** è concettualmente elegante (Mealy pulito) ma aggiunge un
-  concetto nuovo all'engine: allargare un hook esistente pesa meno che introdurne uno nuovo.
-- Contrappunto onesto: oggi `hordeTimed` è l'**unico** evento con payload, quindi si sta
-  generalizzando un'infrastruttura per un singolo call-site. Il valore cresce solo se si prevedono
-  altri eventi parametrici (es. spawn con conteggio, boss con soglie, drop). Da pesare contro il
-  ripple sullo spec dell'engine.
+  dominio attuale (eventi di completamento a forma nota, scritti nell'XML) siamo nel caso
+  "estensibile a design-time", che B copre bene. **C** è concettualmente elegante (Mealy pulito) ma
+  aggiunge un concetto nuovo all'engine: allargare un hook esistente pesa meno che introdurne uno
+  nuovo.
+- Contrappunto onesto: oggi `timed` è l'**unico** evento con payload, quindi si sta generalizzando
+  un'infrastruttura per un singolo call-site. Il valore cresce solo se si prevedono altri eventi
+  parametrici (es. spawn con conteggio, boss con soglie, drop). Da pesare contro il ripple sullo
+  spec dell'engine.
 
 ---
 
