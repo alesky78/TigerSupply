@@ -1,12 +1,9 @@
-# enemy-spawn-lifecycle Specification
+## RENAMED Requirements
 
-## Purpose
+- FROM: `### Requirement: Time-gated hordes honor the authored delay`
+- TO: `### Requirement: Time-gated steps honor the authored delay`
 
-Defines how the level's scripted steps are sequenced during play — in particular how each step runs
-its ordered actions and how long the game waits between two time-gated steps, driven by the level
-definition and validated when the level loads.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Time-gated steps honor the authored delay
 
@@ -53,6 +50,8 @@ level definition is explicit and human-readable.
 
 - **WHEN** a level declares a wait value on a step whose completion is not time-gated
 - **THEN** loading the level succeeds and the declared value has no effect on sequencing
+
+## ADDED Requirements
 
 ### Requirement: A step performs an ordered list of actions then emits a completion event
 

@@ -13,16 +13,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import it.spaghettisource.tigersupply.game.scene.builder.definition.ActionDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmProperties;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.CompletionEvent;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
-import it.spaghettisource.tigersupply.game.scene.builder.definition.GenerateEvent;
-import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Image;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.PointDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Scale;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Speed;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
 
 
 /**
@@ -33,8 +34,9 @@ import it.spaghettisource.tigersupply.game.scene.builder.definition.Speed;
  */
 public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataBuilder {
 
-	private final String TAG_HORDER = "horde";
-	private final String TAG_GENERATE_EVENT = "generateEvent";
+	private final String TAG_STEP = "step";
+	private final String TAG_ACTION = "action";
+	private final String TAG_COMPLETION_EVENT = "completionEvent";
 	private final String TAG_ENEMY = "enemy";	
 
 	private final String TAG_ENEMY_PROTO ="enemyPrototype";
@@ -50,8 +52,9 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	
 	private String sourceFile;
 	
-	private List<Horde> hordes;
-	private Horde actualHorde;
+	private List<Step> steps;
+	private Step actualStep;
+	private ActionDefinition actualAction;
 	
 	private List<EnemyPrototype> enemyPrototypes;
 	private EnemyPrototype actualEnemyPrototype;	
@@ -64,7 +67,7 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	
 	public EnemyDataBuilderSaxXml(String sourceFile){		
 		this.sourceFile =sourceFile;
-		hordes = new ArrayList<Horde>();
+		steps = new ArrayList<Step>();
 		enemyPrototypes = new ArrayList<EnemyPrototype>();
 		algorithmsPrototypes = new ArrayList<AlgorithmPrototype>();
 	}
@@ -85,15 +88,24 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	}
 
 	public void startElement(String namespaceURI,String localName,String qName, Attributes atts) throws SAXException {
-		if(localName.equals(TAG_HORDER)){	//it is a new horde
-			actualHorde = new Horde();
-			hordes.add(actualHorde);
-		}else if(localName.equals(TAG_GENERATE_EVENT)){	//it is a new generateEvent
-			GenerateEvent event = new GenerateEvent(atts.getValue("name"), atts.getValue("time"));
-			actualHorde.setEvent(event);
-		}else if(localName.equals(TAG_ENEMY)){	//it is a enemy
+		if(localName.equals(TAG_STEP)){	//it is a new step
+			actualStep = new Step();
+			steps.add(actualStep);
+		}else if(localName.equals(TAG_ACTION)){	//it is a new action inside the current step
+			actualAction = new ActionDefinition(atts.getValue("type"));
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attrName = atts.getLocalName(i);
+				if(!"type".equals(attrName)){
+					actualAction.setProperty(attrName, atts.getValue(i));
+				}
+			}
+			actualStep.addAction(actualAction);
+		}else if(localName.equals(TAG_COMPLETION_EVENT)){	//it is the completion event of the current step
+			CompletionEvent completion = new CompletionEvent(atts.getValue("name"), atts.getValue("time"));
+			actualStep.setCompletion(completion);
+		}else if(localName.equals(TAG_ENEMY)){	//it is an enemy inside the current action
 			EnemyDefinition enemy = new EnemyDefinition(atts.getValue("enemyPrototype"), atts.getValue("algorithmPrototype"), atts.getValue("posX"), atts.getValue("posY"),atts.getValue("posZ"));
-			actualHorde.addEnemy(enemy);
+			actualAction.addEnemy(enemy);
 		}else if(localName.equals(TAG_ENEMY_PROTO)){	//it is a new enemy prototype
 			actualEnemyPrototype = new EnemyPrototype(atts.getValue("name"), atts.getValue("type"), atts.getValue("class"));
 			enemyPrototypes.add(actualEnemyPrototype);
@@ -125,8 +137,8 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	public void endDocument() throws SAXException {
 	}		
 
-	public List<Horde> buildHordes() {
-		return hordes;
+	public List<Step> buildSteps() {
+		return steps;
 	}
 
 	public List<EnemyPrototype> buildEnemyPrototypes() {

@@ -4,18 +4,17 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
-import it.spaghettisource.tigersupply.game.scene.builder.definition.GenerateEvent;
-import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
 
 public class LevelDataRepository {
 
-	private List<Horde> hordes;
+	private List<Step> steps;
 	List<EnemyPrototype> enemyPrototypes;
 	List<AlgorithmPrototype> algorithmPrototypes;
 
 
-	public void setHordes(List<Horde> hordes) {
-		this.hordes = hordes;
+	public void setSteps(List<Step> steps) {
+		this.steps = steps;
 	}
 
 	public void setEnemyPrototypes(List<EnemyPrototype> enemyPrototypes) {
@@ -26,12 +25,8 @@ public class LevelDataRepository {
 		this.algorithmPrototypes = algorithmPrototypes;
 	}
 
-	public Horde getHordeByIndex(int i){
-		return hordes.get(i);
-	}
-	
-	public GenerateEvent getEventByIndex(int i){
-		return hordes.get(i).getEvent();
+	public Step getStepByIndex(int i){
+		return steps.get(i);
 	}	
 
 	public EnemyPrototype getEnemyPrototypeByName(String name){
@@ -53,8 +48,8 @@ public class LevelDataRepository {
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("level data......");
-		buffer.append("horde size:"+hordes.size()+"\n");
-		for (Horde single: hordes) {
+		buffer.append("step size:"+steps.size()+"\n");
+		for (Step single: steps) {
 			buffer.append(single.toString());
 		}
 		for (EnemyPrototype single: enemyPrototypes) {

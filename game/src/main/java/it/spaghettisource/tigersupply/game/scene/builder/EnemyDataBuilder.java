@@ -6,13 +6,13 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
-import it.spaghettisource.tigersupply.game.scene.builder.definition.Horde;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
 
 public interface EnemyDataBuilder {
 
 	public void parse() throws Exception;
 	
-	public List<Horde> buildHordes();
+	public List<Step> buildSteps();
 	
 	public List<EnemyPrototype> buildEnemyPrototypes();
 	

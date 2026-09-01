@@ -27,6 +27,7 @@ import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryMan
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.entity.EnemyManager;
 import it.spaghettisource.tigersupply.game.entity.Player;
+import it.spaghettisource.tigersupply.game.scene.director.LevelDirector;
 import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
@@ -37,6 +38,7 @@ public class LevelScene extends AbstractScene {
 	//game entities
 	private Player playerShip;
 	private EnemyManager enemyManager;
+	private LevelDirector levelDirector;
 
 
 	private EntityGroupScreenBound<Entity> playerShootManager;
@@ -80,11 +82,18 @@ public class LevelScene extends AbstractScene {
 
 		//enemy manager		
 		enemyManager = eManager; 
-		enemyManager.setShotManager(enemyShootManager);
-		enemyManager.setEffectManager(effectManager);
-		enemyManager.setPlayer(playerShip);
 		enemyManager.init(context);
-		enemyManager.initComponents();
+
+		//the level director owns the sequencing state machine and commands the subsystems (enemies
+		//today; base, background, audio later); it is ticked once per frame in update()
+		levelDirector = new LevelDirector();
+		levelDirector.setContext(context);
+		levelDirector.setPlayer(playerShip);
+		levelDirector.setShotManager(enemyShootManager);
+		levelDirector.setEffectManager(effectManager);
+		levelDirector.setEnemyManager(enemyManager);
+		levelDirector.setLevelDataFile(enemyManager.getLevelDataFile());
+		levelDirector.init();
 
 
 		//collisions detector
@@ -106,6 +115,7 @@ public class LevelScene extends AbstractScene {
 		if (!context.isPaused() && !context.isStop()){
 			magageGameFlow();
 			playerShip.updateEntity(deltaTimeSeconds);
+			levelDirector.tick(deltaTimeSeconds);
 			enemyManager.updateEntity(deltaTimeSeconds);
 
 			effectManager.updateEntity(deltaTimeSeconds);
@@ -137,7 +147,7 @@ public class LevelScene extends AbstractScene {
 			flowTransitionTriggered = true;
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doGameOver();
-		}else if(enemyManager.isBossDead()){
+		}else if(levelDirector.isLevelCleared()){
 			flowTransitionTriggered = true;
 			AudioManager.getInstance().stopAllAudio();
 			SceneFlowController.getInstance().doNextLevel();
