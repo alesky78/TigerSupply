@@ -4,7 +4,7 @@
 	
 	<!-- limite attuale con questa risoluzione x=1350 y=650 -->
 	<steps>								
-		
+
 		<!-- uncomment to test the boss 
 		<step>
 			<actions>
@@ -565,27 +565,17 @@
 			<completionEvent name="cleared" />							
 		</step>
 
-		<!-- BRIEFING: huge radar contact before the boss -->
+
+		<!-- BOSS + BRIEFING: huge radar contact before the boss-->
 		<step>
 			<actions>
-				<action type="showDialog" script="radar-big-contact" />
+				<action type="stopMusic" alias="mainTheme" />
+				<action type="playMusic" alias="bossFight" loop="true" />
+				<action type="showDialog" script="radar-big-contact" />				
 			</actions>
 			<completionEvent name="dialogClosed" />
 		</step>
 
-		<!-- BOSS-->
-		<step>
-			<actions>
-				<action type="stopMusic" alias="mainTheme" />
-			</actions>
-			<completionEvent name="timed" time="1" />
-		</step>
-		<step>
-			<actions>
-				<action type="playMusic" alias="bossFight" loop="true" />
-			</actions>
-			<completionEvent name="timed" time="2" />
-		</step>
 		<step>
 			<actions>
 				<action type="spawnHorde">

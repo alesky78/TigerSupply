@@ -172,7 +172,7 @@ Narrazione dell'esempio di riferimento (Livello 1):
 3. **Esecuzione delle azioni.** `StateExecutingStep` legge il passo corrente e, per **ogni**
    `ActionDefinition`, chiede a `LevelActionFactory` la `LevelAction` concreta e la esegue. Nel
    Livello 1 ogni passo ha una sola azione `spawnHorde` → `SpawnHordeAction` istanzia i nemici e li
-   registra sull'`EnemyGroup`.
+   registra sull'`EntityGroupScreenBound<Enemy>`.
 4. **Completamento.** Il primo passo dichiara `<completionEvent name="timed" time="1" />`:
    `honorCompletion` imposta `waitTime = 1`, `advanceStep()` sposta il cursore e lo stato emette
    l'`Event` `timed`.
@@ -215,7 +215,7 @@ Narrazione dell'esempio di riferimento (Livello 1):
 | `DirectorContext.elapsedTime` | `game` | scritto ogni frame, azzerato in `onEnter` di `StateAwaitingTimer` | Base temporale del sequenziamento. |
 | `DirectorContext.waitTime` | `game` | scritto in `honorCompletion` quando l'evento è `timed` | Sovrascrive il default `1`. |
 | `DirectorContext.stepIndex` | `game` | avanzato da `advanceStep()` a ogni passo eseguito | Cursore sul passo corrente. |
-| `EnemyGroup` (entità) | `game` | scritto da `SpawnHordeAction.execute` via `addRequest(...)` | I nemici generati entrano nel gruppo gestito. |
+| `EntityGroupScreenBound<Enemy>` (entità) | `engine` | scritto da `SpawnHordeAction.execute` via `addRequest(...)` | I nemici generati entrano nel gruppo gestito. |
 | `StateMachineImpl.state` | `engine` | scritto a ogni tick non finale | Lo stato corrente. |
 
 ### Casi limite e sicurezza

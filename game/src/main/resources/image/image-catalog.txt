@@ -16,9 +16,12 @@ s bcgr_hangar image/background-hangar.png
 s bcgr_texture_space image/background-texture-space.jpg
 
 
-//player images
+//player ship
 l playerA image/ship-A-*.png 5
 l playerB image/ship-B-*.png 5
+
+
+//player shot
 s playershot1 image/player-gun.png
 s playershot2 image/player-rocket.png
 s playershot3 image/player-green.png
@@ -33,15 +36,18 @@ l explosion image/exp*.png 9
 //l explosion explosion*.gif 15
 
 
-//enemy images
+//enemy ships
 s enemy1 image/enemy-1.png
 s enemy2 image/enemy-2.png
 s enemy3 image/enemy-3.png
 s enemy4 image/enemy-4.png
 s boss   image/enemy-boss.png
-s enemyshot1 image/enemy-shot-1.png
-s enemyshot2 image/enemy-shot-2.png
-s enemyshot3 image/enemy-shot-3.png
+
+
+//enemy shot
+s enemyShotDefault image/enemy-shot-default.png
+s enemyShotPlasmaCannon image/enemy-shot-plasma-cannon.png
+s enemyshotRocket image/enemy-shot-rocket.png
 
 
 //other
@@ -49,6 +55,7 @@ s asteroid1 image/asteroid-1.png
 s asteroid2 image/asteroid-2.png
 s asteroid3 image/asteroid-3.png
 s asteroid4 image/asteroid-4.png
+
 
 //radio-dialogue portraits (one alias per speaker+expression; placeholder art)
 s portrait_pilot_calm      image/portrait-pilot-1.jpg

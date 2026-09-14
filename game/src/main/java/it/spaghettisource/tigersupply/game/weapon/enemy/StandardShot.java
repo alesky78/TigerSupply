@@ -18,8 +18,7 @@ public class StandardShot extends AbstractWeapon<Enemy> {
 	
 	protected void doFire(Entity target) throws Exception {
 		Position shotPosition = new Position(owner.getPosition());
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(180, 100, new Position(target.getXposition(), target.getYposition(),0));
-		Entity gunShotSprite = EntityFactoryWrapper.newEnemyShot1(shotPosition, algorithm);
+		Entity gunShotSprite = EntityFactoryWrapper.newEnemyShotDefault(shotPosition, target);
 		owner.getShotManager().addRequest(gunShotSprite);
 	}
 

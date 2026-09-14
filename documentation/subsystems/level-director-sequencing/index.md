@@ -56,7 +56,7 @@ flowchart LR
     DIR --> FSM["Macchina a stati<br/>(engine.statemachine)"]
     FSM --> STEP["StateExecutingStep<br/>(modulo game)"]
     STEP --> ACT["LevelAction<br/>(es. SpawnHordeAction)"]
-    ACT --> ENEMY["EnemyGroup → Enemy in scena<br/>(modulo game)"]
+    ACT --> ENEMY["EntityGroupScreenBound&lt;Enemy&gt; → Enemy in scena<br/>(modulo game)"]
 ```
 
 > **Obiettivo di questa documentazione:** permettere a uno sviluppatore (o a un agente AI) di
@@ -219,7 +219,7 @@ flowchart LR
         FAC -->|cabla stati e tabella| STATES["StateAwaitingTimer / StateAwaitingClear / StateAwaitingDialog /<br/>StateExecutingStep / StateAwaitingBossDefeat / StateLevelCleared"]
         STATES -. eseguono azioni via .-> AF["LevelActionFactory"]
         AF --> SHA["SpawnHordeAction / ShowDialogAction /<br/>PlayMusicAction / StopMusicAction"]
-        SHA --> EG["EnemyGroup / DialogManager / AudioManager"]
+        SHA --> EG["EntityGroupScreenBound&lt;Enemy&gt; / DialogManager / AudioManager"]
         CTX --> REPO["LevelDataRepository"]
     end
     STATES -. estendono .-> ABS["engine.statemachine.AbstractState&lt;C&gt;"]
@@ -301,10 +301,10 @@ classDiagram
 | Stato (finale) | `StateLevelCleared` | [StateLevelCleared.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateLevelCleared.java) | Terminale: boss morto, livello vinto. |
 | Azione (interfaccia) | `LevelAction` | [LevelAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/LevelAction.java) | Comando fire-and-forget: `init(ActionDefinition)` + `execute(DirectorContext)`. |
 | Factory azioni | `LevelActionFactory` | [LevelActionFactory.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/LevelActionFactory.java) | Registro `tipo → classe`; istanzia e configura una `LevelAction` per reflection. |
-| Azione concreta | `SpawnHordeAction` | [SpawnHordeAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/SpawnHordeAction.java) | Istanzia i nemici dichiarati e li registra sull'`EnemyGroup`. |
+| Azione concreta | `SpawnHordeAction` | [SpawnHordeAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/SpawnHordeAction.java) | Istanzia i nemici dichiarati e li registra sul gruppo nemici (`EntityGroupScreenBound<Enemy>`). |
 | Azione concreta | `ShowDialogAction` | [ShowDialogAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/ShowDialogAction.java) | Avvia un dialogo radio: risolve lo script per nome e comanda il `DialogManager`. |
 | Azione concreta | `PlayMusicAction` / `StopMusicAction` | [PlayMusicAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/PlayMusicAction.java) | Avviano/fermano una traccia musicale via `AudioManager`. |
-| Gruppo nemici | `EnemyGroup` | [EnemyGroup.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyGroup.java) | Gestisce **solo** le entità nemico vive (nessun sequenziamento). |
+| Gruppo nemici | `EntityGroupScreenBound<Enemy>` | [EntityGroupScreenBound.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/EntityGroupScreenBound.java) | Contenitore generico dell'engine riusato per i nemici vivi: nessun sequenziamento e nessuna logica di tiro (il fire-control vive in `Enemy.updateEntity`). |
 | Builder | `EnemyDataBuilderSaxXml` | [EnemyDataBuilderSaxXml.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/EnemyDataBuilderSaxXml.java) | Parser SAX dell'XML del livello (passi, azioni, completamento, prototipi). |
 | Repository | `LevelDataRepository` | [LevelDataRepository.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/LevelDataRepository.java) | Custodisce passi + prototipi, lookup per indice/nome. |
 | Scena | `LevelScene` | [LevelScene.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/LevelScene.java) | Crea e fa il tick del `LevelDirector`; rileva la fine livello. |
@@ -488,7 +488,7 @@ generico della macchina in [motore-macchina-a-stati.md](motore-macchina-a-stati.
 
 | Scenario | Stato |
 |---|---|
-| Pipeline dei passi del Livello 1 | Esempio verticale di riferimento usato in tutte le pagine: `level-1.xml` → `EnemyDataBuilderSaxXml` → `LevelDataRepository` → `LevelDirector` → macchina a stati → `StateExecutingStep` → `SpawnHordeAction` → `EnemyGroup` → `Enemy`. |
+| Pipeline dei passi del Livello 1 | Esempio verticale di riferimento usato in tutte le pagine: `level-1.xml` → `EnemyDataBuilderSaxXml` → `LevelDataRepository` → `LevelDirector` → macchina a stati → `StateExecutingStep` → `SpawnHordeAction` → `EntityGroupScreenBound<Enemy>` → `Enemy`. |
 
 ---
 

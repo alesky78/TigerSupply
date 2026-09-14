@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
-import it.spaghettisource.tigersupply.game.weapon.enemy.RocketLauncher;
+import it.spaghettisource.tigersupply.game.weapon.enemy.DoubleRocketLauncher;
 
 
 
@@ -19,7 +19,7 @@ public class EnemyShoterRocket extends Enemy {
 		particleDeathMaxLifeTime= 0.4f;	
 		
 		weapons = new Weapon[1];
-		weapons[0] = new RocketLauncher(); 
+		weapons[0] = new DoubleRocketLauncher(); 
 		weapons[0].setOwner(this);
 		
 	}	

@@ -30,9 +30,9 @@ public class GameResources {
 	public static final String ENEMY_3 = "enemy3";
 	public static final String ENEMY_4 = "enemy4";			
 	public static final String ENEMY_BOSS = "boss";	
-	public static final String ENEMY_SHOT1 = "enemyshot1";
-	public static final String ENEMY_SHOT2 = "enemyshot2";
-	public static final String ENEMY_SHOT3 = "enemyshot3";	
+	public static final String ENEMY_SHOT_DEFAULT = "enemyShotDefault";
+	public static final String ENEMY_SHOT_PLASMA_CANNON = "enemyShotPlasmaCannon";
+	public static final String ENEMY_SHOT_ROCKET = "enemyshotRocket";	
 	public static final String PLAYER_SHIP_A = "playerA";
 	public static final String PLAYER_SHIP_B = "playerB";	
 	public static final String PLAYER_GUN  = "playershot1";

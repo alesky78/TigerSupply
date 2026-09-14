@@ -17,7 +17,11 @@
    - [B. Boss / mid-boss](#b-boss--mid-boss)
    - [C. Proiettili / oggetti](#c-proiettili--oggetti)
 3. [L'idea chiave: un algoritmo composito](#3-lidea-chiave-un-algoritmo-composito)
-4. [Priorità suggerite](#4-priorità-suggerite)
+4. [Quali sono i più utili (priorità)](#4-quali-sono-i-più-utili-priorità)
+   - [4.1 Due significati di "utile"](#41-due-significati-di-utile)
+   - [4.2 Matrice valore/costo](#42-matrice-valorecosto)
+   - [4.3 Classifica per tier](#43-classifica-per-tier)
+   - [4.4 Il genere sposta la classifica](#44-il-genere-sposta-la-classifica)
 5. [Note trasversali](#5-note-trasversali)
 
 ---
@@ -134,27 +138,102 @@ una **condizione di completamento** è soddisfatta (tempo trascorso, punto raggi
 > della lista dei nemici popcorn e diversi pattern boss **senza** aggiungere una classe per ogni
 > variante. È probabilmente l'aggiunta singola a più alto ritorno di tutta questa pagina.
 
-**Prerequisito abilitante.** Serve un concetto di **condizione di completamento del segmento**
-(durata o punto raggiunto). Nel `game` esiste già un vocabolario simile per gli step del livello
+> **Non è "il primo in classifica": è quello che *cancella* le altre voci.** Costruito il composito,
+> **Enter-Hold-Exit, boomerang e swoop-and-return spariscono come classi dedicate** — diventano sue
+> composizioni (vedi la tabella qui sopra). La domanda giusta non è "quali algoritmi costruisco", ma:
+> *"costruisco il composito, e quali **mattoni atomici** mi mancano per comporre tutto il resto?"*
+
+**Prerequisito abilitante (il vero lavoro).** Serve un concetto di **condizione di completamento del
+segmento** (durata scaduta o punto raggiunto). Attenzione: i mattoni attuali **non sanno segnalare la
+fine** — `GoToPoint` *prosegue oltre il punto* (nessuna condizione di arresto sul bersaglio, vedi il
+[catalogo](catalogo-algoritmi-attuali.md#9-quadro-riassuntivo)), mentre `Default` e `Sinusoidal` non
+finiscono mai. Quindi il composito deve **possedere lui stesso** il check (durata/arrivo), oppure gli
+algoritmi devono esporre un `isComplete()`: questa è la vera decisione di design, più della
+traiettoria.
+
+```
+  Il vero lavoro del composito non e' la geometria:
+  +--------------------+     +-------------------------------+
+  | concatenare        |  +  | definire QUANDO un segmento   |
+  | strategie (facile) |     | e' "finito"  (il nodo vero)   |
+  +--------------------+     +-------------------------------+
+```
+
+Nel `game` esiste già un vocabolario simile per gli step del livello
 (vedi [level-director-sequencing](../level-director-sequencing/index.md)); qui però va tenuto nel
 modulo `engine`, generico e senza dipendenze dal gioco, coerente con la collocazione di
 `UpdateAlgorithm`.
 
 ---
 
-## 4. Priorità suggerite
+## 4. Quali sono i più utili (priorità)
 
-L'ordine dipende dal titolo di riferimento; una proposta ragionevole:
+> **In breve:** i due più utili in assoluto sono quelli che **sbloccano capacità oggi impossibili** —
+> l'algoritmo **composito** ([§3](#3-lidea-chiave-un-algoritmo-composito)) e l'**homing con
+> turn-rate**. Il resto sono forme nuove per capacità che in parte esistono già, quindi con ritorno
+> marginale più basso. L'ordine fine dipende dal titolo di riferimento.
 
-1. **`SequenceUpdateAlgorithm` (composito)** — massimo ritorno: abilita Enter-Hold-Exit, boomerang,
-   swoop-and-return riusando i mattoni esistenti.
-2. **Homing con turn-rate** — colma la lacuna dei proiettili a ricerca (FollowSprite non converge).
-3. **ZigZag** e **Ping-pong** — pattern "puliti" ad alta frequenza d'uso, matematica minima.
-4. **Figure-8 / Orbita** — carattere ai boss.
-5. **Arco balistico** e **Spirale** — effetti/bullet-pattern più di nicchia.
+### 4.1 Due significati di "utile"
 
-> **Il titolo sposta la priorità.** Uno shmup "pulito" alla Raiden/Gradius premia composito +
-> zig-zag + ping-pong; un bullet-hell di fine anni '90 (DoDonPachi) sposta spirale e homing in alto.
+Le proposte non sono sullo stesso piano. Alcune **sbloccano un comportamento oggi inesprimibile**;
+altre aggiungono solo una **forma nuova a una capacità che esiste già** — e quindi hanno un ritorno
+marginale più basso.
+
+```
+  SBLOCCA una capacita' oggi IMPOSSIBILE   (ritorno massimo)
+   *  Composite         -> introduce lo stato di ATTESA
+   *  Homing turn-rate  -> CONVERGE sul bersaglio
+
+  AGGIUNGE una forma a capacita' che ESISTONO gia'   (ritorno minore)
+   *  ZigZag      ~ Sinusoidal (onda triangolare)
+   *  Figure-8    ~ Sinusoidal applicata a 2 assi
+   *  Ping-pong   ~ LinearPath ma in LOOP (rimbalza)
+   *  Orbita / Spirale / Arco balistico
+```
+
+- **Composite** — nessun algoritmo attuale ha uno *stato di attesa*: Enter-Hold-Exit è letteralmente
+  inesprimibile.
+- **Homing con turn-rate** — [`UpdateAlgoritmFollowSprite`](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgoritmFollowSprite.java)
+  **oscilla** attorno al bersaglio, non converge mai; un vero missile a ricerca oggi non esiste.
+
+### 4.2 Matrice valore/costo
+
+```
+  valore
+ (pattern sbloccati x frequenza d'uso)
+   ALTO |  [Homing]                  [Composite] *    <- miglior ROI
+        |
+  MEDIO |  [Ping-pong]   [Figure-8/Orbita]            [Spirale] **
+        |
+  BASSO |  [ZigZag]      [Arco balistico]
+        +----------------------------------------------------------
+          BASSO                 costo impl.                    ALTO
+
+  *  Composite: il costo NON e' la matematica (zero) ma il
+     "contratto di completamento" del segmento (vedi §3).
+  ** Spirale: il valore dipende dal sottogenere (alto se bullet-hell).
+```
+
+### 4.3 Classifica per tier
+
+| Tier | Proposte | Perché |
+|---|---|---|
+| **1 — costruisci questi** | **`SequenceUpdateAlgorithm` (composito)**, **Homing con turn-rate** | Sbloccano l'impossibile; il composito **elimina** 3+ altre proposte (Enter-Hold-Exit, boomerang, swoop-and-return diventano sue composizioni). |
+| **2 — miglior valore/costo** | **Ping-pong** (il *loop* è la vera novità: `LinearPath` si ferma a fine lista), **Figure-8 / Orbita** | Carattere ai boss con matematica minima. |
+| **3 — solo se il genere lo chiede** | **Spirale** (bullet-hell), **Arco balistico** (nemici che lanciano bombe/detriti) | Nicchia; dipendono dal titolo di riferimento. |
+| **declassato** | **ZigZag** | Quasi già esprimibile con `Sinusoidal` (stesso inviluppo, onda triangolare): una classe propria rende poco. |
+
+> **Meglio pochi parametri di molte classi.** `ZigZag` e `Figure-8` sono entrambi *"`Sinusoidal`
+> generalizzato"* (forma d'onda diversa; seno anche sul secondo asse). Un singolo oscillatore più
+> ricco li assorbirebbe con qualche parametro invece di tre classi sorelle — a costo di allontanarsi
+> dalla convenzione "una classe per comportamento, referenziata per nome nell'XML". È un compromesso
+> da decidere consapevolmente.
+
+### 4.4 Il genere sposta la classifica
+
+Uno shmup "pulito" alla Raiden/Gradius premia **composito + ping-pong + figure-8**; un bullet-hell di
+fine anni '90 (DoDonPachi) fa salire **spirale** e **homing**. La domanda aperta che decide i primi
+due posti è quindi: **qual è il titolo di riferimento?**
 
 ---
 

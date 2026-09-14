@@ -2,16 +2,14 @@ package it.spaghettisource.tigersupply.game.weapon.enemy;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.game.entity.Enemy;
 import it.spaghettisource.tigersupply.game.entity.EnemyRocket;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
-import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 
-public class RocketLauncher extends AbstractWeapon<Enemy> {
+public class DoubleRocketLauncher extends AbstractWeapon<Enemy> {
 
-	public RocketLauncher(){
+	public DoubleRocketLauncher(){
 		reloadingTime = 1.8f;	//2 seconds and shot
 	}
 	
@@ -19,14 +17,14 @@ public class RocketLauncher extends AbstractWeapon<Enemy> {
 	protected void doFire(Entity target) throws Exception {
 		Position shotPosition1 = new Position(owner.getPosition());
 		Position shotPosition2 = new Position(owner.getPosition());			
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPointIncr(130, 40, new Position(target.getXposition(), target.getYposition(),0));
+
 		EnemyRocket rocketShotSprite1=null;
 		EnemyRocket rocketShotSprite2=null;
 		shotPosition1.increaseY(20);
 		shotPosition2.increaseY(-20);
 		try {
-			rocketShotSprite1 = EntityFactoryWrapper.newEnemyShot3(shotPosition1, algorithm);
-			rocketShotSprite2 = EntityFactoryWrapper.newEnemyShot3(shotPosition2, algorithm);
+			rocketShotSprite1 = EntityFactoryWrapper.newEnemyShotRocket(shotPosition1, target);
+			rocketShotSprite2 = EntityFactoryWrapper.newEnemyShotRocket(shotPosition2, target);
 
 		} catch (Exception e) {
 			e.printStackTrace();

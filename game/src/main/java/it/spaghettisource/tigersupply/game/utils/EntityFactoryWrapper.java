@@ -57,19 +57,22 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity((int)position.getPosX(), (int)position.getPosY(),GameResources.Z_EFFECT_UNDER+1, 0, 0,1.0f, algo, sprite, PlayerEngine.class);		
 	}
 
-	public static BaseEntity newEnemyShot1(Position shotPosition,UpdateAlgorithm algo) throws Exception{	
-		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT1); 
-		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algo, sprite, BaseEntity.class);		
+	public static BaseEntity newEnemyShotDefault(Position shotPosition, Entity target) throws Exception{
+		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_DEFAULT); 
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(180, 100, new Position(target.getXposition(), target.getYposition(),0));		
+		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algorithm, sprite, BaseEntity.class);
 	}
 
-	public static BaseEntity newEnemyShot2(Position shotPosition,UpdateAlgorithm algo) throws Exception{
-		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT2);
-		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -350, 0, 1.0f, algo, sprite, BaseEntity.class);				
+	public static BaseEntity newEnemyShotPlasmaCannon(Position shotPosition, Entity target) throws Exception{
+		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_PLASMA_CANNON);
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(350, 45, new Position(target.getXposition(), target.getYposition(),0));
+		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -350, 0, 1.0f, algorithm, sprite, BaseEntity.class);				
 	}
 
-	public static EnemyRocket newEnemyShot3(Position shotPosition,UpdateAlgorithm algo) throws Exception{	
-		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT3);
-		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algo, sprite, EnemyRocket.class);			
+	public static EnemyRocket newEnemyShotRocket(Position shotPosition, Entity target) throws Exception{	
+		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_ROCKET);
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPointIncr(130, 40, new Position(target.getXposition(), target.getYposition(),0));		
+		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algorithm, sprite, EnemyRocket.class);			
 	}	
 	
 	public static LightningBolt newEnemyShotLightningBolt(GameContext context,Position shotPosition,float fireTime,float loadTime) throws Exception{	

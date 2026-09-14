@@ -24,7 +24,7 @@ import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
-import it.spaghettisource.tigersupply.game.entity.EnemyGroup;
+import it.spaghettisource.tigersupply.game.entity.Enemy;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.scene.director.LevelDirector;
 import it.spaghettisource.tigersupply.game.scene.dialog.DialogManager;
@@ -37,11 +37,10 @@ public class LevelScene extends AbstractScene {
 
 	//game entities
 	private Player playerShip;
-	private EnemyGroup enemyManager;
 	private LevelDirector levelDirector;
 	private DialogManager dialogManager;
 
-
+	private EntityGroupScreenBound<Enemy> enemyManager;
 	private EntityGroupScreenBound<Entity> playerShootManager;
 	private EntityGroupScreenBound<Entity> enemyShootManager;
 	private EntityGroupScreenBound<Entity> effectManager;		
@@ -86,7 +85,7 @@ public class LevelScene extends AbstractScene {
 		playerShip.startPosition();
 
 		//enemy manager		
-		enemyManager = new EnemyGroup();
+		enemyManager = new EntityGroupScreenBound<Enemy>();
 		enemyManager.init(context);
 
 		//the level director owns the sequencing state machine and commands the subsystems (enemies

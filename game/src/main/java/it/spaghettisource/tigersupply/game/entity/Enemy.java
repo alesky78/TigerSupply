@@ -83,6 +83,7 @@ public class Enemy extends BaseEntity {
 			weapons[i].updateWeapon(deltaSeconds);
 		}
 		
+		scanTargetInRange();
 	}	
 
 	/**

@@ -31,7 +31,7 @@ Due fasi distinte:
    `EnemyDataBuilderSaxXml`, **valida** i passi temporizzati e popola `LevelDataRepository`.
 2. **Generazione (su richiesta):** durante `StateExecutingStep`, l'azione `SpawnHordeAction` istanzia
    — per **reflection** — sprite, nemici e algoritmi di movimento dichiarati, e li consegna
-   all'`EnemyGroup`.
+   all'`EntityGroupScreenBound<Enemy>`.
 
 ### Trigger
 - **Caricamento:** `LevelDirector.init()` durante l'avvio della `LevelScene` (una volta).
@@ -54,7 +54,7 @@ Due fasi distinte:
 | Coordinatore | `game` | `LevelDirector` | Orchestratore del caricamento: fa il parse, **valida** i passi `timed`, popola il repository. |
 | Repository | `game` | `LevelDataRepository` | Custodisce passi + prototipi; lookup per indice (passi) e per nome (prototipi). |
 | Factory azioni | `game` | `LevelActionFactory` | Risolve `<action type>` nella classe `LevelAction` e la configura via `init(...)`. |
-| Azione di spawn | `game` | `SpawnHordeAction` | Istanzia i nemici dell'azione e li consegna all'`EnemyGroup`. |
+| Azione di spawn | `game` | `SpawnHordeAction` | Istanzia i nemici dell'azione e li consegna all'`EntityGroupScreenBound<Enemy>`. |
 | Azione di dialogo | `game` | `ShowDialogAction` | Risolve lo `<script>` per nome e comanda il `DialogManager`. |
 | Modello dati | `game` | `Step`, `ActionDefinition`, `CompletionEvent`, `EnemyDefinition`, `EnemyPrototype`, `AlgorithmPrototype`, `ScriptDefinition`, `MessageDefinition`, `WindowDefinition`, … | POJO che rispecchiano i tag XML. |
 | Fabbriche (engine) | `engine` | `SpriteFactory`, `EntityFactory`, `UpdateAlgorithmFactory`, `ClassFactory` | Creano sprite, entità, algoritmi e istanze di azione (le ultime per reflection). |
@@ -105,7 +105,7 @@ flowchart TD
    - crea l'algoritmo via `UpdateAlgorithmFactory.newInstance(classe, proprietà)` (**reflection**);
    - crea l'`Enemy` via `EntityFactory.createEntity(x, y, z, vx, vy, scala, algoritmo, sprite, classe)` (**reflection**);
    - inietta effect/shot/enemy manager, target (il player) e contesto.
-3. `context.getEnemyManager().addRequest(created)` accoda i nemici sull'`EnemyGroup`.
+3. `context.getEnemyManager().addRequest(created)` accoda i nemici sull'`EntityGroupScreenBound<Enemy>`.
 
 ---
 
@@ -146,7 +146,7 @@ flowchart TD
 | Elemento | Modulo | Letto / scritto | Note |
 |---|---|---|---|
 | `LevelDataRepository` | `game` | scritto in caricamento, letto in generazione | Fonte in memoria di passi e prototipi. |
-| `EnemyGroup` (gruppo entità) | `game` | scritto via `addRequest(...)` | I nemici generati entrano in scena. |
+| `EntityGroupScreenBound<Enemy>` (gruppo entità) | `engine` | scritto via `addRequest(...)` | I nemici generati entrano in scena. |
 | `ClassFactory` (engine) | `engine` | letto | Istanzia le `LevelAction` per reflection dall'FQN registrato. |
 | `SpriteFactory` (singleton) | `engine` | letto | Crea gli sprite dagli alias immagine. |
 | `EntityFactory` (singleton) | `engine` | letto | Istanzia i nemici per reflection dall'FQN. |
