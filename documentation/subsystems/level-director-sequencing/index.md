@@ -115,8 +115,11 @@ dell'azione stessa. Nel codice è l'interfaccia
 [`LevelActionFactory`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/LevelActionFactory.java).
 L'unica azione concreta esistente oggi è
 [`SpawnHordeAction`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/SpawnHordeAction.java)
-(la vecchia logica di spawn dei nemici). Le **azioni sono il punto di estensione aperto**: base,
-sfondo, audio saranno nuove `LevelAction`.
+(la vecchia logica di spawn dei nemici), affiancata dalle azioni audio `PlayMusicAction` /
+`StopMusicAction` e da
+[`ShowDialogAction`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/ShowDialogAction.java)
+(avvia un dialogo radio in stile arcade, che sospende l'azione finché il giocatore non lo chiude).
+Le **azioni sono il punto di estensione aperto**: base e sfondo saranno nuove `LevelAction`.
 
 ### 3.3 CompletionEvent (evento di completamento)
 
@@ -129,6 +132,7 @@ nome dell'`Event` engine che instrada la macchina a stati; il vocabolario è **c
 | `timed` | Attendi *N* secondi, poi esegui il passo successivo. | **obbligatorio** (secondi, anche frazionari) |
 | `cleared` | Attendi finché tutti i nemici in scena sono morti, poi esegui il successivo. | ignorato |
 | `bossSpawned` | Questo passo ha introdotto il boss: passa allo stato di attesa uccisione boss. | ignorato |
+| `dialogClosed` | Questo passo ha avviato un dialogo radio: attendi finché il giocatore lo chiude, poi esegui il successivo. | ignorato |
 
 > **Azioni aperte, completamento chiuso.** Le azioni sono estensibili all'infinito (qualsiasi FQN);
 > il vocabolario di completamento è un piccolo insieme chiuso perché ogni valore mappa su uno stato
@@ -152,7 +156,7 @@ avanzare a ogni frame. Il
 [`DirectorContext`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/director/DirectorContext.java)
 è il **contesto `C`** passato a ogni stato: tiene il tempo trascorso (`elapsedTime`), il ritardo da
 rispettare (`waitTime`), il cursore sul passo corrente (`stepIndex`) ed **espone i sottosistemi che
-le azioni comandano** (oggi l'enemy manager; domani base, sfondo, audio). È il successore allargato
+le azioni comandano** (oggi l'enemy manager, l'audio e il dialogo radio; domani base e sfondo). È il successore allargato
 del vecchio `EnemySpawnContext`.
 
 ### 3.6 State, Event, TransitionTable (vocabolario dell'engine)
@@ -212,10 +216,10 @@ flowchart LR
     subgraph GAME ["game.* (esempio implementativo)"]
         DIR["LevelDirector"] -->|costruisce e fa avanzare| CTX["DirectorContext"]
         DIR -->|delega la costruzione| FAC["LevelDirectorStateMachineFactory"]
-        FAC -->|cabla stati e tabella| STATES["StateAwaitingTimer / StateAwaitingClear /<br/>StateExecutingStep / StateAwaitingBossDefeat / StateLevelCleared"]
+        FAC -->|cabla stati e tabella| STATES["StateAwaitingTimer / StateAwaitingClear / StateAwaitingDialog /<br/>StateExecutingStep / StateAwaitingBossDefeat / StateLevelCleared"]
         STATES -. eseguono azioni via .-> AF["LevelActionFactory"]
-        AF --> SHA["SpawnHordeAction"]
-        SHA --> EG["EnemyGroup"]
+        AF --> SHA["SpawnHordeAction / ShowDialogAction /<br/>PlayMusicAction / StopMusicAction"]
+        SHA --> EG["EnemyGroup / DialogManager / AudioManager"]
         CTX --> REPO["LevelDataRepository"]
     end
     STATES -. estendono .-> ABS["engine.statemachine.AbstractState&lt;C&gt;"]
@@ -291,12 +295,15 @@ classDiagram
 | Definizione FSM | `LevelDirectorStateMachineFactory` | [LevelDirectorStateMachineFactory.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/LevelDirectorStateMachineFactory.java) | Costanti di stato/evento, `Event` condivisi, `TransitionTable`, stato iniziale; costruisce la `StateMachine`. |
 | Stato | `StateAwaitingTimer` | [StateAwaitingTimer.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | Attesa temporizzata fra i passi. |
 | Stato | `StateAwaitingClear` | [StateAwaitingClear.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingClear.java) | Attesa finché lo schermo è ripulito. |
+| Stato | `StateAwaitingDialog` | [StateAwaitingDialog.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingDialog.java) | Attesa finché il dialogo radio è chiuso dal giocatore. |
 | Stato | `StateExecutingStep` | [StateExecutingStep.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateExecutingStep.java) | Esegue in ordine le azioni del passo corrente e ne emette l'evento di completamento. |
 | Stato | `StateAwaitingBossDefeat` | [StateAwaitingBossDefeat.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingBossDefeat.java) | Attende l'uccisione del boss. |
 | Stato (finale) | `StateLevelCleared` | [StateLevelCleared.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateLevelCleared.java) | Terminale: boss morto, livello vinto. |
 | Azione (interfaccia) | `LevelAction` | [LevelAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/LevelAction.java) | Comando fire-and-forget: `init(ActionDefinition)` + `execute(DirectorContext)`. |
 | Factory azioni | `LevelActionFactory` | [LevelActionFactory.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/LevelActionFactory.java) | Registro `tipo → classe`; istanzia e configura una `LevelAction` per reflection. |
 | Azione concreta | `SpawnHordeAction` | [SpawnHordeAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/SpawnHordeAction.java) | Istanzia i nemici dichiarati e li registra sull'`EnemyGroup`. |
+| Azione concreta | `ShowDialogAction` | [ShowDialogAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/ShowDialogAction.java) | Avvia un dialogo radio: risolve lo script per nome e comanda il `DialogManager`. |
+| Azione concreta | `PlayMusicAction` / `StopMusicAction` | [PlayMusicAction.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/action/PlayMusicAction.java) | Avviano/fermano una traccia musicale via `AudioManager`. |
 | Gruppo nemici | `EnemyGroup` | [EnemyGroup.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/entity/EnemyGroup.java) | Gestisce **solo** le entità nemico vive (nessun sequenziamento). |
 | Builder | `EnemyDataBuilderSaxXml` | [EnemyDataBuilderSaxXml.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/EnemyDataBuilderSaxXml.java) | Parser SAX dell'XML del livello (passi, azioni, completamento, prototipi). |
 | Repository | `LevelDataRepository` | [LevelDataRepository.java](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/builder/LevelDataRepository.java) | Custodisce passi + prototipi, lookup per indice/nome. |
@@ -322,6 +329,7 @@ classDiagram
     }
     class StateAwaitingTimer
     class StateAwaitingClear
+    class StateAwaitingDialog
     class StateExecutingStep
     class StateAwaitingBossDefeat
     class StateLevelCleared {
@@ -333,15 +341,18 @@ classDiagram
         +execute(DirectorContext)
     }
     class SpawnHordeAction
+    class ShowDialogAction
     LevelDirector --> DirectorContext
     LevelDirector --> StateAwaitingTimer
     AbstractState~DirectorContext~ <|-- StateAwaitingTimer
     AbstractState~DirectorContext~ <|-- StateAwaitingClear
+    AbstractState~DirectorContext~ <|-- StateAwaitingDialog
     AbstractState~DirectorContext~ <|-- StateExecutingStep
     AbstractState~DirectorContext~ <|-- StateAwaitingBossDefeat
     AbstractState~DirectorContext~ <|-- StateLevelCleared
     StateExecutingStep ..> LevelAction : esegue
     LevelAction <|.. SpawnHordeAction
+    LevelAction <|.. ShowDialogAction
 ```
 
 ---
@@ -367,11 +378,11 @@ erDiagram
         CompletionEvent completion
     }
     ACTION_DEFINITION {
-        string type "spawnHorde | (futuri)"
+        string type "spawnHorde | showDialog | playMusic | stopMusic"
         map properties "attributi non-type"
     }
     COMPLETION_EVENT {
-        string name "timed | cleared | bossSpawned"
+        string name "timed | cleared | dialogClosed | bossSpawned"
         string time "secondi, solo per timed"
     }
     ENEMY_DEFINITION {
@@ -431,8 +442,11 @@ flowchart TD
     WT -->|ready| ES["executingStep<br/>(esegue le azioni del passo)"]
     WK["awaitingClear<br/>(attesa uccisioni)"] -->|pending| WK
     WK -->|ready| ES
+    WD["awaitingDialog<br/>(attesa dialogo)"] -->|pending| WD
+    WD -->|ready| ES
     ES -->|timed| WT
     ES -->|cleared| WK
+    ES -->|dialogClosed| WD
     ES -->|bossSpawned| KB["awaitingBossDefeat<br/>(attesa boss)"]
     KB -->|pending| KB
     KB -->|bossDefeated| BK["levelCleared<br/>(FINALE — livello vinto)"]
@@ -457,7 +471,7 @@ generico della macchina in [motore-macchina-a-stati.md](motore-macchina-a-stati.
 | # | Flusso | Modulo | Trigger | Descrizione | Dettaglio |
 |---|---|---|---|---|---|
 | 1 | Esecuzione della macchina a stati generica | **engine** | `tick()` per tick | Come un tick sceglie l'evento, risolve la transizione e si ferma sul finale. | [motore-macchina-a-stati.md](motore-macchina-a-stati.md) |
-| 2 | Sequenziamento dei passi | **game** | frame update | Come i 5 stati concreti sequenziano i passi, eseguono le azioni e rispettano `timed`/`cleared`. | [sequenziamento-step.md](sequenziamento-step.md) |
+| 2 | Sequenziamento dei passi | **game** | frame update | Come i sei stati concreti sequenziano i passi, eseguono le azioni e rispettano `timed`/`cleared`/`dialogClosed`. | [sequenziamento-step.md](sequenziamento-step.md) |
 | 3 | Caricamento dati livello (XML → passi/azioni/nemici) | **game** | avvio livello | Come il SAX builder e la reflection trasformano l'XML in `Step`/azioni e `Enemy` in scena. | [caricamento-dati-livello.md](caricamento-dati-livello.md) |
 
 ---

@@ -10,10 +10,13 @@ import it.spaghettisource.tigersupply.game.entity.Enemy;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilder;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilderSaxXml;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.ActionDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.CompletionEvent;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.ScriptDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
+import it.spaghettisource.tigersupply.game.scene.dialog.DialogManager;
 import it.spaghettisource.tigersupply.game.scene.statemachine.LevelDirectorStateMachineFactory;
 
 /**
@@ -32,6 +35,7 @@ public class LevelDirector {
 	private EntityGroupScreenBound<Entity> shotManager;
 	private EntityGroupScreenBound<Entity> effectManager;
 	private EntityGroupScreenBound<Enemy> enemyManager;
+	private DialogManager dialogManager;
 	private String levelDataFile;
 
 	private DirectorContext directorContext;
@@ -57,6 +61,10 @@ public class LevelDirector {
 		this.enemyManager = enemyManager;
 	}
 
+	public void setDialogManager(DialogManager dialogManager) {
+		this.dialogManager = dialogManager;
+	}
+
 	public void setLevelDataFile(String levelDataFile) {
 		this.levelDataFile = levelDataFile;
 	}
@@ -75,13 +83,16 @@ public class LevelDirector {
 		List<Step> steps = builder.buildSteps();
 		List<EnemyPrototype> enemies = builder.buildEnemyPrototypes();
 		List<AlgorithmPrototype> algorithms = builder.buildAlgorithmPrototypes();
+		List<ScriptDefinition> scripts = builder.buildScripts();
 
 		validateTimedSteps(steps);
+		validateDialogScripts(steps, scripts);
 
 		LevelDataRepository levelData = new LevelDataRepository();
 		levelData.setSteps(steps);
 		levelData.setEnemyPrototypes(enemies);
 		levelData.setAlgorithmPrototypes(algorithms);
+		levelData.setScripts(scripts);
 
 		System.out.println(levelData);
 
@@ -91,6 +102,7 @@ public class LevelDirector {
 		directorContext.setShotManager(shotManager);
 		directorContext.setEffectManager(effectManager);
 		directorContext.setEnemyManager(enemyManager);
+		directorContext.setDialogManager(dialogManager);
 		directorContext.setLevelData(levelData);
 
 		//the whole level-director state machine (states, events, transition graph, initial state)
@@ -140,6 +152,39 @@ public class LevelDirector {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Fails fast when a {@code showDialog} step references a dialogue script that is not defined in the
+	 * level's {@code <scripts>} section, naming the offending step index and script.
+	 *
+	 * @param steps   the steps parsed from the level definition, in declaration order
+	 * @param scripts the dialogue scripts parsed from the level definition
+	 * @throws Exception if a {@code showDialog} action has a missing or unknown {@code script}
+	 */
+	private void validateDialogScripts(List<Step> steps, List<ScriptDefinition> scripts) throws Exception {
+		for (int i = 0; i < steps.size(); i++) {
+			for (ActionDefinition action : steps.get(i).getActions()) {
+				if ("showDialog".equals(action.getType())) {
+					String scriptName = action.getProperty("script");
+					if (scriptName == null || scriptName.trim().isEmpty()) {
+						throw new Exception("step " + i + " has a 'showDialog' action without a 'script' attribute");
+					}
+					if (findScript(scripts, scriptName.trim()) == null) {
+						throw new Exception("step " + i + " references dialogue script '" + scriptName + "' which is not defined in <scripts>");
+					}
+				}
+			}
+		}
+	}
+
+	private ScriptDefinition findScript(List<ScriptDefinition> scripts, String name) {
+		for (ScriptDefinition script : scripts) {
+			if (script.getName().equals(name)) {
+				return script;
+			}
+		}
+		return null;
 	}
 
 }

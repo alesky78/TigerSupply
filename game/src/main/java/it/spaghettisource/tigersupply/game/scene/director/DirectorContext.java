@@ -7,6 +7,7 @@ import it.spaghettisource.tigersupply.game.entity.Enemy;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.CompletionEvent;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
+import it.spaghettisource.tigersupply.game.scene.dialog.DialogManager;
 import it.spaghettisource.tigersupply.game.scene.statemachine.LevelDirectorStateMachineFactory;
 
 /**
@@ -30,6 +31,7 @@ public class DirectorContext {
 	private EntityGroupScreenBound<Entity> shotManager;
 	private EntityGroupScreenBound<Entity> effectManager;
 	private EntityGroupScreenBound<Enemy> enemyManager;
+	private DialogManager dialogManager;
 
 	private LevelDataRepository levelData;
 	private int stepIndex = 0;
@@ -74,6 +76,14 @@ public class DirectorContext {
 
 	public void setEnemyManager(EntityGroupScreenBound<Enemy> enemyManager) {
 		this.enemyManager = enemyManager;
+	}
+
+	public DialogManager getDialogManager() {
+		return dialogManager;
+	}
+
+	public void setDialogManager(DialogManager dialogManager) {
+		this.dialogManager = dialogManager;
 	}
 
 	public LevelDataRepository getLevelData() {

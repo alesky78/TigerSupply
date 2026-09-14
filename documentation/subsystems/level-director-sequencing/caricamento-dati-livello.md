@@ -49,13 +49,14 @@ Due fasi distinte:
 
 | Componente | Modulo | Classe/Interfaccia | Responsabilità |
 |---|---|---|---|
-| Interfaccia builder | `game` | `EnemyDataBuilder` | Contratto: `parse()`, `buildSteps()`, `buildEnemyPrototypes()`, `buildAlgorithmPrototypes()`. |
-| Parser | `game` | `EnemyDataBuilderSaxXml` | Handler SAX che riempie passi, azioni, eventi di completamento e prototipi dai tag XML. |
+| Interfaccia builder | `game` | `EnemyDataBuilder` | Contratto: `parse()`, `buildSteps()`, `buildEnemyPrototypes()`, `buildAlgorithmPrototypes()`, `buildScripts()`. |
+| Parser | `game` | `EnemyDataBuilderSaxXml` | Handler SAX che riempie passi, azioni, eventi di completamento, prototipi e script di dialogo dai tag XML. |
 | Coordinatore | `game` | `LevelDirector` | Orchestratore del caricamento: fa il parse, **valida** i passi `timed`, popola il repository. |
 | Repository | `game` | `LevelDataRepository` | Custodisce passi + prototipi; lookup per indice (passi) e per nome (prototipi). |
 | Factory azioni | `game` | `LevelActionFactory` | Risolve `<action type>` nella classe `LevelAction` e la configura via `init(...)`. |
 | Azione di spawn | `game` | `SpawnHordeAction` | Istanzia i nemici dell'azione e li consegna all'`EnemyGroup`. |
-| Modello dati | `game` | `Step`, `ActionDefinition`, `CompletionEvent`, `EnemyDefinition`, `EnemyPrototype`, `AlgorithmPrototype`, … | POJO che rispecchiano i tag XML. |
+| Azione di dialogo | `game` | `ShowDialogAction` | Risolve lo `<script>` per nome e comanda il `DialogManager`. |
+| Modello dati | `game` | `Step`, `ActionDefinition`, `CompletionEvent`, `EnemyDefinition`, `EnemyPrototype`, `AlgorithmPrototype`, `ScriptDefinition`, `MessageDefinition`, `WindowDefinition`, … | POJO che rispecchiano i tag XML. |
 | Fabbriche (engine) | `engine` | `SpriteFactory`, `EntityFactory`, `UpdateAlgorithmFactory`, `ClassFactory` | Creano sprite, entità, algoritmi e istanze di azione (le ultime per reflection). |
 
 > **Il seam di reflection è nell'engine.** I nomi di classe dell'XML sono istanziati da
@@ -71,8 +72,8 @@ Due fasi distinte:
 ```mermaid
 flowchart TD
     A["level-1.xml"] --> B["EnemyDataBuilderSaxXml.parse()<br/>(SAX)"]
-    B --> C["build*() → List&lt;Step&gt;, List&lt;EnemyPrototype&gt;, List&lt;AlgorithmPrototype&gt;"]
-    C --> D["LevelDirector.validateTimedSteps()<br/>(fail-fast)"]
+    B --> C["build*() → List&lt;Step&gt;, List&lt;EnemyPrototype&gt;, List&lt;AlgorithmPrototype&gt;, List&lt;ScriptDefinition&gt;"]
+    C --> D["LevelDirector.validateTimedSteps() + validateDialogScripts()<br/>(fail-fast)"]
     D --> E["LevelDataRepository<br/>(passi + prototipi)"]
     E --> F["StateExecutingStep<br/>per il passo corrente"]
     F --> G["LevelActionFactory.create(type)<br/>→ SpawnHordeAction"]
@@ -84,11 +85,14 @@ flowchart TD
 
 1. `builder.parse()` legge l'XML con SAX; ogni `startElement` costruisce il POJO corrispondente
    (`<step>` → `Step`, `<action>` → `ActionDefinition`, `<completionEvent>` → `CompletionEvent`,
-   `<enemy>` → `EnemyDefinition`, `<enemyPrototype>` → `EnemyPrototype`, …).
-2. `buildSteps()` / `buildEnemyPrototypes()` / `buildAlgorithmPrototypes()` restituiscono le liste.
+   `<enemy>` → `EnemyDefinition`, `<enemyPrototype>` → `EnemyPrototype`, `<script>` → `ScriptDefinition`,
+   `<message>` → `MessageDefinition`, `<line>` → riga di testo, …).
+2. `buildSteps()` / `buildEnemyPrototypes()` / `buildAlgorithmPrototypes()` / `buildScripts()` restituiscono le liste.
 3. `validateTimedSteps(steps)` scorre i passi e **fallisce subito** se un passo `timed` ha `time`
    assente, vuoto o non numerico, **nominando l'indice** del passo.
-4. Le tre liste vengono riposte in `LevelDataRepository`, che viene messo nel `DirectorContext`.
+4. `validateDialogScripts(steps, scripts)` **fallisce subito** se un passo `showDialog` referenzia
+   uno `script` non definito in `<scripts>`, **nominando** lo script mancante.
+5. Le liste vengono riposte in `LevelDataRepository`, che viene messo nel `DirectorContext`.
 
 ### Fase 2 — generazione (`StateExecutingStep` → `SpawnHordeAction`)
 
@@ -113,8 +117,8 @@ flowchart TD
 |---|---|---|---|
 | `<step>` | — | `Step` | Passo; ordine di dichiarazione = ordine di esecuzione. |
 | `<actions>` | — | *(contenitore)* | Racchiude le `<action>` del passo, in ordine. |
-| `<action>` | `type` (+ attributi liberi) | `ActionDefinition` | `type` sceglie la `LevelAction`; gli attributi diversi da `type` finiscono nel sacchetto `properties`. |
-| `<completionEvent>` | `name`, `time` | `CompletionEvent` | `name` ∈ {`timed`, `cleared`, `bossSpawned`}; `time` in secondi (solo `timed`). Posto **dopo** le azioni. |
+| `<action>` | `type` (+ attributi liberi) | `ActionDefinition` | `type` sceglie la `LevelAction` (`spawnHorde`, `showDialog`, `playMusic`, `stopMusic`); gli attributi diversi da `type` finiscono nel sacchetto `properties`. |
+| `<completionEvent>` | `name`, `time` | `CompletionEvent` | `name` ∈ {`timed`, `cleared`, `dialogClosed`, `bossSpawned`}; `time` in secondi (solo `timed`). Posto **dopo** le azioni. |
 | `<enemy>` | `enemyPrototype`, `algorithmPrototype`, `posX`, `posY`, `posZ` | `EnemyDefinition` | Dentro un'`<action type="spawnHorde">`. Riferimenti per nome + posizione (la risoluzione assume 1360×660). |
 | `<enemyPrototype>` | `name`, `type`, `class` | `EnemyPrototype` | `type` oggi è sempre `imageSingleSprite`; `class` è l'FQN del nemico. |
 | `<speed>` / `<image>` / `<scale>` | vari | `Speed` / `Image` / `Scale` | Attributi del prototipo nemico. `image alias` risolto dal catalogo immagini. |
@@ -122,6 +126,11 @@ flowchart TD
 | `<algorithmProperties>` | — | `AlgorithmProperties` | Contenitore di parametri semplici e liste di punti. |
 | `<property>` | `name`, `value` | proprietà semplice | Es. `delta`, `increment`. |
 | `<listPoints>` / `<point>` | `name` / `posX`, `posY` | `List<PointDefinition>` | Waypoint per gli algoritmi a spline (B-spline). |
+| `<scripts>` | — | *(contenitore)* | Catalogo dei dialoghi radio, in fondo al file accanto ai prototipi. |
+| `<script>` | `name` | `ScriptDefinition` | Dialogo riusabile, referenziato per nome da un'`<action type="showDialog" script="…">`. |
+| `<window>` | `posX`, `posY`, `width`, `height`, `portraitWidth`, `charDelay` | `WindowDefinition` | Geometria della finestra e velocità di scrittura (secondi per carattere). |
+| `<messages>` / `<message>` | `speaker`, `portrait` | `MessageDefinition` | Un messaggio: nome del parlante + alias ritratto (immagine con espressione). |
+| `<line>` | *(testo)* | riga | Riga di testo mostrata così com'è (nessun a-capo automatico). |
 
 ### File esterni
 

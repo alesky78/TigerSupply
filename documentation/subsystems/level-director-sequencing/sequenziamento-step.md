@@ -4,7 +4,7 @@
 
 > **Modulo:** `game` — **esempio implementativo** costruito sul framework
 > [`engine.statemachine`](motore-macchina-a-stati.md). Questa pagina mostra come il **Level Director**
-> e i cinque stati concreti di TigerSupply usano quella macchina a stati generica per sequenziare i
+> e i sei stati concreti di TigerSupply usano quella macchina a stati generica per sequenziare i
 > passi di un livello: eseguire le azioni di ogni passo e aspettare il tempo giusto prima del
 > successivo.
 
@@ -69,6 +69,7 @@ State<DirectorContext> awaitingTimer      = new StateAwaitingTimer(STATE_AWAITIN
 State<DirectorContext> awaitingClear      = new StateAwaitingClear(STATE_AWAITING_CLEAR);
 State<DirectorContext> executingStep      = new StateExecutingStep(STATE_EXECUTING_STEP);
 State<DirectorContext> awaitingBossDefeat = new StateAwaitingBossDefeat(STATE_AWAITING_BOSS_DEFEAT);
+State<DirectorContext> awaitingDialog     = new StateAwaitingDialog(STATE_AWAITING_DIALOG);
 State<DirectorContext> levelCleared       = new StateLevelCleared(STATE_LEVEL_CLEARED);
 
 TransitionTable<DirectorContext> table = new TransitionTable<DirectorContext>();
@@ -76,9 +77,12 @@ table.selfLoop(awaitingTimer, EVENT_PENDING);
 table.add(awaitingTimer, EVENT_READY, executingStep);
 table.selfLoop(awaitingClear, EVENT_PENDING);
 table.add(awaitingClear, EVENT_READY, executingStep);
-table.add(executingStep, EVENT_TIMED,        awaitingTimer);
-table.add(executingStep, EVENT_CLEARED,      awaitingClear);
-table.add(executingStep, EVENT_BOSS_SPAWNED, awaitingBossDefeat);
+table.add(executingStep, EVENT_TIMED,         awaitingTimer);
+table.add(executingStep, EVENT_CLEARED,       awaitingClear);
+table.add(executingStep, EVENT_BOSS_SPAWNED,  awaitingBossDefeat);
+table.add(executingStep, EVENT_DIALOG_CLOSED, awaitingDialog);
+table.selfLoop(awaitingDialog, EVENT_PENDING);
+table.add(awaitingDialog, EVENT_READY, executingStep);
 table.selfLoop(awaitingBossDefeat, EVENT_PENDING);
 table.add(awaitingBossDefeat, EVENT_BOSS_DEFEATED, levelCleared);
 
@@ -89,13 +93,14 @@ stateMachine.setState(awaitingTimer);   // stato iniziale
 return stateMachine;
 ```
 
-### I cinque stati concreti
+### I sei stati concreti
 
 | Stato | Nome (`LevelDirectorStateMachineFactory`) | Evento prodotto | Comportamento |
 |---|---|---|---|
 | [`StateAwaitingTimer`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingTimer.java) | `awaitingTimer` | `ready` se `elapsedTime > waitTime`, altrimenti `pending` | In `onEnter` azzera il timer; conta i secondi. |
 | [`StateAwaitingClear`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingClear.java) | `awaitingClear` | `ready` se lo schermo è ripulito, altrimenti `pending` | Attende che tutti i nemici siano morti. |
-| [`StateExecutingStep`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateExecutingStep.java) | `executingStep` | l'evento di completamento del passo: `timed` \| `cleared` \| `bossSpawned` | Esegue in ordine le azioni del passo, ne emette l'evento di completamento e avanza il cursore. |
+| [`StateAwaitingDialog`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingDialog.java) | `awaitingDialog` | `ready` se il dialogo radio è chiuso, altrimenti `pending` | Attende che il giocatore chiuda il dialogo radio. |
+| [`StateExecutingStep`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateExecutingStep.java) | `executingStep` | l'evento di completamento del passo: `timed` \| `cleared` \| `dialogClosed` \| `bossSpawned` | Esegue in ordine le azioni del passo, ne emette l'evento di completamento e avanza il cursore. |
 | [`StateAwaitingBossDefeat`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateAwaitingBossDefeat.java) | `awaitingBossDefeat` | `bossDefeated` se il boss è morto, altrimenti `pending` | Attende l'uccisione del boss. |
 | [`StateLevelCleared`](../../../game/src/main/java/it/spaghettisource/tigersupply/game/scene/statemachine/StateLevelCleared.java) | `levelCleared` | *(nessuno: `isFinal()` → `true`)* | Terminale: livello vinto, la macchina si ferma. |
 
@@ -114,13 +119,14 @@ public Event internalProcess(DirectorContext context) throws Exception {
     context.honorCompletion(completion);   // se 'timed', copia il time in waitTime
     context.advanceStep();                 // sposta il cursore sul passo successivo
 
-    return new Event(completion.getName()); // 'timed' | 'cleared' | 'bossSpawned'
+    return new Event(completion.getName()); // 'timed' | 'cleared' | 'dialogClosed' | 'bossSpawned'
 }
 ```
 
-> **Perché due stati di attesa distinti?** `awaitingTimer` è temporizzato (ideale per passi
+> **Perché più stati di attesa distinti?** `awaitingTimer` è temporizzato (ideale per passi
 > ravvicinati e coreografati), `awaitingClear` è a "schermo pulito" (obbligatorio per il boss e per i
-> colli di bottiglia). Lo stato `executingStep` sceglie a quale tornare in base al `completionEvent`
+> colli di bottiglia), `awaitingDialog` attende che il giocatore chiuda un dialogo radio. Lo stato
+> `executingStep` sceglie a quale tornare in base al `completionEvent`
 > **dello stesso passo appena eseguito**, in modo del tutto **indipendente da quali azioni** il passo
 > abbia eseguito.
 
@@ -152,8 +158,8 @@ sequenceDiagram
         ST->>CTX: honorCompletion(completion)
         Note over CTX: se completion = timed, aggiorna waitTime col time del passo
         ST->>CTX: advanceStep()
-        ST-->>SM: Event(timed|cleared|bossSpawned)
-        SM->>SM: next = awaitingTimer | awaitingClear | awaitingBossDefeat
+        ST-->>SM: Event(timed|cleared|dialogClosed|bossSpawned)
+        SM->>SM: next = awaitingTimer | awaitingClear | awaitingDialog | awaitingBossDefeat
     end
     SM-->>LD: (tick concluso)
     LD-->>LS: return
@@ -174,10 +180,13 @@ Narrazione dell'esempio di riferimento (Livello 1):
    il ciclo ricomincia per il passo successivo.
 6. **Passi `cleared`.** Quando un passo dichiara `cleared`, si passa a `StateAwaitingClear`, che
    attende finché `areAllEnemiesKilled()` è `true`.
-7. **Boss.** Il passo che introduce il boss dichiara `bossSpawned` (lo spawn del boss è un'ordinaria
+7. **Passi `dialogClosed`.** Quando un passo avvia un dialogo radio (azione `showDialog`) e dichiara
+   `dialogClosed`, si passa a `StateAwaitingDialog`, che attende finché il giocatore non chiude il
+   dialogo; nel frattempo l'azione di gioco è sospesa dalla scena.
+8. **Boss.** Il passo che introduce il boss dichiara `bossSpawned` (lo spawn del boss è un'ordinaria
    azione `spawnHorde`) → `awaitingBossDefeat`. Quando il boss muore, `awaitingBossDefeat` emette
    `bossDefeated` → `levelCleared` (finale).
-8. **Fine livello.** `LevelDirector.isLevelCleared()` diventa `true`; `LevelScene` avvia il livello
+9. **Fine livello.** `LevelDirector.isLevelCleared()` diventa `true`; `LevelScene` avvia il livello
    successivo.
 
 ---
@@ -192,7 +201,7 @@ Narrazione dell'esempio di riferimento (Livello 1):
 | Attesa iniziale | `DirectorContext.waitTime` è inizializzato a `1` per introdurre una pausa prima del primissimo passo. |
 
 > **Corrispondenza nome evento ↔ XML.** `EVENT_TIMED = "timed"`, `EVENT_CLEARED = "cleared"`,
-> `EVENT_BOSS_SPAWNED = "bossSpawned"`: sono esattamente i valori ammessi per
+> `EVENT_DIALOG_CLOSED = "dialogClosed"`, `EVENT_BOSS_SPAWNED = "bossSpawned"`: sono esattamente i valori ammessi per
 > `<completionEvent name="…">`. Aggiungere un nuovo tipo di completamento richiede quindi sia una
 > nuova costante/transizione sia il valore corrispondente nell'XML. Al contrario, gli eventi
 > `pending`/`ready`/`bossDefeated` sono **interni** alla macchina e non compaiono nell'XML.
@@ -217,7 +226,7 @@ Narrazione dell'esempio di riferimento (Livello 1):
 | Passo `timed` con `time` mancante o non numerico | Rifiutato **al caricamento** da `LevelDirector.validateTimedSteps` (fail-fast) — vedi [caricamento-dati-livello.md](caricamento-dati-livello.md). |
 | `completionEvent` con `name` non fra quelli dichiarati nella tabella | `TransitionTable.next` solleva `StateMachineUnsupportedEvent` al tick. |
 | `action type` non registrato in `LevelActionFactory` | `LevelActionFactory.create` lancia un'eccezione ("unknown level action type"), riconfezionata in `StateMachineException` dallo stato. |
-| Nemici ancora vivi in `awaitingClear` / `awaitingBossDefeat` | Lo stato emette `pending` e resta su sé stesso (self-loop). |
+| Nemici ancora vivi in `awaitingClear` / `awaitingBossDefeat`, o dialogo aperto in `awaitingDialog` | Lo stato emette `pending` e resta su sé stesso (self-loop). |
 
 > **Attenzione.** Gli stati concreti sono **senza stato interno**: tutta la memoria vive in
 > `DirectorContext`. Non aggiungere campi mutabili agli stati. Analogamente, una `LevelAction` è

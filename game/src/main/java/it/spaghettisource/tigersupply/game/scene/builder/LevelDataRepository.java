@@ -4,6 +4,7 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.ScriptDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
 
 public class LevelDataRepository {
@@ -11,6 +12,7 @@ public class LevelDataRepository {
 	private List<Step> steps;
 	List<EnemyPrototype> enemyPrototypes;
 	List<AlgorithmPrototype> algorithmPrototypes;
+	List<ScriptDefinition> scripts;
 
 
 	public void setSteps(List<Step> steps) {
@@ -23,6 +25,10 @@ public class LevelDataRepository {
 
 	public void setAlgorithmPrototypes(List<AlgorithmPrototype> algorithmPrototypes) {
 		this.algorithmPrototypes = algorithmPrototypes;
+	}
+
+	public void setScripts(List<ScriptDefinition> scripts) {
+		this.scripts = scripts;
 	}
 
 	public Step getStepByIndex(int i){
@@ -45,6 +51,14 @@ public class LevelDataRepository {
 		return null;
 	}
 
+	public ScriptDefinition getScriptByName(String name){
+		for (ScriptDefinition script : scripts) {
+			if(script.getName().equals(name))
+				return script;
+		}
+		return null;
+	}
+
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("level data......");
@@ -57,6 +71,11 @@ public class LevelDataRepository {
 		}	
 		for (AlgorithmPrototype single: algorithmPrototypes) {
 			buffer.append(single.toString());
+		}
+		if(scripts != null){
+			for (ScriptDefinition single: scripts) {
+				buffer.append(single.toString());
+			}
 		}
 		
 		return buffer.toString();

@@ -27,6 +27,7 @@ import it.spaghettisource.tigersupply.game.control.SceneFlowController;
 import it.spaghettisource.tigersupply.game.entity.EnemyGroup;
 import it.spaghettisource.tigersupply.game.entity.Player;
 import it.spaghettisource.tigersupply.game.scene.director.LevelDirector;
+import it.spaghettisource.tigersupply.game.scene.dialog.DialogManager;
 import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
@@ -38,6 +39,7 @@ public class LevelScene extends AbstractScene {
 	private Player playerShip;
 	private EnemyGroup enemyManager;
 	private LevelDirector levelDirector;
+	private DialogManager dialogManager;
 
 
 	private EntityGroupScreenBound<Entity> playerShootManager;
@@ -53,6 +55,10 @@ public class LevelScene extends AbstractScene {
 	//guard so a single LevelScene requests a scene transition (game-over / next level) only once,
 	//even if the game loop re-updates this (now stale) scene during its catch-up frames
 	private boolean flowTransitionTriggered = false;
+
+	//tracks the fire key so a dialogue advances once per physical press (edge-triggered), not
+	//continuously while the key is held
+	private boolean fireHeld = false;
 
 	List<Entity> renderSprites = new ArrayList<Entity>();	//used to manage the sprites to render	
 	EntityZComparator comparator = new EntityZComparator();	//use to order the renderSprites list
@@ -91,6 +97,10 @@ public class LevelScene extends AbstractScene {
 		levelDirector.setShotManager(enemyShootManager);
 		levelDirector.setEffectManager(effectManager);
 		levelDirector.setEnemyManager(enemyManager);
+		//the dialogue subsystem is owned by the scene; the showDialog action commands it through the
+		//director context, and the scene advances and renders it
+		dialogManager = new DialogManager();
+		levelDirector.setDialogManager(dialogManager);
 		levelDirector.setLevelDataFile(SceneFlowController.getInstance().getCurrentLevelDataFile());
 		levelDirector.init();
 
@@ -112,22 +122,31 @@ public class LevelScene extends AbstractScene {
 
 	public void update(float deltaTimeSeconds) throws Exception{
 		if (!context.isPaused() && !context.isStop()){
-			magageGameFlow();
-			playerShip.updateEntity(deltaTimeSeconds);
+
+			//the dialogue and the level director always advance: the typewriter must animate and the
+			//director must keep ticking so its awaitingDialog state can detect the dialogue dismissal
+			dialogManager.update(deltaTimeSeconds);
 			levelDirector.tick(deltaTimeSeconds);
-			enemyManager.updateEntity(deltaTimeSeconds);
 
-			effectManager.updateEntity(deltaTimeSeconds);
+			//the gameplay action is frozen while a dialogue is on screen (local suspend, independent of
+			//the engine's global pause)
+			if(!dialogManager.isActive()){
+				magageGameFlow();
+				playerShip.updateEntity(deltaTimeSeconds);
+				enemyManager.updateEntity(deltaTimeSeconds);
 
-			playerShootManager.updateEntity(deltaTimeSeconds);
-			enemyShootManager.updateEntity(deltaTimeSeconds);	
+				effectManager.updateEntity(deltaTimeSeconds);
 
-			//skip incoming-damage collisions while the player is in its post-spawn grace window
-			if(!playerShip.isInvulnerable()){
-				collisionDetectorPlayerVsEnemy.detectCollision();
-				collisionDetectorPlayerVsEnemyShot.detectCollision();
+				playerShootManager.updateEntity(deltaTimeSeconds);
+				enemyShootManager.updateEntity(deltaTimeSeconds);	
+
+				//skip incoming-damage collisions while the player is in its post-spawn grace window
+				if(!playerShip.isInvulnerable()){
+					collisionDetectorPlayerVsEnemy.detectCollision();
+					collisionDetectorPlayerVsEnemyShot.detectCollision();
+				}
+				collisionDetectorPlayerShotVsEnemy.detectCollision(); 
 			}
-			collisionDetectorPlayerShotVsEnemy.detectCollision(); 
 
 			backGround.updateBackground(deltaTimeSeconds);
 		}
@@ -182,6 +201,9 @@ public class LevelScene extends AbstractScene {
 		
 		renderSprites.clear();
 
+		//the dialogue window is drawn last, on top of the (frozen) playfield
+		dialogManager.render(dbg);
+
 	}
 	
 	public void doFinalEffect(Graphics2D dbg) throws Exception {
@@ -189,10 +211,26 @@ public class LevelScene extends AbstractScene {
 
 
 	public void keyPressed(KeyEvent event) {
-		playerShip.KeyboardPressed(event);
+		if(event.getKeyCode() == KeyEvent.VK_SPACE){
+			boolean wasHeld = fireHeld;
+			fireHeld = true;
+			if(dialogManager.isActive()){
+				if(!wasHeld){
+					dialogManager.advance();	//edge-triggered: one advance per physical press
+				}
+				return;	//swallow the fire key from gameplay while a dialogue is shown
+			}
+		}
+		if(!dialogManager.isActive()){
+			playerShip.KeyboardPressed(event);
+		}
 	}
 
 	public void keyReleased(KeyEvent event){
+		if(event.getKeyCode() == KeyEvent.VK_SPACE){
+			fireHeld = false;
+		}
+		//always forward releases so held movement/fire flags never stick across a dialogue
 		playerShip.KeyboardReleased(event);
 	}
 

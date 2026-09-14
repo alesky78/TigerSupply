@@ -24,6 +24,14 @@
 			<completionEvent name="timed" time="1" />
 		</step>
 		
+		<!-- BRIEFING: radio dialogue before the first wave -->
+		<step>
+			<actions>
+				<action type="showDialog" script="briefing-intro" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+		
 		<!-- BACKGROUND -->			
 		<step>
 			<actions>
@@ -166,7 +174,15 @@
 			<completionEvent name="cleared" />
 		</step>	
 
-		<!-- Obstacle 	-->	
+		<!-- BRIEFING: radar interference warning -->
+		<step>
+			<actions>
+				<action type="showDialog" script="radar-warning" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+
+		<!-- Asteroids swarm -->	
 		<step>
 			<actions>
 				<action type="spawnHorde">
@@ -549,6 +565,14 @@
 			<completionEvent name="cleared" />							
 		</step>
 
+		<!-- BRIEFING: huge radar contact before the boss -->
+		<step>
+			<actions>
+				<action type="showDialog" script="radar-big-contact" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+
 		<!-- BOSS-->
 		<step>
 			<actions>
@@ -720,5 +744,47 @@
 		</algorithmPrototype>						
 	</algorithmsPrototype>
 
+	<scripts>
+		<script name="briefing-intro">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+					<line>Nemici individuati a ore undici.</line>
+					<line>Prepararsi all'intercettazione...</line>
+				</message>
+				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+					<line>Ehi, stai attenta la' fuori Akame!</line>
+					<line>Ho appena finito di riparare quel motore!</line>
+				</message>
+				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+					<line>Ricevuto Izumi. Ingaggio il nemico.</line>
+				</message>
+			</messages>
+		</script>
+		<script name="radar-warning">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+					<line>Akame! I radar stanno impazzendo, qualcosa li disturba!</line>
+					<line>Tieni gli occhi aperti... sciame in arrivo!</line>
+				</message>
+				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+					<line>Ricevuto, Izumi. Riduco la spinta e resto vigile.</line>
+				</message> 
+			</messages>
+		</script>
+		<script name="radar-big-contact">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+					<line>Akame... c'e' un contatto ENORME sul radar!</line>
+					<line>Non ho mai visto niente di cosi' grosso... stai attenta!</line>
+				</message>
+				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+					<line>Lo vedo, Izumi. Preparati: si fa sul serio.</line>
+				</message>
+			</messages>
+		</script>
+	</scripts>
 
 </level>

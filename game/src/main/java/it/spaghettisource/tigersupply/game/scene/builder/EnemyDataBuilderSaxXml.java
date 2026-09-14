@@ -21,9 +21,12 @@ import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyDefinit
 import it.spaghettisource.tigersupply.game.scene.builder.definition.EnemyPrototype;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Image;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.PointDefinition;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.MessageDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Scale;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.ScriptDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Speed;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;
+import it.spaghettisource.tigersupply.game.scene.builder.definition.WindowDefinition;
 
 
 /**
@@ -49,6 +52,11 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	private final String TAG_ALGO_PROPERTY_SIMPLE ="property";
 	private final String TAG_ALGO_PROPERTY_LIST_POINT ="listPoints";
 	private final String TAG_ALGO_PROPERTY_LIST_POINT_ENTRY ="point";		
+
+	private final String TAG_SCRIPT ="script";
+	private final String TAG_WINDOW ="window";
+	private final String TAG_MESSAGE ="message";
+	private final String TAG_LINE ="line";
 	
 	private String sourceFile;
 	
@@ -63,6 +71,12 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 	private AlgorithmPrototype actualAlgorithmsPrototype;	
 	private AlgorithmProperties actualAlgoPropertie;
 	private List<PointDefinition> actualListOfPoints;		
+
+	private List<ScriptDefinition> scripts;
+	private ScriptDefinition actualScript;
+	private MessageDefinition actualMessage;
+	private StringBuilder lineBuffer;
+	private boolean capturingLine;
 	
 	
 	public EnemyDataBuilderSaxXml(String sourceFile){		
@@ -70,6 +84,7 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 		steps = new ArrayList<Step>();
 		enemyPrototypes = new ArrayList<EnemyPrototype>();
 		algorithmsPrototypes = new ArrayList<AlgorithmPrototype>();
+		scripts = new ArrayList<ScriptDefinition>();
 	}
 
 	public void parse() throws Exception{
@@ -131,8 +146,33 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 			actualAlgoPropertie.setListPoints(atts.getValue("name"), actualListOfPoints);
 		}else if(localName.equals(TAG_ALGO_PROPERTY_LIST_POINT_ENTRY)){		//it is property list of properteies
 			actualListOfPoints.add(new PointDefinition(atts.getValue("posX"),atts.getValue("posY")));
+		}else if(localName.equals(TAG_SCRIPT)){	//it is a new dialogue script
+			actualScript = new ScriptDefinition(atts.getValue("name"));
+			scripts.add(actualScript);
+		}else if(localName.equals(TAG_WINDOW)){	//it is the window of the current script
+			WindowDefinition window = new WindowDefinition(atts.getValue("posX"), atts.getValue("posY"), atts.getValue("width"), atts.getValue("height"), atts.getValue("portraitWidth"), atts.getValue("charDelay"));
+			actualScript.setWindow(window);
+		}else if(localName.equals(TAG_MESSAGE)){	//it is a new message inside the current script
+			actualMessage = new MessageDefinition(atts.getValue("speaker"), atts.getValue("portrait"));
+			actualScript.addMessage(actualMessage);
+		}else if(localName.equals(TAG_LINE)){	//it is a text line inside the current message
+			lineBuffer = new StringBuilder();
+			capturingLine = true;
 		}
 	}	
+
+	public void characters(char[] ch, int start, int length) throws SAXException {
+		if(capturingLine){
+			lineBuffer.append(ch, start, length);
+		}
+	}
+
+	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+		if(localName.equals(TAG_LINE)){	//finalize the current text line
+			actualMessage.addLine(lineBuffer.toString());
+			capturingLine = false;
+		}
+	}
 
 	public void endDocument() throws SAXException {
 	}		
@@ -147,6 +187,10 @@ public class EnemyDataBuilderSaxXml extends DefaultHandler implements EnemyDataB
 
 	public List<AlgorithmPrototype> buildAlgorithmPrototypes() {
 		return algorithmsPrototypes;
+	}
+
+	public List<ScriptDefinition> buildScripts() {
+		return scripts;
 	}
 
 }

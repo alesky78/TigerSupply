@@ -23,6 +23,7 @@ public class LevelActionFactory {
 		TYPE_TO_CLASS.put("spawnHorde", "it.spaghettisource.tigersupply.game.scene.action.SpawnHordeAction");
 		TYPE_TO_CLASS.put("playMusic", "it.spaghettisource.tigersupply.game.scene.action.PlayMusicAction");
 		TYPE_TO_CLASS.put("stopMusic", "it.spaghettisource.tigersupply.game.scene.action.StopMusicAction");
+		TYPE_TO_CLASS.put("showDialog", "it.spaghettisource.tigersupply.game.scene.action.ShowDialogAction");
 	}
 
 	private LevelActionFactory() {

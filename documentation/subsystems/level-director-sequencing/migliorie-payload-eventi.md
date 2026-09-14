@@ -163,7 +163,7 @@ if (next != state) {
 }
 ```
 
-Effetto sul modulo `game`: **solo `StateAwaitingTimer` deve cambiare**; gli altri quattro stati
+Effetto sul modulo `game`: **solo `StateAwaitingTimer` deve cambiare**; gli altri cinque stati
 ereditano il default e restano intatti.
 
 ### Decisione 2 — rappresentazione del payload

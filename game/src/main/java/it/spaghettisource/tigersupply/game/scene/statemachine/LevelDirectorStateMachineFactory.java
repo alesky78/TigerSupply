@@ -21,8 +21,10 @@ import it.spaghettisource.tigersupply.game.scene.director.DirectorContext;
  * <pre>
  * awaitingTimer  --ready--> executingStep        (pending self-loop)
  * awaitingClear  --ready--> executingStep        (pending self-loop)
+ * awaitingDialog --ready--> executingStep        (pending self-loop)
  * executingStep  --timed-->        awaitingTimer
  * executingStep  --cleared-->      awaitingClear
+ * executingStep  --dialogClosed--> awaitingDialog
  * executingStep  --bossSpawned-->  awaitingBossDefeat
  * awaitingBossDefeat --bossDefeated--> levelCleared (final)   (pending self-loop)
  * </pre>
@@ -36,6 +38,7 @@ public class LevelDirectorStateMachineFactory {
 	public static final String STATE_AWAITING_CLEAR       = "awaitingClear";
 	public static final String STATE_EXECUTING_STEP       = "executingStep";
 	public static final String STATE_AWAITING_BOSS_DEFEAT = "awaitingBossDefeat";
+	public static final String STATE_AWAITING_DIALOG      = "awaitingDialog";
 	public static final String STATE_LEVEL_CLEARED        = "levelCleared";	//terminal: boss dead / level won (distinct from EVENT_BOSS_DEFEATED)
 
 	//event names (also the level XML completionEvent vocabulary)
@@ -44,6 +47,7 @@ public class LevelDirectorStateMachineFactory {
 	public static final String EVENT_CLEARED       = "cleared";
 	public static final String EVENT_TIMED         = "timed";
 	public static final String EVENT_BOSS_SPAWNED  = "bossSpawned";
+	public static final String EVENT_DIALOG_CLOSED = "dialogClosed";
 	public static final String EVENT_BOSS_DEFEATED = "bossDefeated";
 
 	//shared, immutable event singletons emitted directly by states (the timed/cleared/bossSpawned
@@ -68,6 +72,7 @@ public class LevelDirectorStateMachineFactory {
 		State<DirectorContext> awaitingClear      = new StateAwaitingClear(STATE_AWAITING_CLEAR);
 		State<DirectorContext> executingStep      = new StateExecutingStep(STATE_EXECUTING_STEP);
 		State<DirectorContext> awaitingBossDefeat = new StateAwaitingBossDefeat(STATE_AWAITING_BOSS_DEFEAT);
+		State<DirectorContext> awaitingDialog     = new StateAwaitingDialog(STATE_AWAITING_DIALOG);
 		State<DirectorContext> levelCleared       = new StateLevelCleared(STATE_LEVEL_CLEARED);
 
 		TransitionTable<DirectorContext> table = new TransitionTable<DirectorContext>();
@@ -78,12 +83,16 @@ public class LevelDirectorStateMachineFactory {
 		table.add(executingStep, EVENT_TIMED, awaitingTimer);
 		table.add(executingStep, EVENT_CLEARED, awaitingClear);
 		table.add(executingStep, EVENT_BOSS_SPAWNED, awaitingBossDefeat);
+		table.add(executingStep, EVENT_DIALOG_CLOSED, awaitingDialog);
+		table.selfLoop(awaitingDialog, EVENT_PENDING);
+		table.add(awaitingDialog, EVENT_READY, executingStep);
 		table.selfLoop(awaitingBossDefeat, EVENT_PENDING);
 		table.add(awaitingBossDefeat, EVENT_BOSS_DEFEATED, levelCleared);
 
 		//state machine for the life cycle of a level
 		//AWAITING_CLEAR <-> EXECUTING STEP
 		//AWAITING_TIMER <-> EXECUTING STEP
+		//AWAITING_DIALOG <-> EXECUTING STEP
 		//EXECUTING STEP -> AWAITING BOSS DEFEAT -> LEVEL CLEARED (final)
 		StateMachine<DirectorContext> stateMachine = new StateMachineImpl<DirectorContext>();
 		stateMachine.setTransitionTable(table);

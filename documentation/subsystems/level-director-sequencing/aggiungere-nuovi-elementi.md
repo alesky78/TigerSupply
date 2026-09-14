@@ -46,6 +46,7 @@ l'engine è già completo e riusabile.
 3. Scegli il `completionEvent`:
    - `timed` con `time` (secondi, anche frazionari) → attesa temporizzata **obbligatoria**;
    - `cleared` → attende lo schermo pulito (nessun `time`);
+   - `dialogClosed` → il passo ha avviato un dialogo radio (`showDialog`): attende che il giocatore lo chiuda;
    - `bossSpawned` → il passo ha introdotto il boss (passa allo stato di attesa boss).
 
 > **Coordinate.** `posX/posY` assumono la risoluzione fissa **1360×660**. Gli spawn a destra usano
@@ -59,8 +60,9 @@ l'engine è già completo e riusabile.
 
 ## 2. Aggiungere un nuovo tipo di azione
 
-**Obiettivo:** introdurre un nuovo comando eseguibile in un passo (es. muovere lo sfondo, comandare
-la base, lanciare una traccia audio). **Modulo toccato: `game` (classe azione + registro), più
+**Obiettivo:** introdurre un nuovo comando eseguibile in un passo (es. avviare un dialogo radio con
+`ShowDialogAction`, lanciare una traccia audio con `PlayMusicAction`/`StopMusicAction`, o — in futuro
+— muovere lo sfondo o comandare la base). **Modulo toccato: `game` (classe azione + registro), più
 eventualmente il `DirectorContext` se serve un sottosistema nuovo.**
 
 ### Prerequisiti
@@ -115,6 +117,11 @@ eventualmente il `DirectorContext` se serve un sottosistema nuovo.**
 > **Additivo e isolato.** Un nuovo tipo di azione = **una nuova classe** + **una riga** nel registro.
 > Non si toccano gli stati della macchina né il vocabolario di completamento: le azioni sono il punto
 > di estensione **aperto**.
+
+> **Esempio reale.** `ShowDialogAction` (tipo `showDialog`) è un'azione concreta recente: comanda il
+> nuovo sottosistema `DialogManager` esposto dal `DirectorContext`. Poiché un dialogo introduce anche
+> un nuovo modo di *attendere* (finché il giocatore lo chiude), è accompagnata da un nuovo evento di
+> completamento `dialogClosed` e dal relativo stato `awaitingDialog` (vedi §5).
 
 ### Verifica
 - Il passo che usa la nuova azione deve produrne l'effetto. Un `type` non registrato fa fallire il
@@ -199,6 +206,11 @@ si tocca.**
 > **Prima di aggiungere uno stato, chiediti se ti serve davvero.** Se vuoi solo un nuovo *effetto* in
 > un passo, aggiungi un'**azione** (§2), non uno stato. Uno stato nuovo serve solo per un nuovo modo
 > di **attendere/completare** un passo (il vocabolario di completamento chiuso).
+
+> **Esempio reale.** Lo stato `awaitingDialog` (evento `dialogClosed`) è stato aggiunto esattamente
+> così: costante + classe `StateAwaitingDialog` (specchio di `StateAwaitingClear`, ma interroga il
+> `DialogManager`) + le transizioni `executingStep --dialogClosed--> awaitingDialog` e
+> `awaitingDialog --ready--> executingStep`.
 
 ### Prerequisiti
 - Comprendere il [framework a stati dell'engine](motore-macchina-a-stati.md) e il
