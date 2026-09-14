@@ -33,6 +33,9 @@ public class StaticResources {
 	public static final String ALGPRO_INCREMENT = "increment";
 	public static final String ALGPRO_START 	= "start";	
 	public static final String ALGPRO_LIST_POINTS = "listpoints";	
+	public static final String ALGPRO_SPEED = "speed";
+	public static final String ALGPRO_TURN_RATE = "turnrate";
+	public static final String ALGPRO_SEEK_TIME = "seektime";
 	
 	
 }

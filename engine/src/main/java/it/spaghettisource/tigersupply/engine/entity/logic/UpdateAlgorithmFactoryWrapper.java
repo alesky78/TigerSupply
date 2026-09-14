@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.List;
 
 import static it.spaghettisource.tigersupply.engine.utils.StaticResources.*;
+import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
@@ -153,5 +154,24 @@ public class UpdateAlgorithmFactoryWrapper {
 		properties.setObject(ALGPRO_POINT, copyPoint);
 		return UpdateAlgorithmFactory.newInstance(UpdateAlgoritmGoToPointIncreasingSpeed.class, properties);
 	}		
+
+	/**
+	 * Creates a {@link UpdateAlgorithmHoming} that seeks a live target at a bounded turn rate.
+	 *
+	 * @param target the live {@link Entity} to home in on
+	 * @param speed the constant travel speed, in pixel/second
+	 * @param maxTurnDegPerSec the maximum turn rate, in degree/second
+	 * @param seekSeconds how long the algorithm homes before losing the lock and flying straight, in seconds
+	 * @return the configured algorithm
+	 * @throws Exception if the algorithm cannot be created
+	 */
+	public static UpdateAlgorithmHoming newHoming(Entity target,float speed,float maxTurnDegPerSec,float seekSeconds) throws Exception{
+		DynaProperties properties = new DynaProperties();
+		properties.setObject(ALGPRO_SPRITE, target);
+		properties.setString(ALGPRO_SPEED, Float.toString(speed));
+		properties.setString(ALGPRO_TURN_RATE, Float.toString(maxTurnDegPerSec));
+		properties.setString(ALGPRO_SEEK_TIME, Float.toString(seekSeconds));
+		return UpdateAlgorithmFactory.newInstance(UpdateAlgorithmHoming.class, properties);
+	}
 		
 }

@@ -15,7 +15,7 @@
 			<completionEvent name="cleared" />
 		</step>
 		-->
-		
+
 		<!-- MUSIC: start the level soundtrack -->
 		<step>
 			<actions>
@@ -32,6 +32,7 @@
 			<completionEvent name="dialogClosed" />
 		</step>
 		
+
 		<!-- BACKGROUND -->			
 		<step>
 			<actions>

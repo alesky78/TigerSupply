@@ -3,26 +3,27 @@ package it.spaghettisource.tigersupply.game.weapon.enemy;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.game.entity.Enemy;
+import it.spaghettisource.tigersupply.game.entity.EnemyRocket;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 
+public class SeekerRocketLauncher extends AbstractWeapon<Enemy> {
 
-public class StandardShot extends AbstractWeapon<Enemy> {
-
-	public StandardShot(){
-		reloadingTime = 3f;	//2 seconds and shot
+	public SeekerRocketLauncher(){
+		reloadingTime = 2.2f;
 	}
-	
-	
+
+
 	protected void doFire(Entity target) throws Exception {
 		Position shotPosition = new Position(owner.getPosition());
-		Entity gunShotSprite = EntityFactoryWrapper.newEnemyShotDefault(shotPosition, target);
-		owner.getShotManager().addRequest(gunShotSprite);
+		EnemyRocket rocketShot = EntityFactoryWrapper.newEnemyShotSeekerRocket(shotPosition, target);
+		rocketShot.setEffectManager(owner.getEffectManager());
+		owner.getShotManager().addRequest(rocketShot);
 	}
 
 
 	protected void doReload() {
-		
+
 	}
 
 	public boolean targetInRange(Entity target) {

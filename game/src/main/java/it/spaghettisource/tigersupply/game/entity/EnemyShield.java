@@ -1,7 +1,7 @@
 package it.spaghettisource.tigersupply.game.entity;
 
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
-import it.spaghettisource.tigersupply.game.weapon.enemy.StandardShot;
+import it.spaghettisource.tigersupply.game.weapon.enemy.SeekerRocketLauncher;
 
 public class EnemyShield extends Enemy {	
 
@@ -23,7 +23,7 @@ public class EnemyShield extends Enemy {
 		shieldCounter = shieldPeriod;
 		
 		weapons = new Weapon[1];
-		weapons[0] = new StandardShot(); 
+		weapons[0] = new SeekerRocketLauncher(); 
 		weapons[0].setOwner(this);	
 	}
 	
