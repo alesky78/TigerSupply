@@ -12,7 +12,7 @@ crearlo e note.
 1. [UpdateAlgorithmDefault](#1-updatealgorithmdefault)
 2. [UpdateAlgorithmSinusoidal](#2-updatealgorithmsinusoidal)
 3. [UpdateAlgorithmLinearPath](#3-updatealgorithmlinearpath)
-4. [UpdateAlgorithmBspline](#4-updatealgorithmbspline)
+4. [UpdateAlgorithmSmoothPath](#4-updatealgorithmsmoothpath)
 5. [UpdateAlgoritmGoToPoint](#5-updatealgoritmgotopoint)
 6. [UpdateAlgoritmGoToPointIncreasingSpeed](#6-updatealgoritmgotopointincreasingspeed)
 7. [UpdateAlgoritmFollowSprite](#7-updatealgoritmfollowsprite)
@@ -115,8 +115,9 @@ avanza verso il waypoint corrente di step; raggiunto -> prossimo waypoint
       \__*___*
 ```
 
-> **Differenza da Bspline:** qui i segmenti restano **spigolosi** e la velocità è costante e
-> rispettosa del frame-rate; Bspline invece **arrotonda** i punti in una curva e ignora la velocità.
+> **Differenza da SmoothPath:** qui i segmenti restano **spigolosi**; SmoothPath invece
+> **arrotonda** i punti in una curva liscia. Entrambi percorrono il percorso a velocità costante e
+> rispettosa del frame-rate.
 
 **Creazione (codice):** `newLinearPath(List<Point> points)`.
 
@@ -137,22 +138,24 @@ avanza verso il waypoint corrente di step; raggiunto -> prossimo waypoint
 
 ---
 
-## 4. UpdateAlgorithmBspline
+## 4. UpdateAlgorithmSmoothPath
 
-**Forma del moto:** percorso liscio campionato da una **spline cubica naturale** che passa per i
-punti di controllo.
+**Forma del moto:** percorso liscio che passa per i punti di controllo, valutato al volo con una
+**spline di Catmull-Rom** uniforme.
 
-- **Sorgente:** [UpdateAlgorithmBspline.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmBspline.java)
-- **Rispetta il frame-rate:** **no** — avanza di **un punto precalcolato per frame**, ignorando
-  `Speed` e `deltaSeconds`.
+- **Sorgente:** [UpdateAlgorithmSmoothPath.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmSmoothPath.java)
+- **Rispetta il frame-rate:** **sì** — avanza di `|Speed| * dt` per frame, come `LinearPath`.
 - **Chiavi:** `listpoints` (punti di controllo).
 
-**Comportamento.** `init` costruisce una [`NatCubicSpline`](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/path/NatCubicSpline.java)
-dai punti di controllo e precalcola l'elenco dei punti interpolati; ogni frame l'entità **salta** al
-punto successivo. Esaurito il percorso, l'entità si ferma.
+**Comportamento.** `init` legge i punti di controllo; il primo e l'ultimo sono l'inizio e la fine del
+percorso (gli estremi sono duplicati così la curva li tocca esattamente). Al primo frame ricava la
+velocità di crociera dal **modulo** della `Speed` di riferimento (come `LinearPath`); ogni frame
+avanza lungo la curva di Catmull-Rom di `|Speed| * dt`, attraversando quanti segmenti servono a
+coprire quel budget. Esaurito il percorso, **l'entità si ferma**.
 
 ```
-per ogni frame: position = prossimo punto precalcolato della spline
+al 1° frame: refSpeed = |Speed|
+per ogni frame: avanza lungo la curva di refSpeed * dt (attraversa piu' segmenti se serve)
 ```
 
 ```
@@ -160,17 +163,16 @@ per ogni frame: position = prossimo punto precalcolato della spline
      /         "-._      (curva liscia attraverso i punti di controllo)
 ```
 
-> **Nota frame-rate.** Poiché avanza di un punto per frame, a FPS diversi la velocità percepita
-> cambia (a 60 FPS è il doppio che a 30). È l'algoritmo giusto quando conta la **forma** della
-> traiettoria più della velocità precisa.
+> **Nota.** La curva è valutata **al volo** con una formula di Catmull-Rom inline: non serve
+> precalcolare l'elenco dei punti. La velocità è costante e indipendente dagli FPS, al primo ordine.
 
-**Creazione (codice):** `newBspline(List<Point> points)`.
+**Creazione (codice):** `newSmoothPath(List<Point> points)`.
 
 **XML (livello 1, `pathAlfa`):**
 
 ```xml
 <algorithmPrototype name="pathAlfa"
-    class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmBspline">
+    class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmSmoothPath">
     <algorithmProperties>
         <listPoints name="listpoints">
             <point posX="1350" posY="325"/>
@@ -307,7 +309,7 @@ Y = copyPoint.Y + deltaY
 | 1 | `UpdateAlgorithmDefault` | moto libero | Sì | no (moto infinito) | — |
 | 2 | `UpdateAlgorithmSinusoidal` | moto libero | Sì | no (moto infinito) | `delta`, `increment`, `start`(opz.) |
 | 3 | `UpdateAlgorithmLinearPath` | percorso scriptato | Sì | sì (fine waypoint) | `listpoints` |
-| 4 | `UpdateAlgorithmBspline` | percorso scriptato | **No** | sì (fine spline) | `listpoints` |
+| 4 | `UpdateAlgorithmSmoothPath` | percorso scriptato | Sì | sì (fine percorso) | `listpoints` |
 | 5 | `UpdateAlgoritmGoToPoint` | mira one-shot | Sì | no* (prosegue oltre il punto) | `speedx`, `speedy`, `point` |
 | 6 | `UpdateAlgoritmGoToPointIncreasingSpeed` | mira one-shot | Sì | no* (prosegue accelerando) | `speedx`, `speedy`, `point` |
 | 7 | `UpdateAlgoritmFollowSprite` | inseguimento | Sì | no (insegue sempre) | `sprite` |

@@ -17,7 +17,7 @@ API/data model, component inventory, technology stack, dependencies, code-qualit
 
 ### Subsystems
 - **[entity-movement-algorithms](../documentation/subsystems/entity-movement-algorithms/index.md)** —
-  the catalogue of `UpdateAlgorithm` movement strategies (Default, Sinusoidal, LinearPath, Bspline,
+  the catalogue of `UpdateAlgorithm` movement strategies (Default, Sinusoidal, LinearPath, SmoothPath,
   GoToPoint(+Increasing), FollowSprite, CopyPosition) an entity delegates its motion to, plus a
   companion page proposing the missing 90s-shmup archetypes and a composite/sequence algorithm.
 - **[level-director-sequencing](../documentation/subsystems/level-director-sequencing/index.md)** —

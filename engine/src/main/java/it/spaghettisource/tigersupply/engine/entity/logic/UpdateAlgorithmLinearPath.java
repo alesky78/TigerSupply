@@ -14,8 +14,8 @@ import java.util.List;
  * {@link UpdateAlgorithm} that drives the entity along a piecewise-straight path, travelling from one
  * waypoint to the next in a straight line at the entity reference speed.
  *
- * <p>Unlike {@link UpdateAlgorithmBspline}, which smooths the waypoints into a spline and snaps the
- * entity to precomputed points ignoring the speed, this algorithm keeps each segment straight and moves
+ * <p>Unlike {@link UpdateAlgorithmSmoothPath}, which smooths the waypoints into a curve, this algorithm
+ * keeps each segment straight and moves
  * the entity at a constant pace: {@link #init(DynaProperties)} reads the ordered list of waypoints
  * supplied under the {@code ALGPRO_LIST_POINTS} key (a {@link List} of {@link Point}) and targets the
  * first one, then every frame {@link #updateLogic(Position, Speed, float)} advances the entity toward the

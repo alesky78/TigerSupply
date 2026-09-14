@@ -656,7 +656,7 @@
 			</algorithmProperties>
 		</algorithmPrototype>			
 		
-		<algorithmPrototype name="pathAlfa" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmBspline">
+		<algorithmPrototype name="pathAlfa" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmSmoothPath">
 			<algorithmProperties>			
 				<listPoints name="listpoints">
 					<point posX="1350" posY="325"/>

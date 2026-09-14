@@ -25,7 +25,7 @@
 ## 1. Perché questi algoritmi
 
 Il catalogo attuale copre bene il **moto libero** (Default, Sinusoidal), il **percorso scriptato**
-(LinearPath, Bspline), la **mira one-shot** (GoToPoint, GoToPointIncreasingSpeed) e
+(LinearPath, SmoothPath), la **mira one-shot** (GoToPoint, GoToPointIncreasingSpeed) e
 l'**aggancio/inseguimento** (FollowSprite, CopyPosition). Mancano però diversi archetipi di
 movimento che sono *firme riconoscibili* del genere anni '90. Li raggruppo per **ruolo di gioco**,
 che è il modo in cui si pensano quando si scrive l'XML del livello.
@@ -34,7 +34,7 @@ che è il modo in cui si pensano quando si scrive l'XML del livello.
    ATTUALE                                     MANCANTE (proposto)
   +-------------------+                        +--------------------------+
   | moto libero       | Default, Sinusoidal    | zig-zag, orbita, fig.8   |
-  | percorso          | LinearPath, Bspline    | swoop / picchiata        |
+  | percorso          | LinearPath, SmoothPath | swoop / picchiata        |
   | mira one-shot     | GoToPoint(+Incr)       | ease-in-out, boomerang   |
   | aggancio/inseguo  | FollowSprite, CopyPos  | homing con turn-rate     |
   | -- (nessuno) --   |                        | arco balistico, spirale  |
@@ -127,7 +127,7 @@ una **condizione di completamento** è soddisfatta (tempo trascorso, punto raggi
 |---|---|
 | Enter-Hold-Exit | `GoToPoint` → `Default(v=0)`+timer → `Default(uscita)` |
 | Boomerang / ritorno | `Default(entra)` → `Default(v=0)`+timer → `Default(-entra)` |
-| Swoop-and-return | `Bspline(entra)` → `GoToPoint(uscita)` |
+| Swoop-and-return | `SmoothPath(entra)` → `GoToPoint(uscita)` |
 | Pattugliamento a segmenti con soste | `LinearPath` → `Default(v=0)` → `LinearPath` … |
 
 > **Perché conviene.** Un solo algoritmo composito, ben fatto e riutilizzabile dall'XML, copre metà
@@ -161,8 +161,8 @@ L'ordine dipende dal titolo di riferimento; una proposta ragionevole:
 ## 5. Note trasversali
 
 - **Frame-rate.** Progettare i nuovi algoritmi in modo **frame-rate independent** (moltiplicare per
-  `deltaSeconds`), evitando il difetto già presente in Bspline/GoToPointIncreasingSpeed (avanzamento
-  o accelerazione per-frame). Vedi [concetto 3.4](index.md#3-concetti-chiave).
+  `deltaSeconds`), evitando il difetto ancora presente in `GoToPointIncreasingSpeed` (accelerazione
+  per-frame). Vedi [concetto 3.4](index.md#3-concetti-chiave).
 - **Riferimenti a entità.** Homing e Swoop hanno bisogno di un riferimento al giocatore: passarlo
   via `DynaProperties` come oggetto (come già fa `FollowSprite` con la chiave `sprite`), senza
   introdurre dipendenze del modulo `engine` verso il `game`.

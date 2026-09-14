@@ -104,15 +104,16 @@ con solo tre helper di parsing (`getInt`, `getDouble`, `getFloat`) per leggere i
 
 La `Speed` passata a `updateLogic` è la **velocità di riferimento** dell'entità (dal prototipo
 nemico nell'XML). Alcuni algoritmi la integrano direttamente (`Default`, `Sinusoidal`), altri ne
-usano solo il **modulo** come "passo" (`LinearPath`), altri ancora la **ignorano** perché la
-traiettoria è già interamente determinata (`Bspline`, `CopyPosition`).
+usano solo il **modulo** come "passo" (`LinearPath`, `SmoothPath`), altri ancora la **ignorano** perché la
+traiettoria è già interamente determinata (`CopyPosition`).
 
 ### 3.4 Dipendenza dal frame-rate (`deltaSeconds`)
 
 Un algoritmo "corretto" moltiplica ogni spostamento per `deltaSeconds`, così a 30 o 60 FPS l'entità
-percorre la stessa distanza al secondo. Due algoritmi attuali **non** lo fanno e avanzano *di un
-passo per frame* (vedi il catalogo): a FPS diversi cambiano velocità. È una caratteristica da tenere
-presente quando si scelgono o si aggiungono algoritmi.
+percorre la stessa distanza al secondo. Un algoritmo attuale **non** lo fa del tutto:
+`GoToPointIncreasingSpeed` integra `dt` per lo spostamento ma applica l'accelerazione *per frame*
+(vedi il catalogo), quindi a FPS diversi cambia il ritmo. È una caratteristica da tenere presente
+quando si scelgono o si aggiungono algoritmi.
 
 ### 3.5 Configurazione via `DynaProperties`
 
@@ -134,7 +135,7 @@ e usate come attributo `name` nei tag `<property>` / `<listPoints>` dell'XML.
 | `ALGPRO_DELTA` | `delta` | float | Sinusoidal (ampiezza) |
 | `ALGPRO_INCREMENT` | `increment` | float | Sinusoidal (velocità angolare, °/s) |
 | `ALGPRO_START` | `start` | float (opz.) | Sinusoidal (angolo iniziale) |
-| `ALGPRO_LIST_POINTS` | `listpoints` | List&lt;Point&gt; | Bspline, LinearPath |
+| `ALGPRO_LIST_POINTS` | `listpoints` | List&lt;Point&gt; | SmoothPath, LinearPath |
 | `ALGPRO_SPEEDX` | `speedx` | int | GoToPoint, GoToPointIncreasingSpeed |
 | `ALGPRO_SPEEDY` | `speedy` | int | GoToPoint, GoToPointIncreasingSpeed |
 | `ALGPRO_POINT` | `point` | Position/Object | GoToPoint(+Incr), CopyPosition |
@@ -153,7 +154,7 @@ e usate come attributo `name` nei tag `<property>` / `<listPoints>` dell'XML.
 | Concreto | `UpdateAlgorithmDefault` | [logic/UpdateAlgorithmDefault.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmDefault.java) | Retta a velocità costante. |
 | Concreto | `UpdateAlgorithmSinusoidal` | [logic/UpdateAlgorithmSinusoidal.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmSinusoidal.java) | Avanza in X, oscilla in Y (seno). |
 | Concreto | `UpdateAlgorithmLinearPath` | [logic/UpdateAlgorithmLinearPath.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmLinearPath.java) | Waypoint spezzati a velocità costante. |
-| Concreto | `UpdateAlgorithmBspline` | [logic/UpdateAlgorithmBspline.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmBspline.java) | Spline cubica liscia, snap su punti precalcolati. |
+| Concreto | `UpdateAlgorithmSmoothPath` | [logic/UpdateAlgorithmSmoothPath.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgorithmSmoothPath.java) | Curva liscia (Catmull-Rom) a velocità costante. |
 | Concreto | `UpdateAlgoritmGoToPoint` | [logic/UpdateAlgoritmGoToPoint.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgoritmGoToPoint.java) | Va verso un punto fisso a velocità costante. |
 | Concreto | `UpdateAlgoritmGoToPointIncreasingSpeed` | [logic/UpdateAlgoritmGoToPointIncreasingSpeed.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgoritmGoToPointIncreasingSpeed.java) | Come sopra ma accelerando. |
 | Concreto | `UpdateAlgoritmFollowSprite` | [logic/UpdateAlgoritmFollowSprite.java](../../../engine/src/main/java/it/spaghettisource/tigersupply/engine/entity/logic/UpdateAlgoritmFollowSprite.java) | Insegue un'entità bersaglio. |
@@ -182,7 +183,7 @@ classDiagram
     AbstractUpdateAlgorithm <|-- UpdateAlgorithmDefault
     AbstractUpdateAlgorithm <|-- UpdateAlgorithmSinusoidal
     AbstractUpdateAlgorithm <|-- UpdateAlgorithmLinearPath
-    AbstractUpdateAlgorithm <|-- UpdateAlgorithmBspline
+    AbstractUpdateAlgorithm <|-- UpdateAlgorithmSmoothPath
     AbstractUpdateAlgorithm <|-- UpdateAlgoritmGoToPoint
     AbstractUpdateAlgorithm <|-- UpdateAlgoritmGoToPointIncreasingSpeed
     AbstractUpdateAlgorithm <|-- UpdateAlgoritmFollowSprite
@@ -232,7 +233,7 @@ La tabella riassume gli **8 algoritmi esistenti**; ognuno è documentato in dett
 | 1 | `UpdateAlgorithmDefault` | retta a velocità costante | Sì | — | [§1](catalogo-algoritmi-attuali.md#1-updatealgorithmdefault) |
 | 2 | `UpdateAlgorithmSinusoidal` | X costante + Y a onda sinusoidale | Sì | `delta`, `increment`, `start`(opz.) | [§2](catalogo-algoritmi-attuali.md#2-updatealgorithmsinusoidal) |
 | 3 | `UpdateAlgorithmLinearPath` | waypoint spezzati a velocità costante | Sì | `listpoints` | [§3](catalogo-algoritmi-attuali.md#3-updatealgorithmlinearpath) |
-| 4 | `UpdateAlgorithmBspline` | spline liscia, snap punti | **No** | `listpoints` | [§4](catalogo-algoritmi-attuali.md#4-updatealgorithmbspline) |
+| 4 | `UpdateAlgorithmSmoothPath` | curva liscia (Catmull-Rom) | Sì | `listpoints` | [§4](catalogo-algoritmi-attuali.md#4-updatealgorithmsmoothpath) |
 | 5 | `UpdateAlgoritmGoToPoint` | verso un punto fisso | Sì | `speedx`, `speedy`, `point` | [§5](catalogo-algoritmi-attuali.md#5-updatealgoritmgotopoint) |
 | 6 | `UpdateAlgoritmGoToPointIncreasingSpeed` | verso un punto, accelerando | Sì | `speedx`, `speedy`, `point` | [§6](catalogo-algoritmi-attuali.md#6-updatealgoritmgotopointincreasingspeed) |
 | 7 | `UpdateAlgoritmFollowSprite` | insegue un'entità | Sì | `sprite` | [§7](catalogo-algoritmi-attuali.md#7-updatealgoritmfollowsprite) |
@@ -258,7 +259,7 @@ La tabella riassume gli **8 algoritmi esistenti**; ognuno è documentato in dett
 Gli algoritmi sono indipendenti da una singola Scene: sono usati dai prototipi nemico e proiettile
 del livello. Gli usi concreti nel **worked example** di riferimento (il livello 1) sono nei tag
 `<algorithmsPrototype>` di [level-1.xml](../../../game/src/main/resources/level/level-1.xml):
-`default`, `sinusoidal`, `pathAlfa` (Bspline), `pathUp`/`pathDown`/`backToFrontUp`/`backToFrontDown`/
+`default`, `sinusoidal`, `pathAlfa` (SmoothPath), `pathUp`/`pathDown`/`backToFrontUp`/`backToFrontDown`/
 `straightBackToFrontDown` (LinearPath).
 
 ---

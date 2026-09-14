@@ -31,16 +31,17 @@ public class UpdateAlgorithmFactoryWrapper {
 	}		
 	
 	/**
-	 * Creates a {@link UpdateAlgorithmBspline} that follows a spline through the given control points.
+	 * Creates a {@link UpdateAlgorithmSmoothPath} that follows a smooth curve through the given control
+	 * points.
 	 *
 	 * @param points the control points defining the path
 	 * @return the configured algorithm
 	 * @throws Exception if the algorithm cannot be created
 	 */
-	public static UpdateAlgorithmBspline newBspline(List<Point> points) throws Exception{
+	public static UpdateAlgorithmSmoothPath newSmoothPath(List<Point> points) throws Exception{
 		DynaProperties properties = new DynaProperties();
 		properties.setList(ALGPRO_LIST_POINTS, points);
-		return UpdateAlgorithmFactory.newInstance(UpdateAlgorithmBspline.class, properties);		
+		return UpdateAlgorithmFactory.newInstance(UpdateAlgorithmSmoothPath.class, properties);		
 	}
 	
 	/**
