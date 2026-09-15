@@ -61,4 +61,7 @@ s asteroid4 image/asteroid-4.png
 s portrait_pilot_calm       image/portrait-pilot-1-calm.jpg
 s portrait_pilot_angry      image/portrait-pilot-1-angry.png
 s portrait_pilot_focused    image/portrait-pilot-1-focused.png
-s portrait_mechanic_worried image/portrait-mechanic-1.jpg
+
+s portrait_mechanic_1_calm  image/portrait-mechanic-1-calm.png
+s portrait_mechanic_1_focus  image/portrait-mechanic-1-focus.png
+s portrait_mechanic_1_furious  image/portrait-mechanic-1-furious.png

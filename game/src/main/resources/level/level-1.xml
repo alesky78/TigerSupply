@@ -743,7 +743,7 @@
 					<line>Nemici individuati a ore undici.</line>
 					<line>Prepararsi all'intercettazione...</line>
 				</message>
-				<message speaker="Izumi" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_1_furious">
 					<line>Ehi, stai attenta la' fuori Akame!</line>
 					<line>Ho appena finito di riparare quel motore!</line>
 				</message>
@@ -755,7 +755,7 @@
 		<script name="radar-warning">
 			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
 			<messages>
-				<message speaker="Izumi" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_1_calm">
 					<line>Akame! I radar stanno impazzendo, qualcosa li disturba!</line>
 					<line>Tieni gli occhi aperti... sciame in arrivo!</line>
 				</message>
@@ -767,7 +767,7 @@
 		<script name="radar-big-contact">
 			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
 			<messages>
-				<message speaker="Izumi" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_1_focus">
 					<line>Akame... c'e' un contatto ENORME sul radar!</line>
 					<line>Non ho mai visto niente di cosi' grosso... stai attenta!</line>
 				</message>
