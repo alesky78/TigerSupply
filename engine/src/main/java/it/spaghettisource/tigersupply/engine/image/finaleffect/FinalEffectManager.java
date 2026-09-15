@@ -30,7 +30,10 @@ public class FinalEffectManager {
 		//register hire the effect to use
 		registeredEffect = new HashMap<String, FinalEffect>();
 		registeredEffect.put("darkness", new Darkness());
-		registeredEffect.put("star", new Star());		
+		registeredEffect.put("star", new Star());
+		registeredEffect.put("lightness", new Lightness());
+		registeredEffect.put("damageFlash", new DamageFlash());
+		registeredEffect.put("rain", new Rain());
 	}
 	
 	public static void init(GameContext context) throws Exception{
@@ -113,5 +116,52 @@ public class FinalEffectManager {
 	public boolean isStarActive(){
 		return registeredEffect.get("star").isActive();
 	}
-	
+
+	public void activateLightness(float secondToLight){
+		Lightness efx = (Lightness) registeredEffect.get("lightness");
+		efx.configAndStart(secondToLight, context.getPeriodSeconds());
+	}
+
+	public void stopLightness(){
+		Lightness efx = (Lightness) registeredEffect.get("lightness");
+		efx.reset();
+	}
+
+	public boolean isLightnessActive(){
+		return registeredEffect.get("lightness").isActive();
+	}
+
+	public boolean isLightnessFinish(){
+		Lightness efx = (Lightness) registeredEffect.get("lightness");
+		return efx.isFinish();
+	}
+
+	public void activateDamageFlash(int startAlpha,float secondToFade){
+		DamageFlash efx = (DamageFlash) registeredEffect.get("damageFlash");
+		efx.configAndStart(startAlpha, secondToFade, context.getPeriodSeconds());
+	}
+
+	public void stopDamageFlash(){
+		DamageFlash efx = (DamageFlash) registeredEffect.get("damageFlash");
+		efx.reset();
+	}
+
+	public boolean isDamageFlashActive(){
+		return registeredEffect.get("damageFlash").isActive();
+	}
+
+	public void activateRain(float nextDropFrequency){
+		Rain efx = (Rain) registeredEffect.get("rain");
+		efx.configAndStart(nextDropFrequency, context);
+	}
+
+	public void stopRain(){
+		Rain efx = (Rain) registeredEffect.get("rain");
+		efx.reset();
+	}
+
+	public boolean isRainActive(){
+		return registeredEffect.get("rain").isActive();
+	}
+
 }

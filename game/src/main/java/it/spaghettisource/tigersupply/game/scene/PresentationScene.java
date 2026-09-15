@@ -63,8 +63,7 @@ public class PresentationScene extends AbstractScene {
 	    dbg.setFont(font);
 		dbg.setColor(new Color(255, 0, 0));
 		
-		GlyphVector gv = font.createGlyphVector(dbg.getFontRenderContext(),"Tiger Supply");
-		
+		GlyphVector gv = font.createGlyphVector(dbg.getFontRenderContext(),"Tiger Supply");	
 	    AffineTransform shadowTransform = AffineTransform.getShearInstance(-1.0, 0.0); // Shear to the right
 	    shadowTransform.scale(1.0, 0.5); // Scale height by 1/2
 		
