@@ -10,7 +10,7 @@ import java.awt.font.GlyphVector;
 
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
-import it.spaghettisource.tigersupply.game.entity.Player;
+import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.engine.ui.RectangleButton;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 

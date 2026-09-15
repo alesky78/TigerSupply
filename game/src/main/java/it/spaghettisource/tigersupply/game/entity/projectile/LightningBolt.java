@@ -1,6 +1,7 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.projectile;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
+import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

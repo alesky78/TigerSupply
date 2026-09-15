@@ -1,4 +1,6 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.effect;
+
+import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 
 
 /**

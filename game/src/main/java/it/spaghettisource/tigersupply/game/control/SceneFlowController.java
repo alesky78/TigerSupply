@@ -5,7 +5,7 @@ import java.util.Map;
 
 import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
-import it.spaghettisource.tigersupply.game.entity.Player;
+import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.game.scene.PresentationScene;
 import it.spaghettisource.tigersupply.game.scene.GameOverScene;
 import it.spaghettisource.tigersupply.game.scene.HangarScene;

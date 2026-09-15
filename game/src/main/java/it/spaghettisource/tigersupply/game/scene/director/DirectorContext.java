@@ -3,7 +3,7 @@ package it.spaghettisource.tigersupply.game.scene.director;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
-import it.spaghettisource.tigersupply.game.entity.Enemy;
+import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.CompletionEvent;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.Step;

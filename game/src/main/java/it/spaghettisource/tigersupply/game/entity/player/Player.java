@@ -1,8 +1,11 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.player;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.spaghettisource.tigersupply.game.entity.BaseEntity;
+import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;

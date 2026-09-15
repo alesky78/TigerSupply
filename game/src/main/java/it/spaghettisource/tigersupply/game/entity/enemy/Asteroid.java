@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.enemy;
 
 
 

@@ -6,7 +6,7 @@ import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.image.repository.ImageRepositoryManager;
-import it.spaghettisource.tigersupply.game.entity.Player;
+import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.game.ui.DescriptionListenerHangar;
 import it.spaghettisource.tigersupply.game.ui.HangarDataModel;
 import it.spaghettisource.tigersupply.game.ui.ShipButtonHangar;

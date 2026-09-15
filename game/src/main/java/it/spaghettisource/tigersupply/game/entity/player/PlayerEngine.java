@@ -1,4 +1,6 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.player;
+
+import it.spaghettisource.tigersupply.game.entity.effect.Effect;
 
 
 public class PlayerEngine extends Effect {

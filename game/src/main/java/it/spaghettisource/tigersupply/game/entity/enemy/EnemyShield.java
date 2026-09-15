@@ -1,4 +1,4 @@
-package it.spaghettisource.tigersupply.game.entity;
+package it.spaghettisource.tigersupply.game.entity.enemy;
 
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
 import it.spaghettisource.tigersupply.game.weapon.enemy.SeekerRocketLauncher;

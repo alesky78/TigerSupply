@@ -11,7 +11,7 @@ import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactory
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.engine.utils.DynaProperties;
-import it.spaghettisource.tigersupply.game.entity.Enemy;
+import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.ActionDefinition;
 import it.spaghettisource.tigersupply.game.scene.builder.definition.AlgorithmPrototype;

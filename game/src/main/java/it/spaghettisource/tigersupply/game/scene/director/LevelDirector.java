@@ -6,7 +6,7 @@ import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.statemachine.StateMachine;
-import it.spaghettisource.tigersupply.game.entity.Enemy;
+import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilder;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilderSaxXml;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;

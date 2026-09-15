@@ -2,8 +2,8 @@ package it.spaghettisource.tigersupply.game.weapon.player;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
-import it.spaghettisource.tigersupply.game.entity.Player;
-import it.spaghettisource.tigersupply.game.entity.PlayerBomb;
+import it.spaghettisource.tigersupply.game.entity.player.Player;
+import it.spaghettisource.tigersupply.game.entity.projectile.PlayerBomb;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 import it.spaghettisource.tigersupply.game.weapon.HangarWeapon;

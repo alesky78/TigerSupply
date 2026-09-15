@@ -589,72 +589,72 @@
 	</steps>
 
 	<enemiesPrototype>		
-		<enemyPrototype name="enemyBackgroundSt" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
+		<enemyPrototype name="enemyBackgroundSt" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
 			<speed x="120" y="0" />
 			<image alias="enemy1" />
 			<scale value="0.7" />
 		</enemyPrototype>
-		<enemyPrototype name="enemyBackgroundSyn" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
+		<enemyPrototype name="enemyBackgroundSyn" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
 			<speed x="120" y="0" />
 			<image alias="enemy2" />
 			<scale value="0.7" />
 		</enemyPrototype>	
-		<enemyPrototype name="enemyBackgroundRk" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBackGround">
+		<enemyPrototype name="enemyBackgroundRk" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
 			<speed x="120" y="0" />
 			<image alias="enemy3" />
 			<scale value="0.5" />
 		</enemyPrototype>
-		<enemyPrototype name="asteroid1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
+		<enemyPrototype name="asteroid1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
 			<speed x="-40" y="11" />
 			<image alias="asteroid1" />
 			<scale value="1" />
 		</enemyPrototype>	
-		<enemyPrototype name="asteroid2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
+		<enemyPrototype name="asteroid2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
 			<speed x="-50" y="-12" />
 			<image alias="asteroid2" />
 			<scale value="1" />
 		</enemyPrototype>			
-		<enemyPrototype name="asteroid3" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
+		<enemyPrototype name="asteroid3" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
 			<speed x="-30" y="14" />
 			<image alias="asteroid3" />
 			<scale value="1" />
 		</enemyPrototype>	
-		<enemyPrototype name="asteroid4" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
+		<enemyPrototype name="asteroid4" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
 			<speed x="-34" y="-10" />
 			<image alias="asteroid4" />
 			<scale value="1" />
 		</enemyPrototype>		
-		<enemyPrototype name="asteroid5" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.Asteroid">
+		<enemyPrototype name="asteroid5" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
 			<speed x="70" y="12" />
 			<image alias="asteroid1" />
 			<scale value="1" />
 		</enemyPrototype>					
-		<enemyPrototype name="standard-1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyStandard">
+		<enemyPrototype name="standard-1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
 			<speed x="-200" y="-200" />
 			<image alias="enemy1" />
 			<scale value="1.1" />			
 		</enemyPrototype>
-		<enemyPrototype name="standard-2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyStandard">
+		<enemyPrototype name="standard-2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
 			<speed x="-200" y="0" />
 			<image alias="enemy1" />
 			<scale value="1.1" />			
 		</enemyPrototype>				
-		<enemyPrototype name="sinusoidal" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyStandard">
+		<enemyPrototype name="sinusoidal" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
 			<speed x="-200" y="-30" />
 			<image alias="enemy2" />
 			<scale value="1.1" />			
 		</enemyPrototype>
-		<enemyPrototype name="enemyShield" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyShield">
+		<enemyPrototype name="enemyShield" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyShield">
 			<speed x="-200" y="0" />
 			<image alias="enemy4" />
 			<scale value="1.1" />			
 		</enemyPrototype>		
-		<enemyPrototype name="roker" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyShoterRocket">
+		<enemyPrototype name="roker" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyShoterRocket">
 			<speed x="-150" y="0" />
 			<image alias="enemy3" />
 			<scale value="1" />			
 		</enemyPrototype>
-		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.EnemyBoss">
+		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBoss">
 			<speed x="-40" y="40" />
 			<image alias="boss" />
 			<scale value="1.4" />			
