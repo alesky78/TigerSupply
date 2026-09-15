@@ -58,5 +58,7 @@ s asteroid4 image/asteroid-4.png
 
 
 //radio-dialogue portraits (one alias per speaker+expression; placeholder art)
-s portrait_pilot_calm      image/portrait-pilot-1.jpg
+s portrait_pilot_calm       image/portrait-pilot-1-calm.jpg
+s portrait_pilot_angry      image/portrait-pilot-1-angry.png
+s portrait_pilot_focused    image/portrait-pilot-1-focused.png
 s portrait_mechanic_worried image/portrait-mechanic-1.jpg

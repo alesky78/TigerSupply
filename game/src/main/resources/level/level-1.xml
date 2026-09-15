@@ -739,15 +739,15 @@
 		<script name="briefing-intro">
 			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
 			<messages>
-				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+				<message speaker="Akame" portrait="portrait_pilot_calm">
 					<line>Nemici individuati a ore undici.</line>
 					<line>Prepararsi all'intercettazione...</line>
 				</message>
-				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_worried">
 					<line>Ehi, stai attenta la' fuori Akame!</line>
 					<line>Ho appena finito di riparare quel motore!</line>
 				</message>
-				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+				<message speaker="Akame" portrait="portrait_pilot_focused">
 					<line>Ricevuto Izumi. Ingaggio il nemico.</line>
 				</message>
 			</messages>
@@ -755,11 +755,11 @@
 		<script name="radar-warning">
 			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
 			<messages>
-				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_worried">
 					<line>Akame! I radar stanno impazzendo, qualcosa li disturba!</line>
 					<line>Tieni gli occhi aperti... sciame in arrivo!</line>
 				</message>
-				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+				<message speaker="Akame" portrait="portrait_pilot_focused">
 					<line>Ricevuto, Izumi. Riduco la spinta e resto vigile.</line>
 				</message> 
 			</messages>
@@ -767,11 +767,11 @@
 		<script name="radar-big-contact">
 			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
 			<messages>
-				<message speaker="Izumi - Chief Mechanic" portrait="portrait_mechanic_worried">
+				<message speaker="Izumi" portrait="portrait_mechanic_worried">
 					<line>Akame... c'e' un contatto ENORME sul radar!</line>
 					<line>Non ho mai visto niente di cosi' grosso... stai attenta!</line>
 				</message>
-				<message speaker="Akame - Pilot" portrait="portrait_pilot_calm">
+				<message speaker="Akame" portrait="portrait_pilot_angry">
 					<line>Lo vedo, Izumi. Preparati: si fa sul serio.</line>
 				</message>
 			</messages>
