@@ -6,6 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import it.spaghettisource.tigersupply.engine.control.AbstractScene;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
@@ -14,6 +17,7 @@ import it.spaghettisource.tigersupply.engine.entity.Size;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
+import it.spaghettisource.tigersupply.game.utils.EntityZComparator;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 import it.spaghettisource.tigersupply.sandbox.catalog.SandboxCase;
 import it.spaghettisource.tigersupply.sandbox.catalog.SandboxManagers;
@@ -42,6 +46,9 @@ public class SandboxTestScene extends AbstractScene {
 
 	private boolean paused = false;
 	private boolean stepOnce = false;
+
+	List<Entity> renderSprites = new ArrayList<Entity>();	//used to manage the sprites to render	
+	EntityZComparator comparator = new EntityZComparator();	//use to order the renderSprites list
 
 	public SandboxTestScene(GameContext context, SandboxSceneHost host, SandboxCase theCase) throws Exception {
 		this.context = context;
@@ -103,11 +110,22 @@ public class SandboxTestScene extends AbstractScene {
 
 		drawGrid(dbg);
 
-		managers.enemy().renderEntity(dbg);
-		managers.effect().renderEntity(dbg);
-		managers.shot().renderEntity(dbg);
 
-		target.renderEntity(dbg);
+		//order the s sprite before to draw by z coordinate
+		renderSprites.addAll(managers.enemy().getManagedEntities());
+		renderSprites.addAll(managers.shot().getManagedEntities());
+		renderSprites.addAll(managers.effect().getManagedEntities());
+		renderSprites.add(target);
+
+		Collections.sort(renderSprites, comparator);
+
+		for (Entity entity : renderSprites) {
+			entity.renderEntity(dbg);
+		}
+		renderSprites.clear();
+
+	
+	
 
 		drawOverlay(dbg);
 	}
