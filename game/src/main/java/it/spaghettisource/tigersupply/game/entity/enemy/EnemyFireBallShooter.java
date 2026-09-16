@@ -1,11 +1,11 @@
 package it.spaghettisource.tigersupply.game.entity.enemy;
 
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
-import it.spaghettisource.tigersupply.game.weapon.enemy.EnergyBallCannon;
+import it.spaghettisource.tigersupply.game.weapon.enemy.FireBallCannon;
 
-public class EnemyEnergyShooter extends Enemy {
+public class EnemyFireBallShooter extends Enemy {
 
-	public EnemyEnergyShooter() {
+	public EnemyFireBallShooter() {
 		super();
 		life = 12;
 		particleNum = 100;
@@ -17,7 +17,7 @@ public class EnemyEnergyShooter extends Enemy {
 		particleDeathMaxLifeTime = 0.4f;
 
 		weapons = new Weapon[1];
-		weapons[0] = new EnergyBallCannon();
+		weapons[0] = new FireBallCannon();
 		weapons[0].setOwner(this);
 	}
 

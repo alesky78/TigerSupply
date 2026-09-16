@@ -32,6 +32,13 @@ public enum ParticleColorScheme {
 		public Color colorAt(float t) {
 			return new Color(0.4f, 0.9f, 1f, t);
 		}
+	},
+
+	/** Fire orange whose alpha fades to zero. */
+	FIRE_TRAIL {
+		public Color colorAt(float t) {
+			return new Color(1f, 0.5f, 0.1f, t);
+		}
 	};
 
 	/**

@@ -60,7 +60,12 @@ public class SandboxCatalog {
 
 	private void buildProjectiles() {
 		cases.add(new SandboxCase("EnergyBall", Family.PROJECTILE, (ctx, m, target) -> {
-			var ball = EntityFactoryWrapper.newEnemyShotEnergyBall(ctx, enemyOrigin(ctx));
+			var ball = EntityFactoryWrapper.newEnemyShotEnergyBall(ctx, enemyOrigin(ctx),target);
+			ball.setEffectManager(m.effect());
+			return ball;
+		}));
+		cases.add(new SandboxCase("FireBall", Family.PROJECTILE, (ctx, m, target) -> {
+			var ball = EntityFactoryWrapper.newEnemyShotFireBall(ctx, enemyOrigin(ctx),target);
 			ball.setEffectManager(m.effect());
 			return ball;
 		}));

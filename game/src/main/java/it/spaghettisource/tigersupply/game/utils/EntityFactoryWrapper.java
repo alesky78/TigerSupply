@@ -18,6 +18,7 @@ import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.game.entity.player.PlayerEngine;
 import it.spaghettisource.tigersupply.game.entity.projectile.EnemyRocket;
 import it.spaghettisource.tigersupply.game.entity.projectile.EnergyBall;
+import it.spaghettisource.tigersupply.game.entity.projectile.FireBall;
 import it.spaghettisource.tigersupply.game.entity.projectile.LightningBolt;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerBomb;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerRocket;
@@ -92,20 +93,36 @@ public class EntityFactoryWrapper {
 		return shot;			
 	}		
 
-	public static EnergyBall newEnemyShotEnergyBall(GameContext context, Position shotPosition) throws Exception{
+	public static EnergyBall newEnemyShotEnergyBall(GameContext context, Position shotPosition, Entity target) throws Exception{
 		Position pos = new Position(shotPosition);
 		pos.setPosZ(GameResources.Z_SHOT);
 		EnergyBall shot = new EnergyBall();
 		shot.setPosition(pos);
 		shot.setSpeed(new Speed(-350, 0));
 		shot.setSize(new Size(25, 25)); //square AABB used by the shot group for collision	
-		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newDefault());
+		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newHoming(target, 350, 70, 1));
 		shot.setContext(context);
 		return shot;
 	}
 
 	public static EnergyTrailParticle newEnergyTrailParticle(int posX, int posY, int size, float lifeTimeSeconds, GameContext context){
 		return new EnergyTrailParticle(ParticleColorScheme.ENERGY_TRAIL, posX, posY, size, lifeTimeSeconds, context);
+	}
+
+	public static FireBall newEnemyShotFireBall(GameContext context, Position shotPosition, Entity target) throws Exception{
+		Position pos = new Position(shotPosition);
+		pos.setPosZ(GameResources.Z_SHOT);
+		FireBall shot = new FireBall();
+		shot.setPosition(pos);
+		shot.setSpeed(new Speed(-350, 0));
+		shot.setSize(new Size(25, 25)); //square AABB used by the shot group for collision
+		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newDefault());
+		shot.setContext(context);
+		return shot;
+	}
+
+	public static EnergyTrailParticle newFireTrailParticle(int posX, int posY, int size, float lifeTimeSeconds, GameContext context){
+		return new EnergyTrailParticle(ParticleColorScheme.FIRE_TRAIL, posX, posY, size, lifeTimeSeconds, context);
 	}
 
 	public static BaseEntity playerShotGun(Position position) throws Exception{	
