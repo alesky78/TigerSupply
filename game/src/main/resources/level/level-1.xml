@@ -69,7 +69,7 @@
 					<enemy enemyPrototype="energyShooter" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
 				</action>
 			</actions>
-			<completionEvent name="timed" time="4" />
+			<completionEvent name="timed" time="3" />
 		</step>
 		
 
@@ -667,9 +667,9 @@
 		</enemyPrototype>
 		<enemyPrototype name="energyShooter" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyEnergyShooter">
 			<speed x="-150" y="0" />
-			<image alias="enemy4" />
-			<scale value="1" />			
-		</enemyPrototype>
+			<image alias="enemy5" />
+			<scale value="0.6" />			
+		</enemyPrototype>			
 		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBoss">
 			<speed x="-40" y="40" />
 			<image alias="boss" />

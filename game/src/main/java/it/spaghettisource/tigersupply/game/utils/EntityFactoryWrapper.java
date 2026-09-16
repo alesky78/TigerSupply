@@ -97,8 +97,8 @@ public class EntityFactoryWrapper {
 		pos.setPosZ(GameResources.Z_SHOT);
 		EnergyBall shot = new EnergyBall();
 		shot.setPosition(pos);
-		shot.setSpeed(new Speed(-250, 0));
-		shot.setSize(new Size(30, 30));	//square AABB used by the shot group for collision
+		shot.setSpeed(new Speed(-350, 0));
+		shot.setSize(new Size(25, 25)); //square AABB used by the shot group for collision	
 		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newDefault());
 		shot.setContext(context);
 		return shot;

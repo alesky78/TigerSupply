@@ -41,6 +41,7 @@ s enemy1 image/enemy-1.png
 s enemy2 image/enemy-2.png
 s enemy3 image/enemy-3.png
 s enemy4 image/enemy-4.png
+s enemy5 image/enemy-5.png
 s boss   image/enemy-boss.png
 
 

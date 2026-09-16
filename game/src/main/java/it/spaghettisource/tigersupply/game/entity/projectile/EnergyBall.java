@@ -25,9 +25,10 @@ public class EnergyBall extends BaseEntity {
 
 	private static final float TRAIL_INTERVAL = 0.03f; // seconds between trail emissions
 	private static final float TRAIL_LIFETIME = 0.4f;  // seconds each trail pixel lives
-	private static final int PARTICLES = 5;          // number of particles emitted per trail interval
+	private static final int PARTICLES = 4;          // number of particles emitted per trail interval
 
-	private final Random random = new Random();
+	private static final Random random = new Random();
+	
 	private float trailCounter = 0;
 
 	private EntityGroupScreenBound<Entity> effectManager;
@@ -47,8 +48,9 @@ public class EnergyBall extends BaseEntity {
 				int jitterX = random.nextInt(7) - 3;
 				int jitterY = random.nextInt(diameter) - diameter / 2; // spread across the full ball height
 				int pixelSize = 3 + random.nextInt(4);
-				EnergyTrailParticle particle = EntityFactoryWrapper.newEnergyTrailParticle(
-						getXposition() + jitterX, getYposition() + jitterY, pixelSize, TRAIL_LIFETIME, context);
+				EnergyTrailParticle particle = EntityFactoryWrapper.newEnergyTrailParticle(getXposition() + jitterX, 
+																						   getYposition() + jitterY, 
+																						   pixelSize, TRAIL_LIFETIME, context);
 				effectManager.addRequest(particle);
 			}
 		}

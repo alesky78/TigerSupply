@@ -10,7 +10,7 @@ import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 public class EnergyBallCannon extends AbstractWeapon<Enemy> {
 
 	public EnergyBallCannon() {
-		reloadingTime = 1.5f;
+		reloadingTime = 1.8f;
 	}
 
 	protected void doFire(Entity target) throws Exception {
