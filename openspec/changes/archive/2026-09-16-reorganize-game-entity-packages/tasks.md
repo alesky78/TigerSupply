@@ -22,4 +22,4 @@
 ## 4. Build and runtime verification
 
 - [x] 4.1 Run `mvn compile` on the reactor and verify the `engine`, `game`, and `launcher` modules build with no errors
-- [ ] 4.2 Launch the application (`mvn -pl launcher exec:java`) and start level 1, verifying enemies, projectiles, and effects spawn correctly with no `ClassNotFoundException` at level load
+- [x] 4.2 Launch the application (`mvn -pl launcher exec:java`) and start level 1, verifying enemies, projectiles, and effects spawn correctly with no `ClassNotFoundException` at level load

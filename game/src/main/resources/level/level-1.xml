@@ -60,7 +60,18 @@
 			</actions>
 			<completionEvent name="timed" time="1" />
 		</step>
-					
+		
+				
+		<!-- HORDE: energy-ball shooter -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="energyShooter" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="4" />
+		</step>
+		
 
 		<!-- HORDE -->
 		<step>
@@ -95,7 +106,7 @@
 			</actions>
 			<completionEvent name="timed" time="3" />
 		</step>
-		
+
 		<!-- HORDE -->
 		<step>
 			<actions>
@@ -652,6 +663,11 @@
 		<enemyPrototype name="roker" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyShoterRocket">
 			<speed x="-150" y="0" />
 			<image alias="enemy3" />
+			<scale value="1" />			
+		</enemyPrototype>
+		<enemyPrototype name="energyShooter" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyEnergyShooter">
+			<speed x="-150" y="0" />
+			<image alias="enemy4" />
 			<scale value="1" />			
 		</enemyPrototype>
 		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBoss">

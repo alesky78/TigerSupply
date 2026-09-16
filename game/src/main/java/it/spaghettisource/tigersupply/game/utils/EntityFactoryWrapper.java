@@ -4,15 +4,20 @@ import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityFactory;
 import it.spaghettisource.tigersupply.engine.entity.Position;
+import it.spaghettisource.tigersupply.engine.entity.Size;
+import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
+import it.spaghettisource.tigersupply.game.entity.effect.EnergyTrailParticle;
 import it.spaghettisource.tigersupply.game.entity.enemy.EnergeticShield;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.game.entity.player.PlayerEngine;
 import it.spaghettisource.tigersupply.game.entity.projectile.EnemyRocket;
+import it.spaghettisource.tigersupply.game.entity.projectile.EnergyBall;
 import it.spaghettisource.tigersupply.game.entity.projectile.LightningBolt;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerBomb;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerRocket;
@@ -32,11 +37,11 @@ public class EntityFactoryWrapper {
 	}	
 
 	public static ExplosionParticle newExplosionParticleFire(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		return new ExplosionParticle(ExplosionParticle.TYPE_FIRE,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
+		return new ExplosionParticle(ParticleColorScheme.FIRE,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}	
 
 	public static ExplosionParticle newExplosionParticleEnergetic(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		return new ExplosionParticle(ExplosionParticle.TYPE_ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
+		return new ExplosionParticle(ParticleColorScheme.ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}		
 	
 	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityGroupScreenBound<Entity> effectManager,Position position,GameContext context) throws Exception{
@@ -86,6 +91,22 @@ public class EntityFactoryWrapper {
 		LightningBolt shot = new LightningBolt(context,shotPosition,fireTime,loadTime);
 		return shot;			
 	}		
+
+	public static EnergyBall newEnemyShotEnergyBall(GameContext context, Position shotPosition) throws Exception{
+		Position pos = new Position(shotPosition);
+		pos.setPosZ(GameResources.Z_SHOT);
+		EnergyBall shot = new EnergyBall();
+		shot.setPosition(pos);
+		shot.setSpeed(new Speed(-250, 0));
+		shot.setSize(new Size(30, 30));	//square AABB used by the shot group for collision
+		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newDefault());
+		shot.setContext(context);
+		return shot;
+	}
+
+	public static EnergyTrailParticle newEnergyTrailParticle(int posX, int posY, int size, float lifeTimeSeconds, GameContext context){
+		return new EnergyTrailParticle(ParticleColorScheme.ENERGY_TRAIL, posX, posY, size, lifeTimeSeconds, context);
+	}
 
 	public static BaseEntity playerShotGun(Position position) throws Exception{	
 		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.PLAYER_GUN);

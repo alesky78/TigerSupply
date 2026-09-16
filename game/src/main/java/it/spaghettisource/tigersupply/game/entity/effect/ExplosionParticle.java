@@ -13,89 +13,52 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 public class ExplosionParticle extends BaseEntity {
 
-	public static final int TYPE_FIRE = 0;
-	public static final int TYPE_ENERGETIC = 1;	
-	private static double PI2 = 2*Math.PI;
+	private static final double PI2 = 2*Math.PI;
 
-	private float increaseForLoop;
 	private float colorAlteration;
 	private int   size;			
-	private int   type;
+	private ParticleColorScheme scheme;
 
-	protected float spriteTimeDuration;
-	private float spriteCounter; 		
+	protected float lifeTime;
+	private float lifeCounter; 		
 
 		
-	public ExplosionParticle(int type,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		this.type = type;
-	
-		spriteTimeDuration = (float) (Math.random()*maxLifeTimeInSeconds);
-		spriteCounter = 0;
+	public ExplosionParticle(ParticleColorScheme scheme,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
+		this.scheme = scheme;
 
-		float loops = (float) (spriteTimeDuration/context.getPeriodSeconds());
+		lifeTime = Math.max(0.01f, (float) (Math.random()*maxLifeTimeInSeconds));
+		lifeCounter = 0;
 
 		colorAlteration = 1f;
-		increaseForLoop = 1 / loops;
-		size = (int) (Math.random()*maxSize);
+		size = Math.max(1, (int) (Math.random()*maxSize));
 
-		double rangle = (PI2)*Math.random();
-		double sinX = Math.sin(rangle);
-		double cosX = Math.cos(rangle);		
-		double sinY = Math.sin((PI2)*Math.random());		
-		double speedX = 0,speedY = 0;
-		if(sinX>0){
-			speedX=sinX*maxSpeed;
-			speedY=sinY*maxSpeed;
-			if(sinY>0){
-				if(speedX+speedY > maxSpeed)
-					speedY = Math.random()*maxSpeed*cosX;	
-			}else if(sinY<0){
-				if(speedX-speedY > maxSpeed)
-					speedY = Math.random()*maxSpeed*cosX;
-			}else{
-				speedY = 0;
-				speedX = maxSpeed;
-			}
-		}else if(sinX<0){
-			speedX=sinX*maxSpeed;
-			speedY=sinY*maxSpeed;
-			if(sinY>0){
-				if(-speedX+speedY > maxSpeed)
-					speedY = Math.random()*maxSpeed*cosX;	
-			}else if(sinY<0){
-				if(-speedX-speedY > maxSpeed)
-					speedY = Math.random()*maxSpeed*cosX;
-			}else{
-				speedY = 0;
-				speedX = maxSpeed;				
-			}
-		}else{
-			speedY = 0;
-			speedY = maxSpeed;
-		}
-
+		//uniform random direction on the full circle at a speed within maxSpeed
+		double angle = PI2*Math.random();
+		double r = Math.random()*maxSpeed;
+		double speedX = Math.cos(angle)*r;
+		double speedY = Math.sin(angle)*r;
 
 		speed = new Speed((int)speedX,(int)speedY);
 
-		//speed che crea un quadrato
-		//speed = new SpriteSpeed(Math.sin((PI2)*Math.random())*maxSpeed, Math.sin((PI2)*Math.random())*maxSpeed);
 		position = new Position(posX, posY,GameResources.Z_EXPLOSION);
 		try {
 			updateAlgorithm = UpdateAlgorithmFactoryWrapper.newDefault();
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	public void updateEntity(float deltaSeconds)  throws Exception  {
 		super.updateEntity(deltaSeconds);
 
-		spriteCounter+=deltaSeconds;
-		if(spriteCounter>=spriteTimeDuration){
+		lifeCounter+=deltaSeconds;
+		if(lifeCounter>=lifeTime){
 			remove = true;
 		}
 
-		//manage the reduction of the color each cycle
-		colorAlteration-=increaseForLoop;
+		//fade based on elapsed lifetime, framerate independent
+		colorAlteration = 1 - (lifeCounter / lifeTime);
 		if(colorAlteration<0){
 			colorAlteration = 0f;
 		}
@@ -105,11 +68,7 @@ public class ExplosionParticle extends BaseEntity {
 
 	public void renderEntity(Graphics2D dbg) throws Exception {
 		Color originalColor = dbg.getColor();
-		if(type==TYPE_FIRE){
-			dbg.setColor(new Color(1, colorAlteration, 0, 1));  //red to yellow			
-		}else if (type==TYPE_ENERGETIC){
-			dbg.setColor(new Color(colorAlteration,colorAlteration,1, 1));  //white to blue			
-		}
+		dbg.setColor(scheme.colorAt(colorAlteration));
 		
 		//dbg.fill3DRect(getXposition()-size/2,getYposition()-size/2,(int)(size*colorAlteration),(int)(size*colorAlteration),false);
 		
