@@ -5,7 +5,7 @@ import java.awt.Color;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 
 /** A code-rendered spherical energy projectile fired by enemies. */
-public class BallEnergy extends BallAbstract {
+public class BallEnergy extends BallTrail {
 
 	@Override
 	protected ParticleColorScheme getTrailScheme() {

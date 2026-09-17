@@ -85,7 +85,7 @@ public class SandboxCatalog {
 			return rocket;
 		}));
 		cases.add(new SandboxCase("EnemyShot default", Family.PROJECTILE,
-				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotDefault(enemyOrigin(ctx), target)));
+				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotDefault(ctx, enemyOrigin(ctx), target)));
 		cases.add(new SandboxCase("PlasmaCannon", Family.PROJECTILE,
 				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotPlasmaCannon(enemyOrigin(ctx), target)));
 		cases.add(new SandboxCase("LightningBolt", Family.PROJECTILE,

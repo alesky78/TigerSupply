@@ -21,6 +21,7 @@ import it.spaghettisource.tigersupply.game.entity.player.PlayerEngine;
 import it.spaghettisource.tigersupply.game.entity.projectile.EnemyRocket;
 import it.spaghettisource.tigersupply.game.entity.projectile.BallEnergy;
 import it.spaghettisource.tigersupply.game.entity.projectile.BallFire;
+import it.spaghettisource.tigersupply.game.entity.projectile.BallStandard;
 import it.spaghettisource.tigersupply.game.entity.projectile.LightningBolt;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerBomb;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerRocket;
@@ -76,10 +77,16 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity((int)position.getPosX(), (int)position.getPosY(),GameResources.Z_EFFECT_UNDER+1, 0, 0,1.0f, algo, sprite, PlayerEngine.class);		
 	}
 
-	public static BaseEntity newEnemyShotDefault(Position shotPosition, Entity target) throws Exception{
-		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_DEFAULT); 
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(new Position(target.getXposition(), target.getYposition(),0));		
-		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, 250, 250, 1.0f, algorithm, sprite, BaseEntity.class);
+	public static BallStandard newEnemyShotDefault(GameContext context, Position shotPosition, Entity target) throws Exception{
+		Position pos = new Position(shotPosition);
+		pos.setPosZ(GameResources.Z_SHOT);
+		BallStandard shot = new BallStandard();
+		shot.setPosition(pos);
+		shot.setSpeed(new Speed(250, 250)); //magnitude only, newGoToPoint reorients it toward the target
+		shot.setSize(new Size(12, 12)); //square AABB used by the shot group for collision
+		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newGoToPoint(new Position(target.getXposition(), target.getYposition(), 0)));
+		shot.setContext(context);
+		return shot;
 	}
 
 	public static BaseEntity newEnemyShotPlasmaCannon(Position shotPosition, Entity target) throws Exception{
