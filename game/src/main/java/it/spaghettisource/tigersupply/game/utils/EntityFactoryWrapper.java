@@ -78,13 +78,13 @@ public class EntityFactoryWrapper {
 
 	public static BaseEntity newEnemyShotDefault(Position shotPosition, Entity target) throws Exception{
 		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_DEFAULT); 
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(180, 100, new Position(target.getXposition(), target.getYposition(),0));		
-		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algorithm, sprite, BaseEntity.class);
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(new Position(target.getXposition(), target.getYposition(),0));		
+		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, 250, 250, 1.0f, algorithm, sprite, BaseEntity.class);
 	}
 
 	public static BaseEntity newEnemyShotPlasmaCannon(Position shotPosition, Entity target) throws Exception{
 		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_PLASMA_CANNON);
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(350, 45, new Position(target.getXposition(), target.getYposition(),0));
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPoint(new Position(target.getXposition(), target.getYposition(),0));
 		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -350, 0, 1.0f, algorithm, sprite, BaseEntity.class);				
 	}
 
