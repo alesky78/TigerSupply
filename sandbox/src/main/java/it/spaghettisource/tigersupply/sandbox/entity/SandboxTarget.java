@@ -18,7 +18,7 @@ import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 public class SandboxTarget extends BaseEntity {
 
 	public SandboxTarget(int posX, int posY, int sizePx) {
-		this.position = new Position(posX, posY, 0);
+		this.position = new Position(posX, posY, Integer.MAX_VALUE);
 		this.speed = new Speed(0, 0);
 		this.size = new Size(sizePx, sizePx);
 	}
