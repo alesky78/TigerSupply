@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<level>
+
+	<!-- limite attuale con questa risoluzione x=1350 y=650 -->
+	<steps>
+
+		<!-- MUSIC: start the level soundtrack -->
+		<step>
+			<actions>
+				<action type="playMusic" alias="mainTheme" loop="true" />
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+
+		<!-- BRIEFING: the debris field left by the level-1 boss hides a second contact -->
+		<step>
+			<actions>
+				<action type="showDialog" script="debris-warning" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+
+		<!-- BACKGROUND -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyBackgroundSyn" posX="1" posY="515" posZ="50" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="500" posZ="50" algorithmPrototype="default" />
+					<enemy enemyPrototype="enemyBackgroundSt" posX="1" posY="530" posZ="50" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyBackgroundRk" posX="1" posY="485" posZ="50" algorithmPrototype="default" />
+					<enemy enemyPrototype="enemyBackgroundRk" posX="1" posY="545" posZ="50" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+
+		<!-- DEBRIS FIELD: denser asteroid storm than level 1 (3 waves instead of 2, tighter cadence) -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="asteroid1" posX="1350" posY="150" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid2" posX="1350" posY="550" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid3" posX="1350" posY="250" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid4" posX="1350" posY="400" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid5" posX="1" posY="240" posZ="40" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.7" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="asteroid1" posX="900" posY="1" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid2" posX="1100" posY="690" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid3" posX="700" posY="1" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid4" posX="800" posY="690" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid5" posX="400" posY="1" posZ="40" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.7" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="asteroid1" posX="1350" posY="50" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid2" posX="1350" posY="650" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid3" posX="600" posY="1" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid4" posX="1000" posY="690" posZ="40" algorithmPrototype="default" />
+					<enemy enemyPrototype="asteroid5" posX="200" posY="1" posZ="40" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- FAST RUSH: same diagonal charge as level 1's opener, tighter cadence -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-1" posX="1350" posY="500" posZ="20" algorithmPrototype="straightBackToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.35" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-1" posX="1350" posY="500" posZ="20" algorithmPrototype="straightBackToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.35" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-1" posX="1350" posY="500" posZ="20" algorithmPrototype="straightBackToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.35" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-1" posX="1350" posY="500" posZ="20" algorithmPrototype="straightBackToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- NEW COMBO A: roker + fireBallShooter attacking together (never paired in level 1) -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="roker" posX="1350" posY="200" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="fireBallShooter" posX="1350" posY="450" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="2" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="fireBallShooter" posX="1350" posY="250" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="roker" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- BRIEFING: the debris hides a coordinated squadron -->
+		<step>
+			<actions>
+				<action type="showDialog" script="squadron-warning" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+
+		<!-- NEW COMBO B: homing enemyShield escorted by standard-2 -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyShield" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="standard-2" posX="1350" posY="150" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="standard-2" posX="1350" posY="550" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyShield" posX="1350" posY="270" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="enemyShield" posX="1350" posY="430" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="standard-2" posX="1350" posY="100" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="standard-2" posX="1350" posY="600" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- SWARM REMIX: pathUp/pathDown + sinusoidal + backToFront waves, faster cadence than level 1 -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="sinusoidal" posX="1350" posY="350" posZ="20" algorithmPrototype="pathUp" />
+					<enemy enemyPrototype="sinusoidal" posX="1350" posY="350" posZ="20" algorithmPrototype="pathDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.7" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-2" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />
+					<enemy enemyPrototype="standard-2" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.7" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="sinusoidal" posX="1350" posY="350" posZ="20" algorithmPrototype="pathUp" />
+					<enemy enemyPrototype="sinusoidal" posX="1350" posY="350" posZ="20" algorithmPrototype="pathDown" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="0.7" />
+		</step>
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-2" posX="0" posY="150" posZ="20" algorithmPrototype="backToFrontUp" />
+					<enemy enemyPrototype="standard-2" posX="0" posY="550" posZ="20" algorithmPrototype="backToFrontDown" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- NEW COMBO C: full mix in a single step, never combined this densely in level 1 -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="standard-2" posX="1350" posY="80" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="sinusoidal" posX="1350" posY="200" posZ="20" algorithmPrototype="sinusoidal" />
+					<enemy enemyPrototype="roker" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="fireBallShooter" posX="1350" posY="500" posZ="20" algorithmPrototype="default" />
+					<enemy enemyPrototype="enemyShield" posX="1350" posY="620" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="cleared" />
+		</step>
+
+		<!-- BACKGROUND -->
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="enemyBackgroundRk" posX="1" posY="140" posZ="50" algorithmPrototype="default" />
+					<enemy enemyPrototype="enemyBackgroundRk" posX="1" posY="190" posZ="50" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="timed" time="1" />
+		</step>
+
+		<!-- BOSS + BRIEFING: the sister ship of the level-1 boss arrives -->
+		<step>
+			<actions>
+				<action type="stopMusic" alias="mainTheme" />
+				<action type="playMusic" alias="bossFight" loop="true" />
+				<action type="showDialog" script="sister-ship-contact" />
+			</actions>
+			<completionEvent name="dialogClosed" />
+		</step>
+
+		<step>
+			<actions>
+				<action type="spawnHorde">
+					<enemy enemyPrototype="boss" posX="1350" posY="350" posZ="20" algorithmPrototype="default" />
+				</action>
+			</actions>
+			<completionEvent name="bossSpawned" />
+		</step>
+
+	</steps>
+
+	<enemiesPrototype>
+		<enemyPrototype name="enemyBackgroundSt" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
+			<speed x="120" y="0" />
+			<image alias="enemy1" />
+			<scale value="0.7" />
+		</enemyPrototype>
+		<enemyPrototype name="enemyBackgroundSyn" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
+			<speed x="120" y="0" />
+			<image alias="enemy2" />
+			<scale value="0.7" />
+		</enemyPrototype>
+		<enemyPrototype name="enemyBackgroundRk" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBackGround">
+			<speed x="120" y="0" />
+			<image alias="enemy3" />
+			<scale value="0.5" />
+		</enemyPrototype>
+		<enemyPrototype name="asteroid1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
+			<speed x="-40" y="11" />
+			<image alias="asteroid1" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="asteroid2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
+			<speed x="-50" y="-12" />
+			<image alias="asteroid2" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="asteroid3" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
+			<speed x="-30" y="14" />
+			<image alias="asteroid3" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="asteroid4" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
+			<speed x="-34" y="-10" />
+			<image alias="asteroid4" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="asteroid5" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.Asteroid">
+			<speed x="70" y="12" />
+			<image alias="asteroid1" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="standard-1" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
+			<speed x="-200" y="-200" />
+			<image alias="enemy1" />
+			<scale value="1.1" />
+		</enemyPrototype>
+		<enemyPrototype name="standard-2" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
+			<speed x="-200" y="0" />
+			<image alias="enemy1" />
+			<scale value="1.1" />
+		</enemyPrototype>
+		<enemyPrototype name="sinusoidal" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyStandard">
+			<speed x="-200" y="-30" />
+			<image alias="enemy2" />
+			<scale value="1.1" />
+		</enemyPrototype>
+		<enemyPrototype name="enemyShield" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyShield">
+			<speed x="-200" y="0" />
+			<image alias="enemy4" />
+			<scale value="1.1" />
+		</enemyPrototype>
+		<enemyPrototype name="roker" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyShoterRocket">
+			<speed x="-150" y="0" />
+			<image alias="enemy3" />
+			<scale value="1" />
+		</enemyPrototype>
+		<enemyPrototype name="fireBallShooter" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyFireBallShooter">
+			<speed x="-150" y="0" />
+			<image alias="enemy5" />
+			<scale value="0.6" />
+		</enemyPrototype>
+		<enemyPrototype name="boss" type="imageSingleSprite" class="it.spaghettisource.tigersupply.game.entity.enemy.EnemyBoss">
+			<speed x="-40" y="40" />
+			<image alias="boss" />
+			<scale value="1.4" />
+		</enemyPrototype>
+	</enemiesPrototype>
+
+	<algorithmsPrototype>
+		<algorithmPrototype name="default" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmDefault" />
+
+		<algorithmPrototype name="sinusoidal" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmSinusoidal" >
+			<algorithmProperties>
+				<property name="delta" value="30" />
+				<property name="increment" value="45.0" />
+			</algorithmProperties>
+		</algorithmPrototype>
+
+		<algorithmPrototype name="pathUp" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmLinearPath">
+			<algorithmProperties>
+				<listPoints name="listpoints">
+					<point posX="685" posY="0"/>
+					<point posX="1300" posY="300"/>
+					<point posX="-100" posY="300"/>
+				</listPoints>
+			</algorithmProperties>
+		</algorithmPrototype>
+		<algorithmPrototype name="pathDown" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmLinearPath">
+			<algorithmProperties>
+				<listPoints name="listpoints">
+					<point posX="685" posY="675"/>
+					<point posX="1300" posY="400"/>
+					<point posX="-100" posY="400"/>
+				</listPoints>
+			</algorithmProperties>
+		</algorithmPrototype>
+		<algorithmPrototype name="backToFrontUp" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmLinearPath">
+			<algorithmProperties>
+				<listPoints name="listpoints">
+					<point posX="0" posY="100"/>
+					<point posX="1200" posY="200"/>
+					<point posX="1300" posY="375"/>
+					<point posX="1100" posY="550"/>
+					<point posX="-10" posY="450"/>
+				</listPoints>
+			</algorithmProperties>
+		</algorithmPrototype>
+		<algorithmPrototype name="backToFrontDown" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmLinearPath">
+			<algorithmProperties>
+				<listPoints name="listpoints">
+					<point posX="0" posY="550"/>
+					<point posX="1200" posY="450"/>
+					<point posX="1300" posY="275"/>
+					<point posX="1100" posY="150"/>
+					<point posX="-10" posY="250"/>
+				</listPoints>
+			</algorithmProperties>
+		</algorithmPrototype>
+		<algorithmPrototype name="straightBackToFrontDown" class="it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmLinearPath">
+			<algorithmProperties>
+				<listPoints name="listpoints">
+					<point posX="1000" posY="500"/>
+					<point posX="1000" posY="250"/>
+					<point posX="500" posY="250"/>
+					<point posX="-10" posY="650"/>
+				</listPoints>
+			</algorithmProperties>
+		</algorithmPrototype>
+	</algorithmsPrototype>
+
+	<scripts>
+		<script name="debris-warning">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Izumi" portrait="portrait_mechanic_1_calm">
+					<line>Akame, i detriti di quella nave intasano i sensori...</line>
+					<line>Aspetta... c'e' una seconda firma energetica. Non era sola!</line>
+				</message>
+				<message speaker="Akame" portrait="portrait_pilot_focused">
+					<line>Ricevuto. Se hanno mandato un'altra nave,</line>
+					<line>la aspetto a braccia aperte.</line>					
+				</message>
+			</messages>
+		</script>
+		<script name="squadron-warning">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Izumi" portrait="portrait_mechanic_1_furious">
+					<line>Akame, non sono unita' isolate, si muovono in formazione!</line>
+				</message>
+				<message speaker="Akame" portrait="portrait_pilot_calm">
+					<line>Li vedo. Cambio schema di volo, tenete il canale aperto.</line>
+				</message>
+			</messages>
+		</script>
+		<script name="sister-ship-contact">
+			<window posX="100" posY="440" width="1160" height="180" portraitWidth="160" charDelay="0.04" />
+			<messages>
+				<message speaker="Izumi" portrait="portrait_mechanic_1_focus">
+					<line>Akame... e' la nave gemella. Stessa energia,</line>
+					<line> stessa potenza di fuoco!</line>					
+				</message>
+				<message speaker="Akame" portrait="portrait_pilot_angry">
+					<line>Allora ricevera' lo stesso trattamento del suo predecessore.</line>
+					<line>Ingaggio!</line>
+				</message>
+			</messages>
+		</script>
+	</scripts>
+
+</level>

@@ -32,7 +32,7 @@ public class SceneFlowController {
 
 
 	private Map<String, String> levelConfiguration = new HashMap<String, String>();
-	private int numberLevel = 1;
+	private int numberLevel = 2;
 	private int actualLevel = 0;	
 
 	private SceneFlowController(TigerSupplySceneHost sceneHost) throws Exception {
@@ -42,6 +42,7 @@ public class SceneFlowController {
 
 		//hire put all the levels levels
 		levelConfiguration.put("1", "level/level-1.xml");
+		levelConfiguration.put("2", "level/level-2.xml");
 
 	}
 

@@ -5,11 +5,12 @@ import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory
 
 public class Asteroid extends Enemy {	
 
+
 	float angle = 0;
 
 	public Asteroid(){
 		super();
-		life = 20;	
+		life = 10;	
 		hitProfile = ExplosionProfileFactory.asteroidHit();
 		deathProfile = ExplosionProfileFactory.asteroidDeath();
 	}	
