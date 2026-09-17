@@ -10,6 +10,7 @@ import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.entity.effect.EnergyTrailParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 
 /**
@@ -57,7 +58,7 @@ public class FireBall extends BaseEntity {
 				int jitterX = random.nextInt(7) - 3;
 				int jitterY = random.nextInt(diameter) - diameter / 2; // spread across the full ball height
 				int pixelSize = 3 + random.nextInt(4);
-				EnergyTrailParticle particle = EntityFactoryWrapper.newFireTrailParticle(getXposition() + jitterX,
+				EnergyTrailParticle particle = new EnergyTrailParticle(ParticleColorScheme.FIRE_TRAIL, getXposition() + jitterX,
 																					   getYposition() + jitterY,
 																					   pixelSize, TRAIL_LIFETIME, context);
 				effectManager.addRequest(particle);

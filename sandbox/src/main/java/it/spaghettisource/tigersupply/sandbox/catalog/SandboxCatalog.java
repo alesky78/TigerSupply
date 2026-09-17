@@ -12,7 +12,10 @@ import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactory
 import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
+import it.spaghettisource.tigersupply.game.entity.effect.EnergyTrailParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionParticle;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilder;
 import it.spaghettisource.tigersupply.game.scene.builder.EnemyDataBuilderSaxXml;
 import it.spaghettisource.tigersupply.game.scene.builder.LevelDataRepository;
@@ -146,9 +149,9 @@ public class SandboxCatalog {
 
 	private void buildEffects() {
 		cases.add(new SandboxCase("ExplosionParticle (fire)", Family.EFFECT, (ctx, m, target) ->
-				EntityFactoryWrapper.newExplosionParticleFire(centerX(ctx), centerY(ctx), 60, 120, 0.8f, ctx)));
+				new ExplosionParticle(ParticleColorScheme.FIRE, centerX(ctx), centerY(ctx), 60, 120, 0.8f, ctx)));
 		cases.add(new SandboxCase("ExplosionParticle (energetic)", Family.EFFECT, (ctx, m, target) ->
-				EntityFactoryWrapper.newExplosionParticleEnergetic(centerX(ctx), centerY(ctx), 60, 120, 0.8f, ctx)));
+				new ExplosionParticle(ParticleColorScheme.ENERGETIC, centerX(ctx), centerY(ctx), 60, 120, 0.8f, ctx)));
 		cases.add(new SandboxCase("Explosion (enemy hit)", Family.EFFECT, (ctx, m, target) ->
 				EntityFactoryWrapper.newTimedExplosion(ExplosionProfileFactory.standardHit(), centerX(ctx), centerY(ctx), ExplosionProfileFactory.standardHit().getParticleNum(), 1f, m.effect(), ctx)));
 		cases.add(new SandboxCase("Explosion (enemy death)", Family.EFFECT, (ctx, m, target) ->
@@ -156,7 +159,9 @@ public class SandboxCatalog {
 		cases.add(new SandboxCase("Explosion (boss agony, follows target)", Family.EFFECT, (ctx, m, target) ->
 				EntityFactoryWrapper.newFollowingExplosion(ExplosionProfileFactory.bossAgony(), target, 200, 2f, m.effect(), ctx)));
 		cases.add(new SandboxCase("EnergyTrailParticle", Family.EFFECT, (ctx, m, target) ->
-				EntityFactoryWrapper.newEnergyTrailParticle(centerX(ctx), centerY(ctx), 10, 0.8f, ctx)));
+				new EnergyTrailParticle(ParticleColorScheme.ENERGY_TRAIL, centerX(ctx), centerY(ctx), 10, 0.8f, ctx)));
+		cases.add(new SandboxCase("FireTrailParticle", Family.EFFECT, (ctx, m, target) ->
+				new EnergyTrailParticle(ParticleColorScheme.FIRE_TRAIL, centerX(ctx), centerY(ctx), 10, 0.8f, ctx)));
 		cases.add(new SandboxCase("Smoke", Family.EFFECT, (ctx, m, target) ->
 				EntityFactoryWrapper.newSmoke(new Position(centerX(ctx), centerY(ctx), 0))));
 		cases.add(new SandboxCase("EnergeticShield (follows target)", Family.EFFECT, (ctx, m, target) ->

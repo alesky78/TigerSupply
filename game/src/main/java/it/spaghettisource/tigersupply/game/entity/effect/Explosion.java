@@ -10,7 +10,6 @@ import it.spaghettisource.tigersupply.engine.entity.Size;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithmFactoryWrapper;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
-import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
@@ -91,7 +90,7 @@ public class Explosion extends BaseEntity {
 			originY += (int) (Math.random() * jitterY);
 		}
 		for (int i = 0; i < perEmit; i++) {
-			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticle(
+			effectManager.addRequest(new ExplosionParticle(
 					profile.getScheme(), originX, originY,
 					profile.getMaxSize(), profile.getMaxSpeed(), profile.getMaxLifeTime(), context));
 		}

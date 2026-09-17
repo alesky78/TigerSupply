@@ -39,18 +39,6 @@ public class EntityFactoryWrapper {
 		return EntityFactory.getInstance().createEntity(0, pHeight/2,GameResources.Z_PLAYER, 0, 0,1.0f, null, sprite, Player.class);
 	}	
 
-	public static ExplosionParticle newExplosionParticleFire(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		return new ExplosionParticle(ParticleColorScheme.FIRE,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
-	}	
-
-	public static ExplosionParticle newExplosionParticleEnergetic(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		return new ExplosionParticle(ParticleColorScheme.ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
-	}		
-
-	public static ExplosionParticle newExplosionParticle(ParticleColorScheme scheme,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
-		return new ExplosionParticle(scheme,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
-	}
-
 	public static Explosion newExplosion(ExplosionProfile profile,int posX,int posY,EntityGroupScreenBound<Entity> effectManager,GameContext context){
 		Explosion explosion = new Explosion(profile, profile.getParticleNum(), -1f, -1f, null, effectManager, context);
 		explosion.setPosition(new Position(posX, posY, GameResources.Z_EXPLOSION));
@@ -130,10 +118,6 @@ public class EntityFactoryWrapper {
 		return shot;
 	}
 
-	public static EnergyTrailParticle newEnergyTrailParticle(int posX, int posY, int size, float lifeTimeSeconds, GameContext context){
-		return new EnergyTrailParticle(ParticleColorScheme.ENERGY_TRAIL, posX, posY, size, lifeTimeSeconds, context);
-	}
-
 	public static FireBall newEnemyShotFireBall(GameContext context, Position shotPosition, Entity target) throws Exception{
 		Position pos = new Position(shotPosition);
 		pos.setPosZ(GameResources.Z_SHOT);
@@ -144,10 +128,6 @@ public class EntityFactoryWrapper {
 		shot.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newDefault());
 		shot.setContext(context);
 		return shot;
-	}
-
-	public static EnergyTrailParticle newFireTrailParticle(int posX, int posY, int size, float lifeTimeSeconds, GameContext context){
-		return new EnergyTrailParticle(ParticleColorScheme.FIRE_TRAIL, posX, posY, size, lifeTimeSeconds, context);
 	}
 
 	public static BaseEntity playerShotGun(Position position) throws Exception{	

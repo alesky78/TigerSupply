@@ -6,7 +6,8 @@ import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.engine.font.repository.FontRepositoryManager;
 import it.spaghettisource.tigersupply.game.control.SceneFlowController;
-import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 import java.awt.Color;
@@ -45,7 +46,7 @@ public class GameOverScene extends AbstractScene {
 	
 	protected void addExplosionToManager(){
 		for (int i = 0; i < particleNum; i++) {					
-			spriteManger.addEntityToBeManaged(EntityFactoryWrapper.newExplosionParticleEnergetic(context.getScreenWidth()/2, context.getScreenHeight()/2, particleDeathMaxSize, particleDeathMaxSpeed, particleDeathMaxLifeTime,context));			
+			spriteManger.addEntityToBeManaged(new ExplosionParticle(ParticleColorScheme.ENERGETIC, context.getScreenWidth()/2, context.getScreenHeight()/2, particleDeathMaxSize, particleDeathMaxSpeed, particleDeathMaxLifeTime,context));			
 		}	
 	}	
 	
