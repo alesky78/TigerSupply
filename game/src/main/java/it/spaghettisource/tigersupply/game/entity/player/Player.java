@@ -7,9 +7,7 @@ import java.util.List;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfile;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
-import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 
-import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
 import it.spaghettisource.tigersupply.engine.entity.logic.UpdateAlgorithm;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
@@ -32,7 +30,6 @@ public class Player extends BaseEntity {
 	private EntityGroupScreenBound<Entity> effectManager;	
 
 	private boolean shotRequest = false;	
-	private float smokeCounter = 0;	
 
 	//bug left right, don't set 0 speed if one is pressed
 	private boolean left  	=false;
@@ -40,8 +37,7 @@ public class Player extends BaseEntity {
 	private boolean up  	=false;	
 	private boolean down  	=false;	
 
-	//used to create the first time the engine sprite
-	boolean engineCreated = false;
+	private PlayerEngine engine;
 
 
 	protected List<Weapon<Player>> weapons = new ArrayList<Weapon<Player>>(); 
@@ -171,9 +167,8 @@ public class Player extends BaseEntity {
 
 	public void updateEntity(float deltaSeconds) throws Exception {
 		
-		if(!engineCreated){	//only first time
+		if(engine == null){	//only first time
 			createEngineSpriteAndLinkToPlayer();
-			engineCreated = true;
 		}
 
 		if(initAnimation){	//only to enter in the level and when destroyed
@@ -193,15 +188,7 @@ public class Player extends BaseEntity {
 		adjustSpeed(deltaSeconds);
 		
 		tryToShot(deltaSeconds);				
-		
-		smokeCounter+=deltaSeconds;
-		if(smokeCounter >deltaSeconds*3 && right){	//smoke only if goes front
-			smokeCounter = 0;
-			Position smokePosition = new Position(position);
-			smokePosition.increaseX(-size.getHalfWidth()-6);
-			Smoke smokeEffect = EntityFactoryWrapper.newSmoke(smokePosition);
-			effectManager.addRequest(smokeEffect);	
-		}
+		engine.setThrustActive(right);
 	}	
 
 	/**
@@ -258,14 +245,14 @@ public class Player extends BaseEntity {
 
 
 	private void createEngineSpriteAndLinkToPlayer() {
-		Entity engineSprite = null;
 		try {
 			UpdateAlgorithm algo = UpdateAlgorithmFactoryWrapper.newCopyPosition((int)(-1-size.getHalfWidth()), 0, position);
-			engineSprite = EntityFactoryWrapper.newEnginePlayer(position, algo, context.getPeriodMilliseconds());
+			engine = EntityFactoryWrapper.newEnginePlayer(position, algo, context.getPeriodMilliseconds());
+			engine.setEffectManager(effectManager);
+			effectManager.addRequest(engine);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		effectManager.addRequest(engineSprite);
 	}	
 	
 	

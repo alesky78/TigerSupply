@@ -43,6 +43,11 @@ so that a family of any length remains fully reachable within the fixed window, 
 position indicator of the highlighted item within the family (for example `3/11`). Every catalogued
 entity SHALL be selectable and launchable regardless of how many entities the catalog contains.
 
+The effect family SHALL include explosion cases that launch a complete explosion burst — not merely
+a single explosion particle — so that an explosion can be observed and studied in isolation. These
+cases SHALL cover at least a one-shot burst and a timed following burst, wired to the sandbox effect
+manager so the emitted particles render.
+
 #### Scenario: Browsing the catalog
 
 - **WHEN** the menu is shown
@@ -65,6 +70,11 @@ entity SHALL be selectable and launchable regardless of how many entities the ca
 
 - **WHEN** the user moves the cursor to an entry in the item pane and confirms the selection
 - **THEN** the sandbox switches to running that entity in isolation
+
+#### Scenario: Launching a full explosion from the effect family
+
+- **WHEN** the user launches an explosion case from the effect family
+- **THEN** the complete burst of particles is emitted and animates, rather than a single particle
 
 ### Requirement: The catalog covers all three entity families
 
