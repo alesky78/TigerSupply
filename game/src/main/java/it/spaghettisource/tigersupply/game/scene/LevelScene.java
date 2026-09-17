@@ -13,6 +13,7 @@ import java.util.List;
 
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.background.BackGround;
+import it.spaghettisource.tigersupply.engine.background.StarBackGround;
 import it.spaghettisource.tigersupply.engine.background.ScrollingBackGroundTiledImage;
 import it.spaghettisource.tigersupply.engine.background.TraversingBackGroundFitImage;
 import it.spaghettisource.tigersupply.engine.background.ParallaxBackGround;
@@ -114,7 +115,8 @@ public class LevelScene extends AbstractScene {
 		//px.addBackGround(new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_space"), 0.2f, pWidth, pHeight,true)); 
 		px.addBackGround(new ScrollingBackGroundTiledImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );
 		px.addBackGround(new TraversingBackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_planet"), 10f, pWidth, pHeight,true));		
-		backGround = px;		
+		backGround = px;
+		//backGround = new StarBackGround(context, 0.1f);
 
 	}
 
