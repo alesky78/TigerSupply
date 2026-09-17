@@ -111,12 +111,12 @@ public class LevelScene extends AbstractScene {
 		collisionDetectorPlayerShotVsEnemy = new CollisionDetector(playerShootManager, enemyManager);
 
 		//TODO il backGround deve essere configurabile cosi e statico in questo costruttore e non si puo' generalizzare 
-		ParallaxBackGround px = new ParallaxBackGround();				
+		//ParallaxBackGround px = new ParallaxBackGround();				
 		//px.addBackGround(new BackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_space"), 0.2f, pWidth, pHeight,true)); 
-		px.addBackGround(new ScrollingBackGroundTiledImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );
-		px.addBackGround(new TraversingBackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_planet"), 10f, pWidth, pHeight,true));		
-		backGround = px;
-		//backGround = new StarBackGround(context, 0.1f);
+		//px.addBackGround(new ScrollingBackGroundTiledImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_texture_space"),10f, pWidth, pHeight,true) );
+		//px.addBackGround(new TraversingBackGroundFitImage(ImageRepositoryManager.getInstance().getSingleImage("bcgr_planet"), 10f, pWidth, pHeight,true));		
+		//backGround = px;
+		backGround = new StarBackGround(context, 0.1f);
 
 	}
 

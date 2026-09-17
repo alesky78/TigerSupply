@@ -37,15 +37,18 @@ public class StarEntity extends AbstractEntity {
 		//size 0 -> tiny far star, 2 -> big close star
 		radius = random.nextInt(3);
 
-		//parallax: bigger stars are "closer" so they scroll faster
-		int parallaxSpeed = -220 - radius * 150 - random.nextInt(80);
+		//parallax: bigger stars are "closer" so they scroll faster, but must stay well below the
+		//slowest enemy speed (level-1.xml enemies range ~30..200) or the background reads as
+		//foreground and enemies look like they are moving in slow motion
+		int parallaxSpeed = -15 - radius * 20 - random.nextInt(15);
 		speed = new Speed(parallaxSpeed, 0);
 
 		position = new Position(screenWidth, random.nextInt(screenHeight), 0);
 
 		tint = TINTS[random.nextInt(TINTS.length)];
-		baseBrightness = 150 + random.nextInt(106);		//150..255
-		twinkleRange = 40 + random.nextInt(60);			//40..99
+		//kept dim/subtle so stars don't compete with bullets/enemies for the player's attention
+		baseBrightness = 70 + random.nextInt(70);			//70..139
+		twinkleRange = 20 + random.nextInt(30);			//20..49
 		twinkleSpeed = 2f + random.nextFloat() * 4f;	//2..6 rad/s
 		twinklePhase = random.nextFloat() * (float) (Math.PI * 2);
 
