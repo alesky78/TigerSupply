@@ -48,7 +48,8 @@ public class LightningBolt extends BaseEntity {
 
 	private int[] 	xPoint;
 	private int[] 	yPoint;
-	private int		points;
+	private int		maxPoints;		//array capacity, sized on screen width since the boss can still move before/while firing
+	private int		points;			//points actually used this frame, recomputed so the bolt always reaches the screen edge
 	private int		pointsFrequency;
 	private int		pointsOffset;		
 
@@ -66,10 +67,10 @@ public class LightningBolt extends BaseEntity {
 
 		random = new Random();
 		pointsFrequency = 25;
-		points = (int) (position.getPosX()/pointsFrequency)+2;
 		pointsOffset = 5;
-		xPoint = new int[points]; 
-		yPoint = new int[points];		
+		maxPoints = (int) (context.getScreenWidth()/pointsFrequency)+2;
+		xPoint = new int[maxPoints]; 
+		yPoint = new int[maxPoints];		
 
 		statusWeapon = 0;	//preparation of the bolt
 
@@ -92,6 +93,10 @@ public class LightningBolt extends BaseEntity {
 				sizeLoadingBall = sizeMaxLoadingBall;
 
 		}else{
+			//recomputed every tick: the boss may still be moving, so the reach must track its current X
+			//clamped to [2, maxPoints] so a negative/off-screen X can never yield an empty polyline
+			int reachX = (int) Math.max(0, position.getPosX());
+			points = Math.max(2, Math.min(maxPoints, (reachX/pointsFrequency)+2));
 			xPoint[0] = (int) position.getPosX();
 			yPoint[0] = (int) position.getPosY();		
 			for (int i = 1; i < points; i++) {
@@ -126,6 +131,11 @@ public class LightningBolt extends BaseEntity {
 					(int) glowSize, (int) glowSize);
 			
 		}else{
+
+			//first render after the loading->shot transition can happen before updateEntity ever set points
+			if(points < 2){
+				return;
+			}
 
 			Color originalColor = dbg.getColor();
 			Stroke originalStroke = dbg.getStroke();
