@@ -258,22 +258,22 @@ public class Player extends BaseEntity {
 	
 
 	public void KeyboardPressed(KeyEvent event){
-		if(event.getKeyCode() == KeyEvent.VK_I){//up
+		if(event.getKeyCode() == KeyEvent.VK_UP){//up
 			speed.setSpeedY(-maxSpeedY);
 			up = true;
 			((ImagePlayerCenterControllerSprite)sprite).goToUpAnimation();			
 		}
-		if(event.getKeyCode() == KeyEvent.VK_K){//down
+		if(event.getKeyCode() == KeyEvent.VK_DOWN){//down
 			speed.setSpeedY(maxSpeedY);
 			down = true;
 			((ImagePlayerCenterControllerSprite)sprite).goToDownAnimation();			
 		}	
 		if(!initAnimation){	
-			if(event.getKeyCode() == KeyEvent.VK_J){//left
+			if(event.getKeyCode() == KeyEvent.VK_LEFT){//left
 				speed.setSpeedX(-maxSpeedX);
 				left = true;
 			}
-			if(event.getKeyCode() == KeyEvent.VK_L){//right
+			if(event.getKeyCode() == KeyEvent.VK_RIGHT){//right
 				speed.setSpeedX(maxSpeedX);
 				right = true;
 			}
@@ -286,20 +286,20 @@ public class Player extends BaseEntity {
 
 	public void KeyboardReleased(KeyEvent event){
 		
-		if(event.getKeyCode() == KeyEvent.VK_I){//up
+		if(event.getKeyCode() == KeyEvent.VK_UP){//up
 			up = false;
 			((ImagePlayerCenterControllerSprite)sprite).goToCentralAnimation();			
 		}
-		if(event.getKeyCode() == KeyEvent.VK_K){//down
+		if(event.getKeyCode() == KeyEvent.VK_DOWN){//down
 			down = false;
 			((ImagePlayerCenterControllerSprite)sprite).goToCentralAnimation();			
 		}
 
 		if(!initAnimation){  // it block only left and right
-			if(event.getKeyCode() == KeyEvent.VK_J){//left
+			if(event.getKeyCode() == KeyEvent.VK_LEFT){//left
 				left = false;			
 			}
-			if(event.getKeyCode() == KeyEvent.VK_L){//right
+			if(event.getKeyCode() == KeyEvent.VK_RIGHT){//right
 				right = false;
 			}
 			if(event.getKeyCode() == KeyEvent.VK_SPACE ){
