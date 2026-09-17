@@ -3,7 +3,7 @@ package it.spaghettisource.tigersupply.game.weapon.enemy;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
-import it.spaghettisource.tigersupply.game.entity.projectile.EnergyBall;
+import it.spaghettisource.tigersupply.game.entity.projectile.BallEnergy;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
 import it.spaghettisource.tigersupply.game.weapon.AbstractWeapon;
 
@@ -15,7 +15,7 @@ public class EnergyBallCannon extends AbstractWeapon<Enemy> {
 
 	protected void doFire(Entity target) throws Exception {
 		Position shotPosition = new Position(owner.getPosition());
-		EnergyBall ball = EntityFactoryWrapper.newEnemyShotEnergyBall(owner.getContext(), shotPosition,target);
+		BallEnergy ball = EntityFactoryWrapper.newEnemyShotEnergyBall(owner.getContext(), shotPosition,target);
 		ball.setEffectManager(owner.getEffectManager());
 		owner.getShotManager().addRequest(ball);
 	}

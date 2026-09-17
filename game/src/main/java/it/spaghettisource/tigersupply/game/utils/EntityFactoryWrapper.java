@@ -19,8 +19,8 @@ import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 import it.spaghettisource.tigersupply.game.entity.player.Player;
 import it.spaghettisource.tigersupply.game.entity.player.PlayerEngine;
 import it.spaghettisource.tigersupply.game.entity.projectile.EnemyRocket;
-import it.spaghettisource.tigersupply.game.entity.projectile.EnergyBall;
-import it.spaghettisource.tigersupply.game.entity.projectile.FireBall;
+import it.spaghettisource.tigersupply.game.entity.projectile.BallEnergy;
+import it.spaghettisource.tigersupply.game.entity.projectile.BallFire;
 import it.spaghettisource.tigersupply.game.entity.projectile.LightningBolt;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerBomb;
 import it.spaghettisource.tigersupply.game.entity.projectile.PlayerRocket;
@@ -106,10 +106,10 @@ public class EntityFactoryWrapper {
 		return shot;			
 	}		
 
-	public static EnergyBall newEnemyShotEnergyBall(GameContext context, Position shotPosition, Entity target) throws Exception{
+	public static BallEnergy newEnemyShotEnergyBall(GameContext context, Position shotPosition, Entity target) throws Exception{
 		Position pos = new Position(shotPosition);
 		pos.setPosZ(GameResources.Z_SHOT);
-		EnergyBall shot = new EnergyBall();
+		BallEnergy shot = new BallEnergy();
 		shot.setPosition(pos);
 		shot.setSpeed(new Speed(-350, 0));
 		shot.setSize(new Size(25, 25)); //square AABB used by the shot group for collision	
@@ -118,10 +118,10 @@ public class EntityFactoryWrapper {
 		return shot;
 	}
 
-	public static FireBall newEnemyShotFireBall(GameContext context, Position shotPosition, Entity target) throws Exception{
+	public static BallFire newEnemyShotFireBall(GameContext context, Position shotPosition, Entity target) throws Exception{
 		Position pos = new Position(shotPosition);
 		pos.setPosZ(GameResources.Z_SHOT);
-		FireBall shot = new FireBall();
+		BallFire shot = new BallFire();
 		shot.setPosition(pos);
 		shot.setSpeed(new Speed(-350, 0));
 		shot.setSize(new Size(25, 25)); //square AABB used by the shot group for collision
