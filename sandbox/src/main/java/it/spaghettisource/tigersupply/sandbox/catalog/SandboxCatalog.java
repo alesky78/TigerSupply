@@ -13,6 +13,7 @@ import it.spaghettisource.tigersupply.engine.sprite.Sprite;
 import it.spaghettisource.tigersupply.engine.sprite.SpriteFactory;
 import it.spaghettisource.tigersupply.game.entity.enemy.Enemy;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleFadeSquare;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleTrail;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleBurst;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
@@ -162,6 +163,10 @@ public class SandboxCatalog {
 				new ParticleFadeSquare(ParticleColorScheme.ENERGY_TRAIL, centerX(ctx), centerY(ctx), 10, 0.8f, ctx)));
 		cases.add(new SandboxCase("ParticleFadeSquare (fire)", Family.EFFECT, (ctx, m, target) ->
 				new ParticleFadeSquare(ParticleColorScheme.FIRE_TRAIL, centerX(ctx), centerY(ctx), 10, 0.8f, ctx)));
+		cases.add(new SandboxCase("ParticleTrail (ember)", Family.EFFECT, (ctx, m, target) ->
+				new ParticleTrail(ParticleColorScheme.EMBER, centerX(ctx), centerY(ctx), 12, -120, 0, 0.2f, ctx)));
+		cases.add(new SandboxCase("ParticleTrail (energy)", Family.EFFECT, (ctx, m, target) ->
+				new ParticleTrail(ParticleColorScheme.ENERGY_TRAIL, centerX(ctx), centerY(ctx), 12, -220, 0, 0.35f, ctx)));
 		cases.add(new SandboxCase("Smoke", Family.EFFECT, (ctx, m, target) ->
 				EntityFactoryWrapper.newSmoke(new Position(centerX(ctx), centerY(ctx), 0))));
 		cases.add(new SandboxCase("EnergeticShield (follows target)", Family.EFFECT, (ctx, m, target) ->

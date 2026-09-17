@@ -39,6 +39,19 @@ public enum ParticleColorScheme {
 		public Color colorAt(float t) {
 			return new Color(1f, 0.5f, 0.1f, t);
 		}
+	},
+
+	/**
+	 * Glowing ember cooling into ash: hot red at full intensity, decaying toward grey while its
+	 * alpha fades to zero. Suited to a smoky exhaust trail that starts hot and cools as it dissipates.
+	 */
+	EMBER {
+		public Color colorAt(float t) {
+			float r = 0.5f + 0.5f * t;   //1.0 (hot red) -> 0.5 (grey)
+			float g = 0.5f - 0.2f * t;   //0.3 -> 0.5
+			float b = 0.5f - 0.5f * t;   //0.0 -> 0.5
+			return new Color(r, g, b, t);
+		}
 	};
 
 	/**
