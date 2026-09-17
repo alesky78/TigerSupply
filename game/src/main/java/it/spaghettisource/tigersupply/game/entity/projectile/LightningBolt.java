@@ -1,7 +1,10 @@
 package it.spaghettisource.tigersupply.game.entity.projectile;
 
 import it.spaghettisource.tigersupply.engine.entity.Entity;
+import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleConverge;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -31,6 +34,18 @@ public class LightningBolt extends BaseEntity {
 	private static final Color ENERGY_GLOW = new Color(0, 90, 160, 80);
 	private static final float LOADING_GLOW_FACTOR = 1.5f;
 
+	//charging particles that stream in from outside and feed the loading ball
+	private static final int   LOADING_BALL_OFFSET_X = 80;
+	private static final float CHARGE_PARTICLE_INTERVAL = 0.03f;
+	private static final int   CHARGE_PARTICLES_PER_EMIT = 2;
+	private static final int   CHARGE_MIN_DISTANCE = 40;
+	private static final int   CHARGE_MAX_DISTANCE = 110;
+	private static final int   CHARGE_PARTICLE_MAX_SIZE = 10;
+	private static final float CHARGE_PARTICLE_MAX_LIFETIME = 0.5f;
+
+	private EntityGroupScreenBound<Entity> effectManager;
+	private float chargeEmitCounter;
+
 	private int statusWeapon; // 0 --> loading; 1 --> shot
 	
 	private float 	actualTickShot;	//number of update for this entity during shot phase	
@@ -42,7 +57,7 @@ public class LightningBolt extends BaseEntity {
 
 	private float sizeLoadingBall = 1;
 	private float sizeIncreasingLoadingBall = 0;	
-	private float sizeMaxLoadingBall = 40;	
+	private float sizeMaxLoadingBall = 29;	//~28% smaller than the original 40
 	
 	private Random 	random;
 
@@ -64,6 +79,7 @@ public class LightningBolt extends BaseEntity {
 		
 		
 		this.position = position;
+		this.context = context;
 
 		random = new Random();
 		pointsFrequency = 25;
@@ -80,6 +96,10 @@ public class LightningBolt extends BaseEntity {
 		statusWeapon = statusWeapon+1;
 	}
 
+	public void setEffectManager(EntityGroupScreenBound<Entity> effectManager){
+		this.effectManager = effectManager;
+	}
+
 
 	public void updateEntity(float deltaSeconds)  throws Exception  {
 
@@ -91,6 +111,8 @@ public class LightningBolt extends BaseEntity {
 				sizeLoadingBall = 1f;
 			if(sizeLoadingBall >= sizeMaxLoadingBall)
 				sizeLoadingBall = sizeMaxLoadingBall;
+
+			emitChargeParticles(deltaSeconds);
 
 		}else{
 			//recomputed every tick: the boss may still be moving, so the reach must track its current X
@@ -114,15 +136,31 @@ public class LightningBolt extends BaseEntity {
 
 	public void collided(Entity other) {
 		remove = false;	//remove only with time and not with collision
-	}		
+	}
+
+	/** Streams particles in from a ring around the loading ball so they visually feed it as it charges. */
+	private void emitChargeParticles(float deltaSeconds){
+		if(effectManager == null){
+			return;
+		}
+
+		chargeEmitCounter += deltaSeconds;
+		if(chargeEmitCounter >= CHARGE_PARTICLE_INTERVAL){
+			chargeEmitCounter = 0;
+
+			for(int i=0; i<CHARGE_PARTICLES_PER_EMIT; i++){
+				effectManager.addRequest(new ParticleConverge(ParticleColorScheme.ENERGY_TRAIL, this, LOADING_BALL_OFFSET_X,
+						CHARGE_MIN_DISTANCE, CHARGE_MAX_DISTANCE, CHARGE_PARTICLE_MAX_SIZE, CHARGE_PARTICLE_MAX_LIFETIME, context));
+			}
+		}
+	}
 
 	public void renderEntity(Graphics2D dbg) throws Exception {
 
 		if(statusWeapon == 0){
 			
-			int offset = 80;
 			int size = (int) sizeLoadingBall;
-			Point center = new Point((int)position.getPosX()-offset, (int)position.getPosY());   
+			Point center = new Point((int)position.getPosX()-LOADING_BALL_OFFSET_X, (int)position.getPosY());   
 			float glowSize = size * LOADING_GLOW_FACTOR;
 			float[] dist = {0f, 0.45f, 0.75f, 1f};
 			Color[] colors = {Color.WHITE, ENERGY_CYAN, new Color(0, 90, 160, 190), ENERGY_GLOW};

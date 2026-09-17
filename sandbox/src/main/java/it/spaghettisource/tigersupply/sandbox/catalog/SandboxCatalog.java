@@ -88,8 +88,11 @@ public class SandboxCatalog {
 				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotDefault(ctx, enemyOrigin(ctx), target)));
 		cases.add(new SandboxCase("PlasmaCannon", Family.PROJECTILE,
 				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotPlasmaCannon(enemyOrigin(ctx), target)));
-		cases.add(new SandboxCase("LightningBolt", Family.PROJECTILE,
-				(ctx, m, target) -> EntityFactoryWrapper.newEnemyShotLightningBolt(ctx, enemyOrigin(ctx), 2f, 1f)));
+		cases.add(new SandboxCase("LightningBolt", Family.PROJECTILE, (ctx, m, target) -> {
+			var bolt = EntityFactoryWrapper.newEnemyShotLightningBolt(ctx, enemyOrigin(ctx), 2f, 1f);
+			bolt.setEffectManager(m.effect());
+			return bolt;
+		}));
 		cases.add(new SandboxCase("PlayerRocket", Family.PROJECTILE, (ctx, m, target) -> {
 			var rocket = EntityFactoryWrapper.playerShotRocket(playerOrigin(ctx));
 			rocket.setEffectManager(m.effect());

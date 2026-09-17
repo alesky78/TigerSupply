@@ -27,6 +27,7 @@ public class LightningBoltLaser extends AbstractWeapon<Enemy> {
 		super.doReload();
 		try {
 			gunShotSprite = EntityFactoryWrapper.newEnemyShotLightningBolt(owner.getContext(),owner.getPosition(),fireingTime,currentReloadingTime);
+			gunShotSprite.setEffectManager(owner.getEffectManager());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
