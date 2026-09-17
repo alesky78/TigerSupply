@@ -30,7 +30,7 @@ import it.spaghettisource.tigersupply.game.utils.GameResources;
  *
  * @author Alessandro D'Ottavio
  */
-public class ParticleTrail extends BaseEntity {
+public class ParticleTrailSquare extends BaseEntity {
 
 	/** Fraction of the velocity retained after one second of drift. */
 	private static final double DAMPING_PER_SECOND = 0.15;
@@ -54,7 +54,7 @@ public class ParticleTrail extends BaseEntity {
 	 * @param lifeTimeSeconds the lifetime after which the particle removes itself, in seconds
 	 * @param context         the game context (kept for symmetry with the other particle effects)
 	 */
-	public ParticleTrail(ParticleColorScheme scheme, int posX, int posY, int size, float speedX, float speedY, float lifeTimeSeconds, GameContext context) {
+	public ParticleTrailSquare(ParticleColorScheme scheme, int posX, int posY, int size, float speedX, float speedY, float lifeTimeSeconds, GameContext context) {
 		this.scheme = scheme;
 		this.size = Math.max(1, size);
 		this.lifeTimeDuration = Math.max(0.01f, lifeTimeSeconds);
@@ -115,7 +115,7 @@ public class ParticleTrail extends BaseEntity {
 	public void renderEntity(Graphics2D dbg) throws Exception {
 		Color originalColor = dbg.getColor();
 		dbg.setColor(scheme.colorAt(colorAlteration));
-		dbg.fillOval(getXposition() - size / 2, getYposition() - size / 2, (int) (size * colorAlteration), (int) (size * colorAlteration));
+		dbg.fillRect(getXposition() - size / 2, getYposition() - size / 2, (int) (size * colorAlteration), (int) (size * colorAlteration));
 		dbg.setColor(originalColor);
 	}
 

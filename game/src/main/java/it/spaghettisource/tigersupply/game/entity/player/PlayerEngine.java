@@ -6,7 +6,7 @@ import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.effect.Effect;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
-import it.spaghettisource.tigersupply.game.entity.effect.ParticleTrail;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleTrailSquare;
 
 
 public class PlayerEngine extends Effect {
@@ -47,7 +47,7 @@ public class PlayerEngine extends Effect {
 				float driftX = -TRAIL_DRIFT_SPEED + (random.nextInt(60) - 30);
 				float driftY = random.nextInt(80) - 40;
 				int pixelSize = 8 + random.nextInt(6);
-				ParticleTrail trail = new ParticleTrail(ParticleColorScheme.EMBER,
+				ParticleTrailSquare trail = new ParticleTrailSquare(ParticleColorScheme.EMBER,
 						emitX, emitY + jitterY, pixelSize, driftX, driftY, TRAIL_LIFETIME, context);
 				effectManager.addRequest(trail);
 			}
