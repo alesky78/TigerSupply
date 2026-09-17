@@ -26,14 +26,13 @@ public class StaticResources {
 	public static final String ALGPRO_DELTA = "delta";
 	public static final String ALGPRO_DELTAX = "deltax";	
 	public static final String ALGPRO_DELTAY = "deltay";
-	public static final String ALGPRO_SPEEDX = "speedx";	
-	public static final String ALGPRO_SPEEDY = "speedy";	
 	public static final String ALGPRO_POINT = "point";
 	public static final String ALGPRO_SPRITE = "sprite";		
 	public static final String ALGPRO_INCREMENT = "increment";
 	public static final String ALGPRO_START 	= "start";	
 	public static final String ALGPRO_LIST_POINTS = "listpoints";	
 	public static final String ALGPRO_SPEED = "speed";
+	public static final String ALGPRO_ACCELERATION = "acceleration";
 	public static final String ALGPRO_TURN_RATE = "turnrate";
 	public static final String ALGPRO_SEEK_TIME = "seektime";
 	

@@ -90,7 +90,7 @@ public class EntityFactoryWrapper {
 
 	public static EnemyRocket newEnemyShotRocket(Position shotPosition, Entity target) throws Exception{	
 		Sprite sprite = SpriteFactory.getInstance(). createImageSingleSprite(GameResources.ENEMY_SHOT_ROCKET);
-		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPointIncr(130, 40, new Position(target.getXposition(), target.getYposition(),0));		
+		UpdateAlgorithm algorithm = UpdateAlgorithmFactoryWrapper.newGoToPointIncr(0.003f, new Position(target.getXposition(), target.getYposition(),0));		
 		return EntityFactory.getInstance().createEntity((int)shotPosition.getPosX(),(int)shotPosition.getPosY(),GameResources.Z_SHOT, -150, 0, 1.0f, algorithm, sprite, EnemyRocket.class);			
 	}	
 

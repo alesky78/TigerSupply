@@ -136,18 +136,17 @@ public class UpdateAlgorithmFactoryWrapper {
 	}	
 	
 	/**
-	 * Creates a {@link UpdateAlgoritmGoToPointIncreasingSpeed} that accelerates toward a target point.
+	 * Creates a {@link UpdateAlgoritmGoToPointIncreasingSpeed} that accelerates toward a target point,
+	 * using the entity's own {@link it.spaghettisource.tigersupply.engine.entity.Speed} as the initial speed.
 	 *
-	 * @param maxSpeedx the initial maximum horizontal speed, in pixel/second
-	 * @param maxSpeedy the initial maximum vertical speed, in pixel/second
+	 * @param acceleration the per-frame acceleration factor (e.g. {@code 0.003} for +0.3% each frame)
 	 * @param copyPoint the target {@link Position} to reach
 	 * @return the configured algorithm
 	 * @throws Exception if the algorithm cannot be created
 	 */
-	public static UpdateAlgoritmGoToPointIncreasingSpeed newGoToPointIncr(int maxSpeedx,int maxSpeedy,Position copyPoint) throws Exception{
+	public static UpdateAlgoritmGoToPointIncreasingSpeed newGoToPointIncr(float acceleration,Position copyPoint) throws Exception{
 		DynaProperties properties = new DynaProperties();
-		properties.setString(ALGPRO_SPEEDX, Integer.toString(maxSpeedx));
-		properties.setString(ALGPRO_SPEEDY, Integer.toString(maxSpeedy));		
+		properties.setFloat(ALGPRO_ACCELERATION, acceleration);
 		properties.setObject(ALGPRO_POINT, copyPoint);
 		return UpdateAlgorithmFactory.newInstance(UpdateAlgoritmGoToPointIncreasingSpeed.class, properties);
 	}		
