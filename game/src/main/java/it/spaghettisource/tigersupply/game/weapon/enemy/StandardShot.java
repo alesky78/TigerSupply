@@ -11,6 +11,7 @@ public class StandardShot extends AbstractWeapon<Enemy> {
 
 	public StandardShot(){
 		reloadingTime = 3f;	//2 seconds and shot
+		reloadingTimeJitter = 1.5f;
 	}
 	
 	
@@ -18,11 +19,6 @@ public class StandardShot extends AbstractWeapon<Enemy> {
 		Position shotPosition = new Position(owner.getPosition());
 		Entity gunShotSprite = EntityFactoryWrapper.newEnemyShotDefault(shotPosition, target);
 		owner.getShotManager().addRequest(gunShotSprite);
-	}
-
-
-	protected void doReload() {
-		
 	}
 
 	public boolean targetInRange(Entity target) {

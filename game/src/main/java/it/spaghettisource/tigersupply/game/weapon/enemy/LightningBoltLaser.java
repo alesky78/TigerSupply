@@ -13,6 +13,7 @@ public class LightningBoltLaser extends AbstractWeapon<Enemy> {
 	
 	public LightningBoltLaser(){
 		reloadingTime = 4f;	//4 seconds and shot
+		reloadingTimeJitter = 2f;
 		fireingTime = 3f;//;
 	}
 	
@@ -23,8 +24,9 @@ public class LightningBoltLaser extends AbstractWeapon<Enemy> {
 
 
 	protected void doReload() {
+		super.doReload();
 		try {
-			gunShotSprite = EntityFactoryWrapper.newEnemyShotLightningBolt(owner.getContext(),owner.getPosition(),fireingTime,reloadingTime);
+			gunShotSprite = EntityFactoryWrapper.newEnemyShotLightningBolt(owner.getContext(),owner.getPosition(),fireingTime,currentReloadingTime);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -31,10 +31,6 @@ public class DoubleGun extends AbstractWeapon<Player> implements HangarWeapon  {
 		owner.getShotManager().addRequest(gunShotSprite);
 	}
 
-	protected void doReload() {
-		
-	}
-
 	public boolean targetInRange(Entity target) {
 		return true;
 	}

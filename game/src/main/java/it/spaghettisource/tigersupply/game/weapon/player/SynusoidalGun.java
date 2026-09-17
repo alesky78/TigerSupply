@@ -27,10 +27,6 @@ public class SynusoidalGun extends AbstractWeapon<Player>  implements HangarWeap
 		AudioManager.getInstance().playFx("laser", false);
 	}
 
-	protected void doReload() {
-		
-	}
-
 	public boolean targetInRange(Entity target) {
 		return true;
 	}

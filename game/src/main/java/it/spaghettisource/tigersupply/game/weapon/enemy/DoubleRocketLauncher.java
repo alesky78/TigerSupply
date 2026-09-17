@@ -11,6 +11,7 @@ public class DoubleRocketLauncher extends AbstractWeapon<Enemy> {
 
 	public DoubleRocketLauncher(){
 		reloadingTime = 1.8f;	//2 seconds and shot
+		reloadingTimeJitter = 0.9f;
 	}
 	
 	
@@ -36,11 +37,6 @@ public class DoubleRocketLauncher extends AbstractWeapon<Enemy> {
 	}
 
 
-	protected void doReload() {
-		
-	}
-
-	
 	public boolean targetInRange(Entity target) {
 		if(target.getXposition() < owner.getXposition()){
 			return true;

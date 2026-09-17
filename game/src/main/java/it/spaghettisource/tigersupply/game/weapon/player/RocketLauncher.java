@@ -37,10 +37,6 @@ public class RocketLauncher extends AbstractWeapon<Player> implements HangarWeap
 		AudioManager.getInstance().playFx("rocket", false);		
 	}
 
-	protected void doReload() {
-
-	}
-
 	public boolean targetInRange(Entity target) {
 		return true;
 	}

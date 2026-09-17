@@ -11,6 +11,7 @@ public class SeekerRocketLauncher extends AbstractWeapon<Enemy> {
 
 	public SeekerRocketLauncher(){
 		reloadingTime = 2.2f;
+		reloadingTimeJitter = 1.1f;
 	}
 
 
@@ -21,10 +22,6 @@ public class SeekerRocketLauncher extends AbstractWeapon<Enemy> {
 		owner.getShotManager().addRequest(rocketShot);
 	}
 
-
-	protected void doReload() {
-
-	}
 
 	public boolean targetInRange(Entity target) {
 		if(target.getXposition() < owner.getXposition()){

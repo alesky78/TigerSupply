@@ -11,6 +11,7 @@ public class FireBallCannon extends AbstractWeapon<Enemy> {
 
 	public FireBallCannon() {
 		reloadingTime = 1.8f;
+		reloadingTimeJitter = 0.9f;
 	}
 
 	protected void doFire(Entity target) throws Exception {
@@ -18,10 +19,6 @@ public class FireBallCannon extends AbstractWeapon<Enemy> {
 		BallFire ball = EntityFactoryWrapper.newEnemyShotFireBall(owner.getContext(), shotPosition,target);
 		ball.setEffectManager(owner.getEffectManager());
 		owner.getShotManager().addRequest(ball);
-	}
-
-	protected void doReload() {
-
 	}
 
 	public boolean targetInRange(Entity target) {

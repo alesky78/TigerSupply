@@ -13,6 +13,7 @@ public class PlasmaCannon extends AbstractWeapon<Enemy> {
 
 	public PlasmaCannon(){
 		reloadingTime = 1f;	//2 seconds and shot
+		reloadingTimeJitter = 0.5f;
 	}
 
 
@@ -37,6 +38,7 @@ public class PlasmaCannon extends AbstractWeapon<Enemy> {
 
 
 	protected void doReload() {
+		super.doReload();
 		explosionInversion = !explosionInversion;
 	}
 

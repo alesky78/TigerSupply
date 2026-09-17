@@ -34,10 +34,6 @@ public class Bomb extends AbstractWeapon<Player> implements HangarWeapon {
 		owner.getShotManager().addRequest(rocketShotSprite1);
 	}
 
-	protected void doReload() {
-
-	}
-
 	public boolean targetInRange(Entity target) {
 		return true;
 	}
