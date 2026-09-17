@@ -1,19 +1,25 @@
 # TIGER SUPPLY - Copilot Instructions
 
 TigerSupply is a retro-inspired, 90s-style arcade shoot 'em up ("shmup") built in Java 17 on a
-hand-rolled Swing/AWT game engine. There is no server, database, or network layer — it is a
-single-process, offline desktop application. See
-[documentation/architecture/system-overview/](../documentation/architecture/system-overview/)
-for the full reverse-engineered reference (business overview, architecture, code structure,
-API/data model, component inventory, technology stack, dependencies, code-quality assessment).
+hand-rolled Swing/AWT game engine. The player pilots a ship down a scrolling playfield, dodging
+and destroying waves ("hordes") of enemies scripted from XML, up to a level-ending boss. There
+is no server, database, or network layer — it is a single-process, offline desktop application.
+
+## Gameplay & scene flow
+
+- The game runs as a fixed-timestep loop driving a small set of full-screen scenes, sequenced by
+  `game.control.SceneFlowController`:
+  `Presentation` (title) -> `Hangar` (pre-mission) -> `Level` (the actual shmup gameplay) ->
+  `GameOver`.
+- During a `Level`, a `game.scene.director.LevelDirector` sequences the level as an ordered list
+  of steps; each step runs pluggable `LevelAction`s (spawn a horde, show a radio dialogue, play
+  music, wait) and drives the reusable engine state machine until the level is cleared.
+- Gameplay objects are split into decoupled concerns: **Entity** (simulation), **Sprite**
+  (presentation) and **Weapon** (fire control) — see [note.txt](../note.txt).
 
 ## Documentation
 
 - **[documentation root location](../documentation)**
-- **[data dictionary](../documentation/data-dictionary/dictionary-map.md)**
-
-### Architecture
-- **[system overview](../documentation/architecture/system-overview/)**
 
 ### Subsystems
 - **[entity-movement-algorithms](../documentation/subsystems/entity-movement-algorithms/index.md)** —
@@ -49,8 +55,9 @@ API/data model, component inventory, technology stack, dependencies, code-qualit
 ## Architecture
 
 ### Module organization
-Organized into 3 Maven modules, each depending on the previous one (`launcher` → `game` →
-`engine`):
+Organized into 4 Maven modules. The core chain depends left-to-right (`launcher` → `game` →
+`engine`); `sandbox` is a parallel entry point alongside `launcher`, so the reactor is
+`engine` → `game` → `{launcher, sandbox}`:
 
 ### 1. `engine`
 **Purpose**: The reusable, game-agnostic arcade-game framework only: game loop and
@@ -77,6 +84,15 @@ game to the engine and produces the runnable jar.
 owns window title + 1360x660 playfield) and `TigerSupplysceneHostFactory` (the only class
 outside `game.*` that names `game.control.TigerSupplysceneHost`). Its POM builds the uber-jar
 `launcher/target/tigersupply.jar` (shade) and provides `mvn -pl launcher exec:java` (exec).
+
+### 4. `sandbox`
+**Purpose**: A standalone debug/dev tool to run any single entity (projectile, enemy, effect) in
+isolation, separate from the actual game (its own `main`, not reachable from normal play).
+**Package**: `it.spaghettisource.tigersupply.sandbox`
+**Contains**: A parallel launcher (`SandboxLauncher` + `SandboxSceneHostFactory`) plus a two-scene
+menu/test harness; depends on `game` and uses only its public APIs. Runs via
+`mvn -pl sandbox exec:java` (uber-jar `sandbox/target/tigersupply-sandbox.jar`). Keep `sandbox`
+code out of `engine`/`game`/`launcher` — the dependency only points inward toward `game`.
 
 ---
 
@@ -136,24 +152,15 @@ outside `game.*` that names `game.control.TigerSupplysceneHost`). Its POM builds
   deliberate design goal recorded in [note.txt](../note.txt).
 
 ### DON'T
-- Don't introduce a DI framework, ORM, servlet/web layer, or database — this is an offline
-  Swing desktop game with zero external runtime dependencies by design.
-- Don't assume a REST API, database, or network call exists anywhere in this codebase — none do.
-- Don't silently "fix" the remaining long-standing typos in public identifiers (e.g.
-  `EnemyShoterRocket`, `addRquest`, `SynusoidalGun`, `fireingTime`) as a drive-by change —
-  renaming them can ripple into the level XML/class hierarchy and should only be done as its own
-  deliberate, requested change. (The earlier `RocketLauncer`/`LithingBolt`/`GamePanelMause*`/
-  `algoritmPrototype`/`Size.getHeigh()` typos have since been corrected in a dedicated change.)
+- Don't assume any online-game or backend plumbing exists (REST API, database, sockets,
+  matchmaking, save-server) — TigerSupply runs fully offline in a single process; game state
+  lives in memory and level content comes from bundled XML/catalog files.
 - Don't add new dependencies without a clear reason — beyond the JDK, the only declared
   dependency is JUnit (test scope, currently unused).
 
 ### Be Careful With
-- `it.spaghettisource.tigersupply.game.entity.Entity` is an empty, unused class that
-  shadows the real `it.spaghettisource.tigersupply.engine.entity.Entity` interface — double
-  check imports when working with "Entity" under `game.entity`.
-- Simple-name collisions across sibling packages, e.g. `game.weapon.player.RocketLauncher` vs
-  `game.weapon.enemy.RocketLauncher`, and `game.scene.definition.Speed` vs `engine.entity.Speed`
-  — verify the fully-qualified import before reusing a name.
+- Simple-name collisions across sibling packages, e.g. `game.scene.builder.definition.Speed`
+  vs `engine.entity.Speed` — verify the fully-qualified import before reusing a name.
 - The play field is hard-coded to 1360x660 in `launcher.Launcher` (`PLAYFIELD_WIDTH`/
   `PLAYFIELD_HEIGHT`, passed into `windows.GameFrame`), and `level-1.xml`'s spawn coordinates
   assume this fixed resolution.
@@ -182,7 +189,7 @@ outside `game.*` that names `game.control.TigerSupplysceneHost`). Its POM builds
 TigerSupply is a small, single-developer, offline Java 17 Swing arcade shoot-'em-up with no
 external runtime dependencies, no tests, and no CI build/test pipeline. Prefer minimal,
 consistent changes that follow the existing Factory/Singleton/Strategy/State patterns already
-used throughout the `engine` and `game` modules.
+used throughout the `engine`, `game`, `launcher`, and `sandbox` modules.
 
 ---
 
