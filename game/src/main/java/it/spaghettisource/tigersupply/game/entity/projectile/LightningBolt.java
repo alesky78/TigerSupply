@@ -26,6 +26,11 @@ import it.spaghettisource.tigersupply.engine.entity.Position;
  */
 public class LightningBolt extends BaseEntity {
 
+	private static final Color ENERGY_CYAN = new Color(102, 230, 255);
+	private static final Color ENERGY_BLUE = new Color(0, 90, 160);
+	private static final Color ENERGY_GLOW = new Color(0, 90, 160, 80);
+	private static final float LOADING_GLOW_FACTOR = 1.5f;
+
 	private int statusWeapon; // 0 --> loading; 1 --> shot
 	
 	private float 	actualTickShot;	//number of update for this entity during shot phase	
@@ -113,19 +118,24 @@ public class LightningBolt extends BaseEntity {
 			int offset = 80;
 			int size = (int) sizeLoadingBall;
 			Point center = new Point((int)position.getPosX()-offset, (int)position.getPosY());   
-		    float[] dist = {0.1f, 0.5f};
-		    Color[] colors = {Color.WHITE, Color.BLUE};
-			dbg.setPaint(new RadialGradientPaint(center,size,dist,colors));
-			dbg.fillOval((int)position.getPosX()-offset-size/2, (int)position.getPosY()-size/2, size, size);
+			float glowSize = size * LOADING_GLOW_FACTOR;
+			float[] dist = {0f, 0.45f, 0.75f, 1f};
+			Color[] colors = {Color.WHITE, ENERGY_CYAN, new Color(0, 90, 160, 190), ENERGY_GLOW};
+			dbg.setPaint(new RadialGradientPaint(center, glowSize / 2f, dist, colors));
+			dbg.fillOval((int) (center.x - glowSize / 2f), (int) (center.y - glowSize / 2f),
+					(int) glowSize, (int) glowSize);
 			
 		}else{
 
 			Color originalColor = dbg.getColor();
 			Stroke originalStroke = dbg.getStroke();
 
-			dbg.setStroke(new BasicStroke(2.0f));
+			dbg.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			dbg.setPaint(new GradientPaint(xPoint[0], yPoint[0], ENERGY_CYAN, xPoint[points-1], yPoint[0], ENERGY_BLUE));
+			dbg.drawPolyline(xPoint, yPoint, points);
 
-			dbg.setPaint(new GradientPaint(xPoint[0], yPoint[0], Color.WHITE, xPoint[points-1], yPoint[0], Color.BLUE));
+			dbg.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			dbg.setPaint(new GradientPaint(xPoint[0], yPoint[0], Color.WHITE, xPoint[points-1], yPoint[0], ENERGY_CYAN));
 			dbg.drawPolyline(xPoint, yPoint, points);
 
 
