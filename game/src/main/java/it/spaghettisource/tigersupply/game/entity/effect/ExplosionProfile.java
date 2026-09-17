@@ -2,7 +2,7 @@ package it.spaghettisource.tigersupply.game.entity.effect;
 
 /**
  * Immutable configuration of a single explosion burst: the colour scheme and the per-particle
- * maxima its {@link ExplosionParticle}s are spawned with.
+ * maxima its {@link ParticleBurst}s are spawned with.
  *
  * @author Alessandro D'Ottavio
  */

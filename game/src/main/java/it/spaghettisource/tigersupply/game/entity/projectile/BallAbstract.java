@@ -9,7 +9,7 @@ import java.util.Random;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
-import it.spaghettisource.tigersupply.game.entity.effect.EnergyTrailParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.ParticleFadeSquare;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 
 /** Shared implementation for code-rendered spherical enemy projectiles. */
@@ -50,7 +50,7 @@ public abstract class BallAbstract extends BaseEntity {
 				int jitterX = random.nextInt(7) - 3;
 				int jitterY = random.nextInt(diameter) - diameter / 2;
 				int pixelSize = 3 + random.nextInt(4);
-				EnergyTrailParticle particle = new EnergyTrailParticle(getTrailScheme(), getXposition() + jitterX,
+				ParticleFadeSquare particle = new ParticleFadeSquare(getTrailScheme(), getXposition() + jitterX,
 						getYposition() + jitterY, pixelSize, TRAIL_LIFETIME, context);
 				effectManager.addRequest(particle);
 			}

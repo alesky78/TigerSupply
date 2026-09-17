@@ -13,7 +13,7 @@ import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 
 /**
- * Explosion emitter: an invisible effect entity that spawns {@link ExplosionParticle}s into the
+ * Explosion emitter: an invisible effect entity that spawns {@link ParticleBurst}s into the
  * effect group from an {@link ExplosionProfile}.
  *
  * <p>With a non-positive {@code interval} it is a one-shot burst (emit once, then remove itself).
@@ -90,7 +90,7 @@ public class Explosion extends BaseEntity {
 			originY += (int) (Math.random() * jitterY);
 		}
 		for (int i = 0; i < perEmit; i++) {
-			effectManager.addRequest(new ExplosionParticle(
+			effectManager.addRequest(new ParticleBurst(
 					profile.getScheme(), originX, originY,
 					profile.getMaxSize(), profile.getMaxSpeed(), profile.getMaxLifeTime(), context));
 		}
