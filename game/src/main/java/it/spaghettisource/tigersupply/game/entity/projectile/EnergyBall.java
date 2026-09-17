@@ -60,7 +60,7 @@ public class EnergyBall extends BaseEntity {
 		int diameter = size.getWidth();
 		Point center = new Point(getXposition(), getYposition());
 		float[] dist = {0f, 0.6f, 1f};
-		Color[] colors = {Color.WHITE, new Color(0, 180, 255), new Color(0, 0, 80)}; // core -> darkening edge
+		Color[] colors = {Color.WHITE, new Color(102, 230, 255), new Color(0, 90, 160)}; // core -> trail-matching cyan edge
 		dbg.setPaint(new RadialGradientPaint(center, diameter / 2f, dist, colors));
 		dbg.fillOval(getXposition() - diameter / 2, getYposition() - diameter / 2, diameter, diameter);
 	}
