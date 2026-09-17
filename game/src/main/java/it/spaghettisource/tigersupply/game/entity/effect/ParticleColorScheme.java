@@ -47,10 +47,12 @@ public enum ParticleColorScheme {
 	 */
 	EMBER {
 		public Color colorAt(float t) {
-			float r = 0.5f + 0.5f * t;   //1.0 (hot red) -> 0.5 (grey)
-			float g = 0.5f - 0.2f * t;   //0.3 -> 0.5
-			float b = 0.5f - 0.5f * t;   //0.0 -> 0.5
-			return new Color(r, g, b, t);
+			//grey out early (t^2) but keep alpha high longer (sqrt) so the grey phase stays visible
+			float hot = t * t;
+			float r = 0.5f + 0.5f * hot;   //1.0 (hot red) -> 0.5 (grey)
+			float g = 0.5f - 0.2f * hot;   //0.3 -> 0.5
+			float b = 0.5f - 0.5f * hot;   //0.0 -> 0.5
+			return new Color(r, g, b, (float) Math.sqrt(t));
 		}
 	};
 
