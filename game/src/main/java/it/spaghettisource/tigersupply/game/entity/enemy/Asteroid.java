@@ -1,5 +1,6 @@
 package it.spaghettisource.tigersupply.game.entity.enemy;
 
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
 
 
 public class Asteroid extends Enemy {	
@@ -9,13 +10,8 @@ public class Asteroid extends Enemy {
 	public Asteroid(){
 		super();
 		life = 20;	
-		particleNum = 120;
-		particleMaxSize = 40;
-		particleDeathMaxSize = 60;	
-		particleMaxSpeed = 90;
-		particleDeathMaxSpeed = 100 ;	
-		particleMaxLifeTime = 0.3f;	
-		particleDeathMaxLifeTime= 0.5f;				
+		hitProfile = ExplosionProfileFactory.asteroidHit();
+		deathProfile = ExplosionProfileFactory.asteroidDeath();
 	}	
 
 

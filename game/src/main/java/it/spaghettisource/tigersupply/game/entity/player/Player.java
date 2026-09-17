@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfile;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
 import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 
 import it.spaghettisource.tigersupply.engine.entity.Position;
@@ -45,10 +47,7 @@ public class Player extends BaseEntity {
 	protected List<Weapon<Player>> weapons = new ArrayList<Weapon<Player>>(); 
 	
 	//explosion management
-	protected int particleNum;
-	protected int particleMaxSize;	
-	protected int particleMaxSpeed;	
-	protected float particleMaxLifeTime;		
+	protected ExplosionProfile deathProfile;		
 	
 	
 	int life = 4;	//life of the player, how many time they can distroy you!!!!!!
@@ -63,10 +62,7 @@ public class Player extends BaseEntity {
 	private boolean visible = true;			//current blink phase of the ship sprite
 	
 	public Player(){
-		particleNum = 100;
-		particleMaxSize = 40;	
-		particleMaxSpeed = 100;	
-		particleMaxLifeTime = 0.5f;			
+		deathProfile = ExplosionProfileFactory.playerDeath();			
 	}
 	
 	
@@ -327,19 +323,7 @@ public class Player extends BaseEntity {
 
 	
 	private void createdDeadParticle(){
-		createExplosionParticleFire(particleNum, getXposition(),getYposition(), particleMaxSize, particleMaxSpeed, particleMaxLifeTime);
+		effectManager.addRequest(EntityFactoryWrapper.newExplosion(deathProfile, getXposition(), getYposition(), effectManager, context));
 	}	
-
-	protected void createExplosionParticleFire(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
-		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
-		}
-	}
-	
-	protected void createExplosionParticleEnergy(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
-		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
-		}
-	}
 
 }

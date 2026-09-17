@@ -12,6 +12,8 @@ import it.spaghettisource.tigersupply.game.entity.BaseEntity;
 import it.spaghettisource.tigersupply.game.entity.effect.EnergyTrailParticle;
 import it.spaghettisource.tigersupply.game.entity.enemy.EnergeticShield;
 import it.spaghettisource.tigersupply.game.entity.effect.ExplosionParticle;
+import it.spaghettisource.tigersupply.game.entity.effect.Explosion;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfile;
 import it.spaghettisource.tigersupply.game.entity.effect.ParticleColorScheme;
 import it.spaghettisource.tigersupply.game.entity.effect.Smoke;
 import it.spaghettisource.tigersupply.game.entity.player.Player;
@@ -44,6 +46,29 @@ public class EntityFactoryWrapper {
 	public static ExplosionParticle newExplosionParticleEnergetic(int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
 		return new ExplosionParticle(ParticleColorScheme.ENERGETIC,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
 	}		
+
+	public static ExplosionParticle newExplosionParticle(ParticleColorScheme scheme,int posX, int posY,int maxSize,int maxSpeed,float maxLifeTimeInSeconds,GameContext context){
+		return new ExplosionParticle(scheme,posX, posY,maxSize,maxSpeed,maxLifeTimeInSeconds,context);
+	}
+
+	public static Explosion newExplosion(ExplosionProfile profile,int posX,int posY,EntityGroupScreenBound<Entity> effectManager,GameContext context){
+		Explosion explosion = new Explosion(profile, profile.getParticleNum(), -1f, -1f, null, effectManager, context);
+		explosion.setPosition(new Position(posX, posY, GameResources.Z_EXPLOSION));
+		return explosion;
+	}
+
+	public static Explosion newFollowingExplosion(ExplosionProfile profile,Entity owner,int perEmit,float interval,EntityGroupScreenBound<Entity> effectManager,GameContext context) throws Exception{
+		Explosion explosion = new Explosion(profile, perEmit, interval, -1f, owner, effectManager, context);
+		explosion.setPosition(new Position(owner.getXposition(), owner.getYposition(), GameResources.Z_EXPLOSION));
+		explosion.setUpdateAlgorithm(UpdateAlgorithmFactoryWrapper.newCopyPosition(0, 0, owner.getPosition()));
+		return explosion;
+	}
+
+	public static Explosion newTimedExplosion(ExplosionProfile profile,int posX,int posY,int perEmit,float interval,EntityGroupScreenBound<Entity> effectManager,GameContext context){
+		Explosion explosion = new Explosion(profile, perEmit, interval, -1f, null, effectManager, context);
+		explosion.setPosition(new Position(posX, posY, GameResources.Z_EXPLOSION));
+		return explosion;
+	}
 	
 	public static EnergeticShield newEnergeticShield(int shieldSize, float shieldLifeTimeInSeconds,EntityGroupScreenBound<Entity> effectManager,Position position,GameContext context) throws Exception{
 		EnergeticShield shield = new EnergeticShield(shieldSize,shieldLifeTimeInSeconds, context);

@@ -3,6 +3,7 @@ package it.spaghettisource.tigersupply.game.entity.enemy;
 import it.spaghettisource.tigersupply.engine.audio.AudioManager;
 import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.game.entity.BaseEntity;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfile;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 import it.spaghettisource.tigersupply.engine.entity.EntityGroupScreenBound;
 import it.spaghettisource.tigersupply.game.utils.EntityFactoryWrapper;
@@ -23,13 +24,8 @@ public class Enemy extends BaseEntity {
 	protected Weapon<Enemy>[] weapons = new Weapon[0];	//deafult 0 fix otherway null poin exception if there is enemy wihtout weapon (background)
 
 	//explosion management
-	protected int particleNum;
-	protected int particleMaxSize;
-	protected int particleDeathMaxSize;	
-	protected int particleMaxSpeed;
-	protected int particleDeathMaxSpeed;	
-	protected float particleMaxLifeTime;	
-	protected float particleDeathMaxLifeTime;	
+	protected ExplosionProfile hitProfile;
+	protected ExplosionProfile deathProfile;
 
 	public void setContext(GameContext context) {
 		this.context = context;
@@ -104,19 +100,6 @@ public class Enemy extends BaseEntity {
 	}
 
 
-	protected void createExplosionParticleFire(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
-		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleFire(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
-		}
-	}
-
-	protected void createExplosionParticleEnergy(int particleNum,int posX, int posY, int maxSize,int maxSpeed,float maxLifeTimeInSeconds){
-		for (int i = 0; i < particleNum; i++) {					
-			effectManager.addRequest(EntityFactoryWrapper.newExplosionParticleEnergetic(posX, posY, maxSize, maxSpeed, maxLifeTimeInSeconds,context));			
-		}
-	}
-
-
 	/**
 	 * used when die
 	 */
@@ -126,7 +109,7 @@ public class Enemy extends BaseEntity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		createExplosionParticleFire(particleNum, getXposition(),getYposition(), particleDeathMaxSize, particleDeathMaxSpeed, particleDeathMaxLifeTime);
+		effectManager.addRequest(EntityFactoryWrapper.newExplosion(deathProfile, getXposition(), getYposition(), effectManager, context));
 	}
 
 	/**
@@ -139,7 +122,7 @@ public class Enemy extends BaseEntity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-		createExplosionParticleFire(particleNum,  other.getXposition(), other.getYposition(), particleMaxSize, particleMaxSpeed, particleMaxLifeTime);
+		effectManager.addRequest(EntityFactoryWrapper.newExplosion(hitProfile, other.getXposition(), other.getYposition(), effectManager, context));
 	}	
 
 	/**
@@ -147,7 +130,7 @@ public class Enemy extends BaseEntity {
 	 * @param other
 	 */
 	protected void createdHitExplosionParticleEnergy(Entity other){
-		createExplosionParticleEnergy(particleNum,  other.getXposition(), other.getYposition(), particleMaxSize, particleMaxSpeed, particleMaxLifeTime);
+		effectManager.addRequest(EntityFactoryWrapper.newExplosion(hitProfile, other.getXposition(), other.getYposition(), effectManager, context));
 	}	
 
 

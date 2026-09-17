@@ -8,6 +8,7 @@ import it.spaghettisource.tigersupply.engine.control.GameContext;
 import it.spaghettisource.tigersupply.engine.entity.Position;
 import it.spaghettisource.tigersupply.engine.entity.Size;
 import it.spaghettisource.tigersupply.engine.entity.Speed;
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
 import it.spaghettisource.tigersupply.game.utils.GameResources;
 import it.spaghettisource.tigersupply.engine.entity.Entity;
 
@@ -37,13 +38,7 @@ public class EnergeticShield extends Enemy {
 		
 		//create enemy variable
 		life = 0;			
-		particleNum = 20;
-		particleMaxSize = 20;
-		particleDeathMaxSize = 20;	
-		particleMaxSpeed = 30;
-		particleDeathMaxSpeed = 30 ;	
-		particleMaxLifeTime = 0.3f;	
-		particleDeathMaxLifeTime= 0.3f;				
+		hitProfile = ExplosionProfileFactory.shieldEnergeticHit();
 		
 		//create sprite variables
 		size = new Size((int)sizeShield, (int)sizeShield);

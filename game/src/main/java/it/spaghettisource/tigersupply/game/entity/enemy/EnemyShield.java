@@ -1,5 +1,6 @@
 package it.spaghettisource.tigersupply.game.entity.enemy;
 
+import it.spaghettisource.tigersupply.game.entity.effect.ExplosionProfileFactory;
 import it.spaghettisource.tigersupply.game.weapon.Weapon;
 import it.spaghettisource.tigersupply.game.weapon.enemy.SeekerRocketLauncher;
 
@@ -11,13 +12,8 @@ public class EnemyShield extends Enemy {
 	
 	public EnemyShield(){
 		life = 0;			
-		particleNum = 50;
-		particleMaxSize = 35;
-		particleDeathMaxSize = 35;	
-		particleMaxSpeed = 60;
-		particleDeathMaxSpeed = 60 ;	
-		particleMaxLifeTime = 0.3f;	
-		particleDeathMaxLifeTime= 0.5f;
+		hitProfile = ExplosionProfileFactory.standardHit();
+		deathProfile = ExplosionProfileFactory.standardDeath();
 
 		shieldPeriod = 1; 
 		shieldCounter = shieldPeriod;
